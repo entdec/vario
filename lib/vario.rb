@@ -16,7 +16,7 @@ module Vario
       context.symbolize_keys!
       default = context.delete(:default)
 
-      s = Setting.find_by(name: name)
+      s = Vario::Setting.find_by(name: name)
       return default unless s
       s.value_for(context) || default
     end
