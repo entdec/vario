@@ -9,9 +9,9 @@ Gem::Specification.new do |s|
   s.version     = Vario::VERSION
   s.authors     = ["Andre Meij"]
   s.email       = ["andre@itsmeij.com"]
-  s.homepage    = "TODO"
-  s.summary     = "TODO: Summary of Vario."
-  s.description = "TODO: Description of Vario."
+  s.homepage    = "https://code.entropydecelerator.com/components/vario"
+  s.summary     = "Summary of Vario."
+  s.description = "Description of Vario."
   s.license     = "MIT"
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
