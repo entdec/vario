@@ -1,5 +1,6 @@
 require 'vario/engine'
 require 'vario/config'
+require 'vario/active_record_helpers'
 
 module Vario
   class Error < StandardError; end
@@ -20,5 +21,10 @@ module Vario
       return default unless s
       s.value_for(context) || default
     end
+  end
+
+  # Include helpers
+  ActiveSupport.on_load(:active_record) do
+    include ActiveRecordHelpers
   end
 end

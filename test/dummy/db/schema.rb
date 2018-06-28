@@ -10,6 +10,30 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 0) do
+ActiveRecord::Schema.define(version: 2018_06_28_130140) do
+
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "pgcrypto"
+  enable_extension "plpgsql"
+  enable_extension "uuid-ossp"
+
+  create_table "accounts", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "vario_settings", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "settable_type"
+    t.uuid "settable_id"
+    t.string "name"
+    t.string "category"
+    t.string "description"
+    t.string "keys", default: [], array: true
+    t.json "levels"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["settable_type", "settable_id"], name: "index_vario_settings_on_settable_type_and_settable_id"
+  end
 
 end
