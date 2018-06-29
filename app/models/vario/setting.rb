@@ -4,20 +4,33 @@ module Vario
 
     belongs_to :settable, polymorphic: true
 
-    validates :keys, presence: true
-    validates :levels, presence: true
-
     def value_for(context)
       context.stringify_keys!
 
-      missing = keys - context.keys
-      raise ArgumentError, "missing context '#{missing.join(', ')}''" if missing.present?
+      validate_context(context)
 
       result = levels.find do |level|
         context >= level['conditions']
       end
 
-      result&.dig('value')
+      parse_value(result&.dig('value'))
+    end
+
+    private
+
+    def validate_context(context)
+      missing = keys - context.keys
+      raise ArgumentError, "missing context '#{missing.join(', ')}''" if missing.present?
+    end
+
+    def parse_value(value)
+      return unless value.present?
+      return value unless value.is_a?(String)
+      return value.to_i if value.to_i.to_s == value.to_s
+      return false if value == 'false'
+      return true if value == 'true'
+      return value.split(/,\s*/) if value.match?(/,/)
+      value
     end
   end
 end
