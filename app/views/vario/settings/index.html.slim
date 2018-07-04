@@ -1,0 +1,10 @@
+.container-fluid.container-fixed-lg.bg-white.no-padding
+  table.table
+    thead
+      th Name
+      th Levels
+    tbody
+      - @settings.each do |setting|
+        tr
+          td= link_to setting.name, setting_path(setting)
+          td= setting.levels.count

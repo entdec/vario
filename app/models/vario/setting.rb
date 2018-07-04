@@ -2,7 +2,10 @@ module Vario
   class Setting < ApplicationRecord
     has_paper_trail if respond_to?(:has_paper_trail)
 
-    belongs_to :settable, polymorphic: true
+    belongs_to :settable, polymorphic: true, optional: true
+
+    after_initialize :levels # pre-init the levels
+    before_save :update_level_data
 
     def value_for(context)
       context.stringify_keys!
@@ -10,10 +13,18 @@ module Vario
       validate_context(context)
 
       result = levels.find do |level|
-        context >= level['conditions']
+        context >= level.conditions_hash
       end
 
-      parse_value(result&.dig('value'))
+      parse_value(result.value)
+    end
+
+    def levels
+      @levels ||= attributes['levels'].map { |level| Level.new(self, level) }
+    end
+
+    def update_level_data
+      self.levels = levels.map(&:to_h)
     end
 
     private

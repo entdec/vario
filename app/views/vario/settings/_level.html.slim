@@ -1,0 +1,13 @@
+.row.level
+  .col-sm-9.conditions
+    .row
+      - if level.set_conditions.size.zero?
+        .col-sm-12 Default
+      - level.set_conditions.each do |condition|
+        .col-md-6.col-lg-4.col-xl-3
+          button.btn.btn-light disabled=true
+            = condition.key.gsub('_id', '').humanize
+            | &nbsp;
+            span.badge.badge-light= condition.value
+  .col-sm-3.value
+    = level.value

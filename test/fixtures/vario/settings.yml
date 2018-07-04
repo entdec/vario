@@ -1,13 +1,15 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
-  description: MyString
-  keys: MyString
-  data: 
+  name: setting1
+  description: First setting
+  keys:
+    - key
+  levels: [{id: 1, conditions: {}, value: 1}]
 
 two:
-  name: MyString
-  description: MyString
-  keys: MyString
-  data: 
+  name: setting2
+  description: Second setting
+  keys:
+    - key
+  levels: [{id: 1, conditions: {}, value: 2}]
