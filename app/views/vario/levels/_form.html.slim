@@ -4,7 +4,7 @@
   h3 Conditions
   = f.simple_fields_for :conditions do |ff|
     - @level.conditions.each do |condition|
-      = f.simple_fields_for condition.key do |fff|
-        = fff.input :value, as: :select, label: condition.key, value: condition.value, collection: condition.collection, include_blank: false
+      = f.simple_fields_for :conditions do |fff|
+        = fff.input condition.key, as: :select, label: condition.key, selected: condition.value, collection: condition.collection, include_blank: true
     .actions.float-right
       = f.submit class: 'btn btn-primary'

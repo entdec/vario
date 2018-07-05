@@ -17,3 +17,9 @@
     - unless last
       = link_to move_down_setting_level_path(level.id, setting_id: level.setting.id)
         i.fa.fa-arrow-down
+    .float-right
+      = link_to edit_setting_level_path(level.id, setting_id: level.setting.id)
+        i.fa.fa-pencil
+      | &nbsp;
+      = link_to setting_level_path(level.id, setting_id: level.setting.id), method: :delete, confirm: 'Are you sure?'
+        i.fa.fa-times

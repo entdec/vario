@@ -2,12 +2,14 @@ module Vario
   class Level
     include ActiveModel::Model
     attr_accessor :id, :setting, :conditions, :value
+    delegate :persisted?, to: :setting
 
-    def initialize(setting, level)
+    def initialize(setting, level, new_record = false)
       @setting = setting
       @id = level['id'] || SecureRandom.hex
       @conditions = setting.keys.map { |key| Condition.new(setting, key, level.dig('conditions', key)) }
       @value = level['value']
+      @new_record = new_record
     end
 
     def conditions=(new_conditions)
@@ -38,6 +40,10 @@ module Vario
         conditions: conditions_hash,
         value: value
       }
+    end
+
+    def persisted?
+      !@new_record
     end
   end
 end

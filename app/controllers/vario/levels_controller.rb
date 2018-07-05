@@ -1,28 +1,50 @@
 module Vario
   class LevelsController < ApplicationController
+    add_breadcrumb I18n.t('breadcrumbs.vario.settings.index'), :settings_path
+
+    before_action :set_objects
+
     def new
-      @setting = Setting.find(params[:setting_id])
-      @level = Level.new(@setting, {})
+      @level = Level.new(@setting, {}, true)
+      add_breadcrumb I18n.t('breadcrumbs.vario.levels.new')
     end
 
     def create
-      @setting = Setting.find(params[:setting_id])
       @level = Level.new(@setting, level_params)
-      @setting.update_level(nil, params[:conditions], params[:value])
+      @setting.levels.unshift @level
 
-      render json: @setting.levels
+
+      if @setting.save
+        redirect_to setting_path(@setting)
+      else
+        render :new
+      end
+    end
+
+    def edit
+      @level = @setting.levels.find { |level| level.id == params[:id] }
     end
 
     def update
-      @setting = Setting.find(params[:setting_id])
       @level = @setting.levels.find { |level| level.id == params[:id] }
-      @setting.update_level(params[:id], params[:conditions], params[:value])
+      @level.value = level_params[:value]
+      @level.conditions = level_params[:conditions]
 
-      render json: @setting.levels
+      if @setting.save
+        redirect_to setting_path(@setting)
+      else
+        render :new
+      end
+    end
+
+    def destroy
+      @setting.levels.reject! { |level| level.id == params[:id] }
+      @setting.save!
+
+      redirect_to setting_path(@setting)
     end
 
     def move_up
-      @setting = Setting.find(params[:setting_id])
       @level = @setting.levels.find { |level| level.id == params[:id] }
       @level.move_up
 
@@ -30,7 +52,6 @@ module Vario
     end
 
     def move_down
-      @setting = Setting.find(params[:setting_id])
       @level = @setting.levels.find { |level| level.id == params[:id] }
       @level.move_down
 
@@ -39,8 +60,13 @@ module Vario
 
     private
 
+    def set_objects
+      @setting = Setting.find(params[:setting_id])
+      add_breadcrumb @setting.name, setting_path(@setting)
+    end
+
     def level_params
-      params.require(:level)
+      params.require(:level).permit(:value, conditions: {})
     end
   end
 end
