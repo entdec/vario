@@ -9,8 +9,12 @@ module Vario
     attr_reader :config
 
     def setup
-      @config = Config.new
+      @config = Vario::Config.new
       yield config
+    end
+
+    def key_data(key)
+      config.keys[key.to_s] || { name: key, type: :string }
     end
   end
 

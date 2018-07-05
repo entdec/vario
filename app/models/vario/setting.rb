@@ -27,6 +27,18 @@ module Vario
       self.levels = levels.map(&:to_h)
     end
 
+    def move_level_up(level)
+      index = levels.index(level)
+      level = levels.delete(level)
+      levels.insert(index - 1, level)
+    end
+
+    def move_level_down(level)
+      index = levels.index(level)
+      level = levels.delete(level)
+      levels.insert(index + 1, level)
+    end
+
     private
 
     def validate_context(context)

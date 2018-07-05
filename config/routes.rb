@@ -1,5 +1,10 @@
 Vario::Engine.routes.draw do
   resources :settings do
-    resource :levels
+    resources :levels do
+      member do
+        get :move_up
+        get :move_down
+      end
+    end
   end
 end

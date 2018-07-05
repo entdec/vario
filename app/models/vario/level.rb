@@ -22,6 +22,16 @@ module Vario
       conditions.reject { |condition| condition.value.blank? }
     end
 
+    def move_up
+      setting.move_level_up(self)
+      setting.save!
+    end
+
+    def move_down
+      setting.move_level_down(self)
+      setting.save!
+    end
+
     def to_h
       {
         id: id,

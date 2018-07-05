@@ -5,14 +5,15 @@
 
   .row.levels-header
     .col-sm-9 <b>Conditions</b>
-    .col-sm-3 <b>Value</b>
-  - @setting.levels.each do |level|
-    = render partial: 'level', object: level
+    .col-sm-2 <b>Value</b>
+    .col-sm-1 <b>Order</b>
+  - @setting.levels.each_with_index do |level, index|
+    = render 'level', level: level, first: index==0, last: index==(@setting.levels.size - 1)
 
   .row
     .col-sm-12
       .actions.float-right
-        = link_to "Add level", new_setting_levels_path(@setting), class: 'btn btn-primary'
+        = link_to "Add level", new_setting_level_path(@setting), class: 'btn btn-primary'
 css:
   .row.level {
     min-height: 32px;

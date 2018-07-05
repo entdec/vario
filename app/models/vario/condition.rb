@@ -8,5 +8,28 @@ module Vario
       @key = key
       @value = value
     end
+
+    def human_value
+      if key_data[:type] == :select
+        collection.find { |entry| entry.last == value }.first
+      else
+        value
+      end
+    end
+
+    def key_data
+      Vario.key_data(key)
+    end
+
+    def collection
+      return @collection if @collection
+
+      @collection = key_data[:collection]
+      @collection ||= instance_exec(&key_data[:collection_proc]) if key_data[:collection_proc]
+      @collection ||= []
+      current_value = @collection.find { |entry| entry.last == value }
+      @collection << ["<#{value}>", value] unless current_value
+      @collection
+    end
   end
 end
