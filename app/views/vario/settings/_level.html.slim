@@ -2,14 +2,17 @@
   .col-sm-9.conditions
     .row
       - if level.set_conditions.size.zero?
-        .col-sm-12 Default
+        .col-sm-12
+          button.btn.btn-light disabled=true Default
+          - if level.default? && !last
+            span.badge.badge-warning Everything below this level is ignored, as this is the default.
       - level.set_conditions.each do |condition|
         .col-md-6.col-lg-4.col-xl-3
           button.btn.btn-light disabled=true
             = condition.key_data[:name]
             | &nbsp;
             span.badge.badge-light= condition.human_value
-  .col-sm-2.value= level.value
+  .col-sm-2.value= level.human_value
   .col-sm-1
     - unless first
       = link_to move_up_setting_level_path(level.id, setting_id: level.setting.id)

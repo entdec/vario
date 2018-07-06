@@ -1,13 +1,13 @@
 module Vario
   class Level
     include ActiveModel::Model
-    attr_accessor :id, :setting, :conditions, :value
-    delegate :persisted?, to: :setting
+    attr_reader :conditions
+    attr_accessor :id, :setting, :value
 
     def initialize(setting, level, new_record = false)
       @setting = setting
       @id = level['id'] || SecureRandom.hex
-      @conditions = setting.keys.map { |key| Condition.new(setting, key, level.dig('conditions', key)) }
+      @conditions = setting.keys.map { |key| Condition.new(setting, key, level.dig('conditions', key.to_s)) }
       @value = level['value']
       @new_record = new_record
     end
@@ -34,12 +34,22 @@ module Vario
       setting.save!
     end
 
+    def human_value
+      hv = setting.parse_value(value)
+      return unless hv
+      setting.type == :array ? hv.join(', ') : hv.to_s
+    end
+
     def to_h
       {
         id: id,
         conditions: conditions_hash,
         value: value
       }
+    end
+
+    def default?
+      set_conditions.size.zero?
     end
 
     def persisted?

@@ -18,7 +18,7 @@ module Vario
     end
 
     def key_data
-      Vario.key_data(key)
+      Vario.config.key_data_for(key)
     end
 
     def collection
@@ -27,8 +27,10 @@ module Vario
       @collection = key_data[:collection]
       @collection ||= instance_exec(&key_data[:collection_proc]) if key_data[:collection_proc]
       @collection ||= []
-      current_value = @collection.find { |entry| entry.last == value }
-      @collection << ["<#{value}>", value] unless current_value
+      if value.present?
+        current_value = @collection.find { |entry| entry.last == value }
+        @collection << ["<#{value}>", value] unless current_value
+      end
       @collection
     end
   end

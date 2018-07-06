@@ -3,7 +3,7 @@ module Vario
     add_breadcrumb I18n.t('breadcrumbs.vario.settings.index'), :settings_path
 
     def index
-      @settings = Setting.all
+      @settings = Setting.all.order(:name)
     end
 
     def show

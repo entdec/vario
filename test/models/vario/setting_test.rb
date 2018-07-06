@@ -1,7 +1,17 @@
 require 'test_helper'
+require 'vario'
 
 module Vario
   class SettingTest < ActiveSupport::TestCase
+
+    setup do
+      Vario.setup do |config|
+        config.setting 'test'
+        config.setting 'setting1'
+        config.setting 'setting2'
+      end
+    end
+
     test "can store a setting" do
       setting = Setting.new(name: 'test', levels: [conditions: {}, value: 1])
       assert setting.valid?, setting.errors.full_messages

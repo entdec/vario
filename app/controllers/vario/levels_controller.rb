@@ -28,7 +28,7 @@ module Vario
     def update
       @level = @setting.levels.find { |level| level.id == params[:id] }
       @level.value = level_params[:value]
-      @level.conditions = level_params[:conditions]
+      @level.conditions = level_params[:conditions].to_h
 
       if @setting.save
         redirect_to setting_path(@setting)

@@ -12,10 +12,6 @@ module Vario
       @config = Vario::Config.new
       yield config
     end
-
-    def key_data(key)
-      config.keys[key.to_s] || { name: key, type: :string }
-    end
   end
 
   # Include helpers
