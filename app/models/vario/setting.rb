@@ -1,6 +1,6 @@
 module Vario
   class Setting < ApplicationRecord
-    attr_reader :settable_setting, :type, :keys, :default, :description
+    attr_reader :settable_setting, :type, :default, :description
 
     has_paper_trail if respond_to?(:has_paper_trail)
 
@@ -10,12 +10,20 @@ module Vario
     after_initialize :configure, :levels # pre-init the levels
     before_save :update_level_data
 
-    default_scope -> { where(settable: Vario.config.current_settable) }
-
     def value_for(context)
-      raise ArgumentError, "Configuration key '#{name}' not initialized for #{settable_type}" unless initialized?
+      current_default = context.delete(:default)
 
-      context.symbolize_keys!
+      unless initialized?
+        raise UnknownSetting, "Configuration key '#{name}' not initialized for #{settable_type}" if Vario.config.raise_on_undefined?(settable_type)
+        return current_default unless Vario.config.create_on_request?(settable_type)
+
+        # This is a new record, save it to the table since create_on_request? is true
+        self.keys = Vario.config.default_keys?(settable_type)
+        self.levels << Vario::Level.new(self, conditions: {}, value: current_default)
+        save!
+      end
+
+      context = context.symbolize_keys
       update_context(context)
       validate_context(context)
 
@@ -23,17 +31,17 @@ module Vario
         context >= level.conditions_hash
       end
 
-      parse_value(result&.value || default)
+      parse_value(result&.value || current_default || default)
     end
 
     def configure
-      @keys = []
+      self.keys ||= []
 
       @settable_setting = Vario.config.settable_setting(settable_type, name)
       return unless settable_setting
 
       @type = settable_setting[:type]
-      @keys = settable_setting[:keys]
+      self.keys = settable_setting[:keys]
       @default = settable_setting[:default]
       @description = settable_setting[:description]
     end
@@ -59,7 +67,7 @@ module Vario
     end
 
     def initialized?
-      settable_setting.present?
+      settable_setting.present? || persisted?
     end
 
     def parse_value(value)
@@ -80,13 +88,14 @@ module Vario
     #
     def update_context(context)
       keys.each do |key|
+        key = key.to_sym
         key_data = Vario.config.key_data_for(key)
         context[key] ||= instance_exec(&key_data[:value_proc]) if key_data.key?(:value_proc)
       end
     end
 
     def validate_context(context)
-      missing = keys - context.keys
+      missing = keys.map(&:to_sym) - context.keys
       raise ArgumentError, "missing context '#{missing.join(', ')}''" if missing.present?
     end
   end

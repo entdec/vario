@@ -25,7 +25,7 @@ module Vario
     end
 
     def conditions_hash
-      set_conditions.map { |c| [c.key, c.value] }.to_h
+      set_conditions.map { |c| [c.key.to_sym, c.value] }.to_h
     end
 
     def move_up

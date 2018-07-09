@@ -1,7 +1,7 @@
 module Vario
   class Config
-    attr_writer :logger, :current_settable
-    attr_reader :keys, :settable_settings
+    attr_writer :logger, :current_settable, :translation_settable
+    attr_reader :keys, :settable_types, :settable_settings
     attr_accessor :base_controller
 
     def initialize
@@ -9,6 +9,7 @@ module Vario
       @logger.level         = Logger::INFO
       @keys = {}
       @base_controller = '::ApplicationController'
+      @settable_types = {}
       @settable_settings = {}
       @settable_type = nil
       @current_settable = nil
@@ -33,10 +34,30 @@ module Vario
       settable_settings[settable_type][name.to_s] = options
     end
 
+    # If true, raise Vario::UnknownSetting if a unknown setting is retrieved, if false unknown settings return nil
+    def raise_on_undefined(value, options = {})
+      settable_type = options.delete(:settable_type) || @settable_type
+      settable_types[settable_type] ||= {}
+      settable_types[settable_type][:raise_on_undefined] = value
+    end
+
+    # If true, a new setting will be saved for settings that do not exist.
+    def create_on_request(value, options = {})
+      settable_type = options.delete(:settable_type) || @settable_type
+      settable_types[settable_type] ||= {}
+      settable_types[settable_type][:create_on_request] = value
+      settable_types[settable_type][:default_keys] = options[:with_keys]
+    end
+
     def for_settable_type(settable_type)
       @settable_type = settable_type
       yield self
       @settable_type = nil
+    end
+
+    def translation_settable=(settable)
+      @translation_settable = settable
+      I18n::Backend::Simple.send(:include, I18nBackend)
     end
 
     # Config retrieval
@@ -56,6 +77,22 @@ module Vario
 
     def key_data_for(key)
       keys[key.to_s] || { name: key, type: :string, description: 'Not configured in initializer' }
+    end
+
+    def create_on_request?(settable_type)
+      settable_types.dig(settable_type, :create_on_request)
+    end
+
+    def raise_on_undefined?(settable_type)
+      settable_types.dig(settable_type, :raise_on_undefined)
+    end
+
+    def default_keys?(settable_type)
+      settable_types.dig(settable_type, :default_keys) || []
+    end
+
+    def translation_settable
+      @translation_settable.is_a?(Proc) ? instance_exec(&@translation_settable) : @translation_settable
     end
   end
 end

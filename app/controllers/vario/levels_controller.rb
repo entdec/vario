@@ -1,6 +1,5 @@
 module Vario
   class LevelsController < ApplicationController
-    add_breadcrumb I18n.t('breadcrumbs.vario.settings.index'), :settings_path
 
     before_action :set_objects
 
@@ -62,6 +61,7 @@ module Vario
 
     def set_objects
       @setting = Setting.find(params[:setting_id])
+      add_breadcrumb I18n.t('breadcrumbs.vario.settings.index'), breadcrumb_settings_path(@setting)
       add_breadcrumb @setting.name, setting_path(@setting)
     end
 

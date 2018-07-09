@@ -1,13 +1,15 @@
 module Vario
   class SettingsController < ApplicationController
-    add_breadcrumb I18n.t('breadcrumbs.vario.settings.index'), :settings_path
 
     def index
-      @settings = Setting.all.order(:name)
+      add_breadcrumb I18n.t('breadcrumbs.vario.settings.index'), settings_path(settable: params[:settable])
+      settable = GlobalID::Locator.locate_signed(params[:settable], for: 'Scribo')
+      @settings = Setting.all.where(settable: settable).order(:name)
     end
 
     def show
       @setting = Setting.find(params[:id])
+      add_breadcrumb I18n.t('breadcrumbs.vario.settings.index'), breadcrumb_settings_path(@setting)
       add_breadcrumb @setting.name, setting_path(@setting)
     end
   end

@@ -1,9 +1,11 @@
 require 'vario/engine'
 require 'vario/config'
 require 'vario/active_record_helpers'
+require 'vario/i18n_backend'
 
 module Vario
   class Error < StandardError; end
+  class UnknownSetting < Error; end
 
   class << self
     attr_reader :config

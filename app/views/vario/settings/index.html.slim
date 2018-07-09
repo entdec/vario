@@ -4,7 +4,7 @@
       th Name
       th Levels
     tbody
-      - @settings.select(&:initialized?).each do |setting|
+      - @settings.each do |setting|
         tr
           td= link_to setting.name, setting_path(setting)
           td= setting.levels.count
