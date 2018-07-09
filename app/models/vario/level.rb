@@ -5,23 +5,27 @@ module Vario
     attr_accessor :id, :setting, :value
 
     def initialize(setting, level, new_record = false)
+      level = level.to_h.with_indifferent_access
       @setting = setting
-      @id = level['id'] || SecureRandom.hex
-      @conditions = setting.keys.map { |key| Condition.new(setting, key, level.dig('conditions', key.to_s)) }
-      @value = level['value']
+      @id = level[:id] || SecureRandom.hex
+      @value = level[:value]
       @new_record = new_record
+      self.conditions= level[:conditions]
     end
 
     def conditions=(new_conditions)
-      @conditions = setting.keys.map { |key| Condition.new(setting, key, new_conditions[key]) }
-    end
-
-    def conditions_hash
-      conditions.map { |c| [c.key, c.value] }.to_h
+      new_conditions = (new_conditions || {}).with_indifferent_access
+      @conditions = setting.keys.map do |key|
+        Condition.new(setting, key, new_conditions[key])
+      end
     end
 
     def set_conditions
       conditions.reject { |condition| condition.value.blank? }
+    end
+
+    def conditions_hash
+      set_conditions.map { |c| [c.key, c.value] }.to_h
     end
 
     def move_up

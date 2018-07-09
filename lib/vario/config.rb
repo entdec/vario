@@ -2,11 +2,13 @@ module Vario
   class Config
     attr_writer :logger, :current_settable
     attr_reader :keys, :settable_settings
+    attr_accessor :base_controller
 
     def initialize
       @logger               = Logger.new(STDOUT)
       @logger.level         = Logger::INFO
       @keys = {}
+      @base_controller = '::ApplicationController'
       @settable_settings = {}
       @settable_type = nil
       @current_settable = nil

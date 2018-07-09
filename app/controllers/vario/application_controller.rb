@@ -1,5 +1,5 @@
 module Vario
-  class ApplicationController < ::ApplicationController
+  class ApplicationController < Vario.config.base_controller.constantize
     protect_from_forgery with: :exception
 
     def add_breadcrumbs(*args)

@@ -15,7 +15,7 @@ module Vario
     def value_for(context)
       raise ArgumentError, "Configuration key '#{name}' not initialized for #{settable_type}" unless initialized?
 
-      context.stringify_keys!
+      context.symbolize_keys!
       update_context(context)
       validate_context(context)
 
@@ -39,11 +39,11 @@ module Vario
     end
 
     def levels
-      @levels ||= attributes['levels'].map { |level| Level.new(self, level) }
+      @levels ||= (attributes['levels'] || []).map { |level| Level.new(self, level) }
     end
 
     def update_level_data
-      self.levels = levels.map(&:to_h)
+      self.levels = levels.select { |l| l.value.present? }.map(&:to_h)
     end
 
     def move_level_up(level)
