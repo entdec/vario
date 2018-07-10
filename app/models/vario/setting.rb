@@ -20,7 +20,6 @@ module Vario
         # This is a new record, save it to the table since create_on_request? is true
         self.keys = Vario.config.default_keys?(settable_type)
         self.levels << Vario::Level.new(self, conditions: {}, value: current_default)
-        save!
       end
 
       context = context.symbolize_keys
@@ -67,6 +66,7 @@ module Vario
     end
 
     def initialized?
+      return false if Vario.config.raise_on_undefined?(settable) && !persisted?
       settable_setting.present? || persisted?
     end
 

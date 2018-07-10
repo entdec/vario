@@ -1,3 +1,5 @@
+require_dependency 'vario/application_controller'
+
 module Vario
   class LevelsController < ApplicationController
 

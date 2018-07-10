@@ -57,7 +57,7 @@ module Vario
 
     def translation_settable=(settable)
       @translation_settable = settable
-      I18n::Backend::Simple.send(:include, I18nBackend)
+      I18n.backend = I18n::Backend::Chain.new(Vario::I18nBackend.new, I18n.backend)
     end
 
     # Config retrieval
@@ -89,6 +89,14 @@ module Vario
 
     def default_keys?(settable_type)
       settable_types.dig(settable_type, :default_keys) || []
+    end
+
+    def pre_create_settings(settable)
+      return unless settable_settings[settable.class.name]
+      settable_settings[settable.class.name].keys.each do |key|
+        s = settable.settings.find_or_initialize_by(name: key)
+        s.save unless s.persisted?
+      end
     end
 
     def translation_settable

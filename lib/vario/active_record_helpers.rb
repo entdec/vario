@@ -24,6 +24,12 @@ module Vario::ActiveRecordHelpers
       end.to_h.with_indifferent_access
     end
 
+    def settings_save_unsaved
+      @vario_setting_cache.each do |key, vario_setting|
+        vario_setting_cache.save unless vario_setting.persisted?
+      end
+    end
+
     def settings_prepopulate_cache
       return if @vario_setting_cache
       @vario_setting_cache ||= {}
