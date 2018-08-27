@@ -3,7 +3,6 @@ require 'vario'
 
 module Vario
   class SettingTest < ActiveSupport::TestCase
-
     setup do
       Vario.setup do |config|
         config.setting 'test'

@@ -19,14 +19,16 @@ module Vario::ActiveRecordHelpers
       context.symbolize_keys!
       raise ArgumentError, 'Cannot request hash with a default' if context.key?(:default)
 
-      settings.where("name ILIKE ?", "#{name}.%").map do |vario_setting|
+      settings.where('name ILIKE ?', "#{name}.%").map do |vario_setting|
         [vario_setting.name.gsub("#{name}.", ''), vario_setting.value_for(context)]
       end.to_h.with_indifferent_access
     end
 
     def settings_save_unsaved
-      @vario_setting_cache.each do |key, vario_setting|
-        vario_setting_cache.save unless vario_setting.persisted?
+      return unless @vario_setting_cache
+
+      @vario_setting_cache.each do |_key, vario_setting|
+        vario_setting.save unless vario_setting.persisted?
       end
     end
 

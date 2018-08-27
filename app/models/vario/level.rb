@@ -10,7 +10,7 @@ module Vario
       @id = level[:id] || SecureRandom.hex
       @value = level[:value]
       @new_record = new_record
-      self.conditions= level[:conditions]
+      self.conditions = level[:conditions]
     end
 
     def conditions=(new_conditions)

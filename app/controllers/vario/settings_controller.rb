@@ -5,10 +5,10 @@ module Vario
 
     def index
       add_breadcrumb I18n.t('breadcrumbs.vario.settings.index'), settings_path(settable: params[:settable])
-      settable = GlobalID::Locator.locate_signed(params[:settable], for: 'Scribo')
+      @settable = GlobalID::Locator.locate_signed(params[:settable], for: 'Scribo')
 
-      Vario.config.pre_create_settings(settable)
-      @settings = Setting.all.where(settable: settable).order(:name)
+      Vario.config.pre_create_settings(@settable)
+      @settings = Setting.all.where(settable: @settable).order(:name)
       @settings = @settings.select(&:initialized?)
     end
 
