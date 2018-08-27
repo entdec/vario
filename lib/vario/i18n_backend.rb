@@ -7,7 +7,7 @@ module Vario
       return unless scribo_value.present?
 
       options.each do |key, value|
-        scribo_value = scribo_value.gsub("%{#{key}}", value) if value.is_a?(String)
+        scribo_value = scribo_value.gsub("%{#{key}}", value) if scribo_value.respond_to?(:gsub) && value.is_a?(String)
       end
       scribo_value
     end
