@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_07_06_130136) do
+ActiveRecord::Schema.define(version: 2018_07_06_155055) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 2018_07_06_130136) do
     t.json "levels"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "keys", array: true
     t.index ["settable_type", "settable_id"], name: "index_vario_settings_on_settable_type_and_settable_id"
   end
 
