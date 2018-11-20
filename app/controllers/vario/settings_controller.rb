@@ -8,7 +8,7 @@ module Vario
       @settable = GlobalID::Locator.locate_signed(params[:settable], for: 'Scribo')
 
       Vario.config.pre_create_settings(@settable)
-      @settings = Setting.all.where(settable: @settable).order(:name)
+      @settings = Setting.all.where(settable: @settable).order(:name).includes(:settable)
       @settings = @settings.select(&:initialized?)
     end
 
