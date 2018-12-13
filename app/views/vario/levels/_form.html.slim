@@ -1,7 +1,10 @@
 = simple_form_for([@setting, @level]) do |f|
   - case @setting.type
     - when :array
-      = f.input :value, as: :text, input_html: { rows: 10, style: 'height: auto' },  hint: 'Multiple values possible, separate with "," or new lines.'
+      - if @setting.collection
+        = f.input :value, as: :select2, input_html: { multiple: true }, collection: @setting.collection, required: false
+      - else
+        = f.input :value, as: :text, input_html: { rows: 10, style: 'height: auto' },  hint: 'Multiple values possible, separate with "," or new lines.'
     - when :integer
       = f.input :value, as: :integer
     - when :boolean

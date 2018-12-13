@@ -39,7 +39,7 @@ module Vario
     end
 
     def human_value
-      hv = setting.parse_value(value)
+      hv = setting.human_value(value)
       return unless hv
       setting.type == :array ? hv.join(', ') : hv.to_s
     end

@@ -68,7 +68,7 @@ module Vario
     end
 
     def level_params
-      params.require(:level).permit(:value, conditions: {})
+      params.require(:level).permit(:value, value: [], conditions: {})
     end
   end
 end

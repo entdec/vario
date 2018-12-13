@@ -72,13 +72,31 @@ module Vario
 
     def parse_value(value)
       return unless value.present?
+      return value.reject(&:blank?) if value.is_a?(Array) && type == :array
       return value unless value.is_a?(String)
 
       return value.to_i if type == :integer
       return false if value == '0' && type == :boolean
       return true if value == '1' && type == :boolean
-      return value.split(/,|\n/).map(&:strip) if type == :array
+      return value.split(/,|\n/).map(&:strip).reject(&:blank?) if type == :array
       value
+    end
+
+    def human_value(value)
+      parsed_value = parse_value(value)
+      return parsed_value if collection.blank?
+      return parsed_value.map { |pv| collection.find { |i| i.last == pv }.first } if type == :array
+      return collection.find { |i| i.last == parsed_value }.first
+    end
+
+    def collection
+      return @collection if @collection
+      return unless settable_setting
+
+      @collection = settable_setting[:collection]
+      @collection ||= instance_exec(&settable_setting[:collection_proc]) if settable_setting[:collection_proc]
+      @collection ||= []
+      @collection
     end
 
     private

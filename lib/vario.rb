@@ -1,7 +1,7 @@
-require 'vario/engine'
-require 'vario/config'
-require 'vario/active_record_helpers'
-require 'vario/i18n_backend'
+require_dependency 'vario/engine'
+require_dependency 'vario/config'
+require_dependency 'vario/active_record_helpers'
+require_dependency 'vario/i18n_backend'
 
 module Vario
   class Error < StandardError; end
