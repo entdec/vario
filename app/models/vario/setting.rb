@@ -72,13 +72,12 @@ module Vario
 
     def parse_value(value)
       return unless value.present?
-      return value.reject(&:blank?) if value.is_a?(Array) && type == :array
+      return parse_value_array(value) if type == :array
       return value unless value.is_a?(String)
 
       return value.to_i if type == :integer
-      return false if value == '0' && type == :boolean
-      return true if value == '1' && type == :boolean
-      return value.split(/,|\n/).map(&:strip).reject(&:blank?) if type == :array
+      return false if [0, '0', 'false'].include?(value) && type == :boolean
+      return true if [1, '1', 'true'].include?(value) && type == :boolean
       value
     end
 
@@ -87,6 +86,16 @@ module Vario
       return parsed_value if collection.blank?
       return parsed_value.map { |pv| collection.find { |i| i.last == pv }.first } if type == :array
       return collection.find { |i| i.last == parsed_value }.first
+    end
+
+    def parse_value_array(value)
+      values = value
+      values = values.split(/,|\n/).map(&:strip) if values.is_a?(String)
+      values = values.reject(&:blank?)
+
+      # If a collection has been defined, and 'all' is in the selected values, return all id's from the colletion
+      return collection.map(&:last) if (values.include?('all') || values.include?(:all)) && collection
+      values
     end
 
     def collection
