@@ -9,6 +9,8 @@
       = f.input :value, as: :integer
     - when :boolean
       = f.input :value, as: :boolean
+    - when :text
+      = f.input :value, as: :code_mirror
     - else
       = f.input :value
 
