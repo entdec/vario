@@ -76,7 +76,7 @@ module Vario
       return value unless value.is_a?(String)
 
       return value.to_i if type == :integer
-      return false if [0, '0', 'false'].include?(value) && type == :boolean
+      return false if [0, '0', 'false', ''].include?(value) && type == :boolean
       return true if [1, '1', 'true'].include?(value) && type == :boolean
       value
     end
