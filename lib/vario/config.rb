@@ -1,6 +1,6 @@
 module Vario
   class Config
-    attr_writer :logger, :current_settable, :translation_settable
+    attr_writer :logger, :current_settable
     attr_reader :keys, :settable_types, :settable_settings
     attr_accessor :base_controller
 
@@ -55,11 +55,6 @@ module Vario
       @settable_type = nil
     end
 
-    def translation_settable=(settable)
-      @translation_settable = settable
-      I18n.backend = I18n::Backend::Chain.new(Vario::I18nBackend.new, I18n.backend)
-    end
-
     # Config retrieval
 
     # Config: logger [Object].
@@ -97,10 +92,6 @@ module Vario
         s = settable.settings.find_or_initialize_by(name: key)
         s.save unless s.persisted?
       end
-    end
-
-    def translation_settable
-      @translation_settable.is_a?(Proc) ? instance_exec(&@translation_settable) : @translation_settable
     end
   end
 end
