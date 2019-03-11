@@ -6,8 +6,6 @@ Vario.setup do |config|
   config.key :level_two, name: 'Level two', type: :select, collection_proc: -> { [%w[Option1 one] %w[Option2 two]] }
   config.key :environment, name: 'Environment', type: :select, collection_proc: -> { [%w[Production production], %w[Development development]] }, value_proc: -> { Rails.env }
 
-  config.translation_settable = -> { Praesens.current_scribo_site }
-
   config.for_settable_type 'Scribo::Site' do |settable|
     settable.raise_on_undefined false
     settable.create_on_request true, with_keys: %i[retailer_id]
