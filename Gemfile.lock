@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     vario (0.1.0)
-      rails (~> 5.2.0)
+      rails (>= 5.2)
       slim (~> 4)
 
 GEM
