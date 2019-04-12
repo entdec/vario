@@ -12,7 +12,10 @@
     - when :text
       = f.input :value, as: :code_mirror
     - else
-      = f.input :value
+      - if @setting.collection.present?
+        = f.input :value, as: :select2, collection: @setting.collection, required: false
+      - else
+        = f.input :value
 
   h3 Conditions
   = f.simple_fields_for :conditions do |ff|
