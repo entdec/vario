@@ -14,7 +14,6 @@ module Vario
       @level = Level.new(@setting, level_params)
       @setting.levels.unshift @level
 
-
       if @setting.save
         redirect_to setting_path(@setting)
       else
