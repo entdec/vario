@@ -1,4 +1,4 @@
-= simple_form_for([@setting, @level]) do |f|
+= ui_form_for([@setting, @level], title: label) do |f|
   - case @setting.type
     - when :array
       - if @setting.collection.present?
@@ -8,7 +8,7 @@
     - when :integer
       = f.input :value, as: :integer
     - when :boolean
-      = f.input :value, as: :boolean
+      = f.input :value, as: :boolean, wrapper: :boolean
     - when :text
       = f.input :value, as: :text, input_html: { data: {controller: 'editor', target: 'editor.textarea', mode: 'text/plain'}}
     - when :hash
@@ -19,18 +19,14 @@
       - else
         = f.input :value
 
-  h3 Conditions
-  = f.simple_fields_for :conditions do |ff|
-    - @level.conditions.each do |condition|
-      = f.simple_fields_for :conditions do |fff|
-        - case condition.key_data[:type]
-          - when :select
-            = fff.input condition.key, as: :select, label: condition.key, selected: condition.value, collection: condition.collection, include_blank: true, required: false
-          - when :boolean
-            =  fff.input condition.key, as: :boolean, label: condition.key, value: condition.value, required: false
-          - else
-            =  fff.input condition.key, label: condition.key, value: condition.value, required: false
-
-
-    .actions.float-right
-      = f.submit class: 'btn btn-primary'
+  = ui_card :conditions do
+    = ui_nested_form f, :conditions do |ff|
+      - @level.conditions.each do |condition|
+        = ui_nested_form ff, :conditions do |fff|
+          - case condition.key_data[:type]
+            - when :select
+              = fff.input condition.key, as: :select, label: condition.key, selected: condition.value, collection: condition.collection, include_blank: true, required: false
+            - when :boolean
+              =  fff.input condition.key, as: :boolean, label: condition.key, value: condition.value, required: false
+            - else
+              =  fff.input condition.key, label: condition.key, value: condition.value, required: false

@@ -1,8 +1,3 @@
-.container
-  .row
-    .col-12
-
-      h1= @setting.name
-      p= @setting.description
-      h2 New level
-      = render 'form'
+= ui_card @setting.name.split('.').each(&:humanize).join(': ')
+  p= @setting.description
+  = render partial: 'form', locals: { label: 'New level'}

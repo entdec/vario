@@ -1,28 +1,28 @@
-.container
-  - if @groups.present?
-    .row
-      .col-12
-        = ui_card :groups
-          table.table
-            thead
-              th Name
-              th Settings
-            tbody
-              - @groups.each do |group|
-                tr
-                  td= link_to(group[:name].humanize, settings_path(group: group[:name], settable: @settable.to_sgid(for: 'Vario').to_s))
-                  td= group[:settings]
+- if @groups.present?
+  = ui_card :groups, padding: false
+    table.table
+      thead
+        th Name
+        th Settings
+      tbody
+        - @groups.each do |group|
+          tr
+            td= link_to(group[:name].humanize, settings_path(group: group[:name], settable: @settable.to_sgid(for: 'Vario').to_s))
+            td= group[:settings]
 
-  - if @settings.present?
-    .row
-      .col-12
-        = ui_card :settings, title: ['Settings', params[:group]].compact.join(' - ')
-          table.table
-            thead
-              th Name
-              th Levels
-            tbody
-              - @settings.each do |setting|
-                tr
-                  td= link_to(setting.name, setting_path(setting))
-                  td= setting.levels.count
+- if @settings.present?
+  = ui_card :settings, title: ['Settings', params[:group]].compact.join(' - '), padding: false
+    table.table
+      thead
+        th Name
+        th Levels
+      tbody
+        - @settings.each do |setting|
+          tr
+            td= link_to(setting.name.gsub(/#{params[:group]}\./, '').humanize, setting_path(setting))
+            td= setting.levels.count
+
+  - if @settable
+    = link_to("Back to groups", settings_path(settable: @settable.to_sgid(for: 'Vario').to_s))
+
+    / = link_to("Back to #{params[:group].humanize}", settings_path(group: params[:group], settable: @settable.to_sgid(for: 'Vario').to_s))
