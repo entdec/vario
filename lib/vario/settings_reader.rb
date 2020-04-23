@@ -2,7 +2,7 @@
 
 module Vario
   # Make vario settings accessible as readers on the object
-  module Settings
+  module SettingsReader
     extend ActiveSupport::Concern
 
     class_methods do

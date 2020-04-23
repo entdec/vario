@@ -6,7 +6,7 @@ module Vario
 
     included do
       # provides settings_reader method to all models
-      include Vario::Settings
+      include Vario::SettingsReader
     end
 
     class_methods do
