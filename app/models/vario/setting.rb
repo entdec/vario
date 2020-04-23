@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Vario
   class Setting < ApplicationRecord
     attr_reader :settable_setting, :type, :default, :description

@@ -1,5 +1,6 @@
 require_relative 'vario/engine'
 require_relative 'vario/config'
+require_relative 'vario/settable'
 require_relative 'vario/active_record_helpers'
 
 module Vario
