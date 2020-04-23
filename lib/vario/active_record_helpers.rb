@@ -4,6 +4,11 @@ module Vario
   module ActiveRecordHelpers
     extend ActiveSupport::Concern
 
+    included do
+      # provides settings_reader method to all models
+      include Vario::Settings
+    end
+
     class_methods do
       def settable(options = {})
         include Vario::Settable
