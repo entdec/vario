@@ -3,6 +3,7 @@ require_relative 'vario/config'
 require_relative 'vario/settable'
 require_relative 'vario/settings_reader'
 require_relative 'vario/active_record_helpers'
+require_relative 'vario/api'
 
 module Vario
   class Error < StandardError; end
