@@ -8,7 +8,7 @@
     - when :integer
       = f.input :value, as: :integer
     - when :boolean
-      = f.input :value, as: :boolean, wrapper: :boolean
+      = f.input :value, as: :boolean, wrapper: :vertical_boolean
     - when :text
       = f.input :value, as: :text, input_html: { data: {controller: 'editor', target: 'editor.textarea', mode: 'text/plain'}}
     - when :hash
