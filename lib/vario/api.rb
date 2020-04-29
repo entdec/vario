@@ -37,63 +37,79 @@ module Vario
       end
     end
 
-    desc 'Get settings'
-    get '/all_settings' do
-      settable_settings
-    end
+    given configuration[:settable] do
+      Vario.config.settable_settings[configuration[:settable].name].each do |setting_name, setting_data|
+        desc "Retrieve setting value for setting #{setting_name}."
+        params do
+          requires :id, type: String
+          setting_data[:keys].each do |context_key|
+            optional context_key, type: String
+          end
+        end
+        get "/:id/#{setting_name}" do
+          record  = find_settable(declared_params[:id])
+          context = settable_setting_context(setting_name, declared_params.reject { |key, value| key == 'id' }.to_h )
 
-    desc 'Get setting value'
-    params do
-      requires :id, type: String
-      requires :setting, type: String, documentation: { in: 'body' }
-      requires :context, type: Hash, documentation: { in: 'body' }
-    end
-    post '/:id/get' do
-      record  = find_settable(declared_params[:id])
-      context = settable_setting_context(declared_params[:setting], declared_params[:context].to_h)
+          { setting: setting_name, value: record.setting(setting_name, context) }
+        end
 
-      { setting: declared_params[:setting], value: record.setting(declared_params[:setting], context) }
-    end
+        setting_type =
+          case setting_data[:type]
+          when :array
+            Array[String]
+          when :boolean
+            Boolean
+          when :integer
+            Integer
+          else
+            String
+          end
 
-    desc 'Set setting value'
-    params do
-      requires :id, type: String
-      requires :setting, type: String, documentation: { in: 'body' }
-      requires :context, type: Hash, documentation: { in: 'body' }
-      requires :value, type: String, documentation: { in: 'body' }
-    end
-    post '/:id/set' do
-      record        = find_settable(declared_params[:id])
-      context       = settable_setting_context(declared_params[:setting], declared_params[:context].to_h)
-      vario_setting = record.settings.find_or_initialize_by(name: declared_params[:setting])
-      level         = vario_setting.levels.find { |level| context == level.conditions_hash }
+        desc "Set setting value for setting #{setting_name}."
+        params do
+          requires :id, type: String
+          setting_data[:keys].each do |context_key|
+            optional context_key, type: String, documentation: { in: 'body' }
+          end
+          requires :value, type: setting_type, documentation: { in: 'body' }
+        end
+        route [:post, :put], "/:id/#{setting_name}" do
+          record          = find_settable(declared_params[:id])
+          context         = settable_setting_context(setting_name, declared_params.reject { |key, value| %w[id value].include?(key) }.to_h )
+          vario_setting   = record.settings.find_or_initialize_by(name: setting_name)
+          conditions_hash = context.values.compact.blank? ? {} : context
+          level           = vario_setting.levels.find { |level| conditions_hash == level.conditions_hash }
 
-      if level.nil?
-        level = Level.new(vario_setting, { conditions: context })
-        vario_setting.levels.unshift level
+          if level.nil?
+            level = Level.new(vario_setting, { conditions: context })
+            vario_setting.levels.unshift level
+          end
+
+          level.value = declared_params[:value]
+          vario_setting.save!
+
+          { setting: setting_name, value: record.setting(setting_name, context) }
+        end
+
+        desc "Remove setting value for setting #{setting_name}."
+        params do
+          requires :id, type: String
+          setting_data[:keys].each do |context_key|
+            optional context_key, type: String
+          end
+        end
+        delete "/:id/#{setting_name}" do
+          record           = find_settable(declared_params[:id])
+          context          = settable_setting_context(setting_name, declared_params.reject { |key, value| key == 'id' }.to_h )
+          conditions_hash  = context.values.compact.blank? ? {} : context
+
+          vario_setting = record.settings.find_or_initialize_by(name: setting_name)
+          vario_setting.levels.reject! { |level| conditions_hash == level.conditions_hash }
+          vario_setting.save!
+
+          { setting: setting_name, value: record.setting(setting_name, context) }
+        end
       end
-
-      level.value = declared_params[:value]
-      vario_setting.save!
-
-      { setting: declared_params[:setting], value: record.setting(declared_params[:setting], context) }
-    end
-
-    desc 'Remove setting value'
-    params do
-      requires :id, type: String
-      requires :setting, type: String, documentation: { in: 'body' }
-      requires :context, type: Hash, documentation: { in: 'body' }
-    end
-    delete '/:id' do
-      record  = find_settable(declared_params[:id])
-      context = settable_setting_context(declared_params[:setting], declared_params[:context].to_h)
-
-      vario_setting = record.settings.find_or_initialize_by(name: declared_params[:setting])
-      vario_setting.levels.reject! { |level| context == level.conditions_hash }
-      vario_setting.save!
-
-      { setting: declared_params[:setting], value: record.setting(declared_params[:setting], context) }
     end
   end
 end
