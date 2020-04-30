@@ -52,7 +52,7 @@ module Vario
     end
 
     def update_level_data
-      self.levels = levels.select { |l| l.value.present? }.map(&:to_h)
+      self.levels = levels.select { |l| l.value_present? }.map(&:to_h)
     end
 
     def move_level_up(level)
@@ -73,14 +73,13 @@ module Vario
     end
 
     def parse_value(value)
+      return false if [0, '0', 'false', ''].include?(value) && type == :boolean
+      return true if [1, '1', 'true'].include?(value) && type == :boolean
       return unless value.present?
       return parse_value_array(value) if type == :array
       return value unless value.is_a?(String)
       return YAML.load(value) if type == :hash
-
       return value.to_i if type == :integer
-      return false if [0, '0', 'false', ''].include?(value) && type == :boolean
-      return true if [1, '1', 'true'].include?(value) && type == :boolean
 
       value
     end

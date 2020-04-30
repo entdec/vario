@@ -54,6 +54,10 @@ module Vario
       }
     end
 
+    def value_present?
+      value === false || value.present?
+    end
+
     def default?
       set_conditions.size.zero?
     end

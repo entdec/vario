@@ -107,11 +107,7 @@ module Vario
                 vario_setting.levels.unshift level
               end
 
-              value = declared_params[:value]
-              value = '1' if declared_params[:value] === true
-              value = '0' if declared_params[:value] === false
-
-              level.value = value
+              level.value = declared_params[:value]
               vario_setting.save!
 
               { setting: setting_name, value: record.setting(setting_name, context) }
