@@ -1,7 +1,6 @@
 # frozen_literal_string: true
 
 require 'grape-swagger'
-require 'grape-swagger-entity'
 
 module Vario
   class API < Grape::API
