@@ -42,10 +42,9 @@ module Vario
     end
 
     given configuration[:settable] do
-
-      # maybe use namespace combined with route_param[:id] ?
-
       Vario.config.settable_settings[configuration[:settable].name].each do |setting_name, setting_data|
+        raise 'To use the oauth2 option you must setup doorkeeper with wine_bouncer in your app' if configuration[:oauth2].present? && !respond_to?(:oauth2)
+
         group_name, short_setting_name  = setting_name.split('.', 2)
         route_param :id, type: String do
           namespace group_name do
@@ -57,6 +56,7 @@ module Vario
                 optional context_key, type: String
               end
             end
+            oauth2(configuration[:oauth2], "#{configuration[:oath2]}:read") if configuration[:oauth2]
             get "/#{short_setting_name}" do
               record  = find_settable(declared_params[:id])
               context = settable_setting_context(setting_name, declared_params.reject { |key, value| key == 'id' }.to_h )
@@ -85,6 +85,7 @@ module Vario
               end
               requires :value, type: setting_type, values: setting_data[:collection].present? ? setting_data[:collection].map { |item| item.last.to_s } : nil, documentation: { in: 'body' }
             end
+            oauth2(configuration[:oauth2], "#{configuration[:oath2]}:write") if configuration[:oauth2]
             route [:post, :put], "/#{short_setting_name}" do
               record          = find_settable(declared_params[:id])
               context         = settable_setting_context(setting_name, declared_params.reject { |key, value| %w[id value].include?(key) }.to_h )
@@ -115,6 +116,7 @@ module Vario
                 optional context_key, type: String
               end
             end
+            oauth2(configuration[:oauth2], "#{configuration[:oath2]}:write") if configuration[:oauth2]
             delete "/#{short_setting_name}" do
               record           = find_settable(declared_params[:id])
               context          = settable_setting_context(setting_name, declared_params.reject { |key, value| key == 'id' }.to_h )
