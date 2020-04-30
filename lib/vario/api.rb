@@ -58,7 +58,7 @@ module Vario
         route_param :id, type: String do
           namespace group_name do
             desc "Get setting value" do
-              detail "Get the setting value for #{setting_name}. #{setting_data[:description]}"
+              detail "Get the setting value for #{setting_name}. Setting description: #{setting_data[:description]}"
             end
             params do
               setting_data[:keys].each do |context_key|
@@ -86,7 +86,7 @@ module Vario
               end
 
             desc "Add or change setting value" do
-              detail "Add or change setting value for #{setting_name}. #{setting_data[:description]}"
+              detail "Add or change setting value for #{setting_name}. Setting description: #{setting_data[:description]}"
             end
             params do
               setting_data[:keys].each do |context_key|
@@ -118,7 +118,7 @@ module Vario
             end
 
             desc "Remove setting value" do
-              detail "Remove setting value for #{setting_name}. #{setting_data[:description]}"
+              detail "Remove setting value for #{setting_name}. Setting description: #{setting_data[:description]}"
             end
             params do
               setting_data[:keys].each do |context_key|
