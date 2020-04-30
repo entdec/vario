@@ -22,4 +22,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'slim', '~> 4'
 
   s.add_development_dependency 'pg'
+  s.add_development_dependency 'pry'
 end
