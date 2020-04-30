@@ -9,6 +9,10 @@ module Vario
     format :json
 
     helpers do
+      def declared_params
+        declared(params, include_missing: false)
+      end
+
       def settable
         configuration[:settable]
       end
@@ -39,7 +43,9 @@ module Vario
 
     given configuration[:settable] do
       Vario.config.settable_settings[configuration[:settable].name].each do |setting_name, setting_data|
-        desc "Retrieve setting value for setting #{setting_name}."
+        desc "Get setting value" do
+          detail "Get the setting value for #{setting_name}. setting_data[:description]"
+        end
         params do
           requires :id, type: String
           setting_data[:keys].each do |context_key|
@@ -65,13 +71,15 @@ module Vario
             String
           end
 
-        desc "Set setting value for setting #{setting_name}."
+        desc "Add or change setting value" do
+          detail "Add or change setting value for #{setting_name}. setting_data[:description]"
+        end
         params do
           requires :id, type: String
           setting_data[:keys].each do |context_key|
             optional context_key, type: String, documentation: { in: 'body' }
           end
-          requires :value, type: setting_type, documentation: { in: 'body' }
+          requires :value, type: setting_type, values: setting_data[:collection].present? ? setting_data[:collection].map { |item| item.last.to_s } : nil, documentation: { in: 'body' }
         end
         route [:post, :put], "/:id/#{setting_name}" do
           record          = find_settable(declared_params[:id])
@@ -85,13 +93,19 @@ module Vario
             vario_setting.levels.unshift level
           end
 
-          level.value = declared_params[:value]
+          value = declared_params[:value]
+          value = '1' if declared_params[:value] === true
+          value = '0' if declared_params[:value] === false
+
+          level.value = value
           vario_setting.save!
 
           { setting: setting_name, value: record.setting(setting_name, context) }
         end
 
-        desc "Remove setting value for setting #{setting_name}."
+        desc "Remove setting value" do
+          detail "Remove setting value for #{setting_name}. setting_data[:description]"
+        end
         params do
           requires :id, type: String
           setting_data[:keys].each do |context_key|
