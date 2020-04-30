@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Vario
   class Condition
     include ActiveModel::Model

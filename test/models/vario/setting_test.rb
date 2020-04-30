@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 require 'vario'
 
@@ -11,16 +13,16 @@ module Vario
       end
     end
 
-    test "can store a setting" do
+    test 'can store a setting' do
       setting = Setting.new(name: 'test', levels: [conditions: {}, value: 1])
       assert setting.valid?, setting.errors.full_messages
     end
 
-    test "can retrieve a setting" do
+    test 'can retrieve a setting' do
       assert_equal 1, Setting.where(name: 'setting1').first.value_for(key: nil)
     end
 
-    test "can change a setting" do
+    test 'can change a setting' do
       setting = Setting.where(name: 'setting1').first
       setting.levels.first.value = 3
       assert_equal 3, setting.value_for(key: nil)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Vario
   class Level
     include ActiveModel::Model
@@ -50,6 +52,10 @@ module Vario
         conditions: conditions_hash,
         value: value
       }
+    end
+
+    def value_present?
+      value === false || value.present?
     end
 
     def default?

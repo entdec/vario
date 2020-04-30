@@ -2,8 +2,8 @@
 
 Vario.setup do |config|
   config.current_settable = -> { Channel.current }
-  config.key :level_one, name: 'Level one', type: :select, collection_proc: -> { [%w[Option1 one] %w[Option2 two]] }
-  config.key :level_two, name: 'Level two', type: :select, collection_proc: -> { [%w[Option1 one] %w[Option2 two]] }
+  config.key :level_one, name: 'Level one', type: :select, collection_proc: -> { [%w[Option1 one], %w[Option2 two]] }
+  config.key :level_two, name: 'Level two', type: :select, collection_proc: -> { [%w[Option1 one], %w[Option2 two]] }
   config.key :environment, name: 'Environment', type: :select, collection_proc: -> { [%w[Production production], %w[Development development]] }, value_proc: -> { Rails.env }
 
   config.for_settable_type 'Scribo::Site' do |settable|

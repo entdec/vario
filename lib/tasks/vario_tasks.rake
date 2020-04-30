@@ -19,9 +19,6 @@ namespace :vario do
     load version_file
     puts "Updated version to #{Vario::VERSION}"
 
-    # spec = Gem::Specification.find_by_name('vario')
-    # spec.version = Vario::VERSION
-
     `git commit lib/vario/version.rb -m "Version #{Vario::VERSION}"`
     `git push`
     `git tag #{Vario::VERSION}`
