@@ -15,6 +15,8 @@ module Vario
 
           define_method(method_name.to_sym) do
             result = nil
+
+            # If you specify a settings method or attribute on your model it will read there first
             result = self.settings&.dig(setting.split('.')) if respond_to?(:settings)
 
             context = vario_setting[:keys].map { |key| [key, send(key)] }
