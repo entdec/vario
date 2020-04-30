@@ -42,8 +42,18 @@ module Vario
     end
 
     given configuration[:settable] do
+      [*configuration[:include]].each do |m|
+        include m
+      end
+
       Vario.config.settable_settings[configuration[:settable].name].each do |setting_name, setting_data|
         raise 'To use the oauth2 option you must setup doorkeeper with wine_bouncer in your app' if configuration[:oauth2].present? && !respond_to?(:oauth2)
+
+        before do
+          [*configuration[:before]].each do |method|
+            send(method) if method.is_a?(Symbol)
+          end
+        end if configuration[:before].present?
 
         group_name, short_setting_name  = setting_name.split('.', 2)
         route_param :id, type: String do
