@@ -7,7 +7,7 @@ module Vario
 
     def new
       @level = Level.new(@setting, {}, true)
-      add_breadcrumb I18n.t('breadcrumbs.vario.levels.new')
+      add_breadcrumb(I18n.t('breadcrumbs.vario.levels.new')) if respond_to?(:add_breadcrumb)
     end
 
     def create
@@ -62,8 +62,10 @@ module Vario
 
     def set_objects
       @setting = Setting.find(params[:setting_id])
-      add_breadcrumb I18n.t('breadcrumbs.vario.settings.index'), breadcrumb_settings_path(@setting)
-      add_breadcrumb @setting.name, setting_path(@setting)
+      if respond_to? :add_breadcrumb
+        add_breadcrumb I18n.t('breadcrumbs.vario.settings.index'), breadcrumb_settings_path(@setting)
+        add_breadcrumb @setting.name, setting_path(@setting)
+      end
     end
 
     def level_params
