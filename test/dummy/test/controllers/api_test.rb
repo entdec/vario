@@ -41,6 +41,23 @@ class ApiTest < ActiveSupport::TestCase
     assert_equal true, last_json['value']
   end
 
+  test 'setting and getting the print_node.api_key setting' do
+    post "/api/account_settings/#{accounts(:boxture).id}/print_node/api_key", JSON.dump({ environment: 'test', value: 'ApiForYouApiForMe' }), { 'CONTENT_TYPE' => 'application/json' }
+    assert last_response.created?
+    assert_equal 'print_node.api_key', last_json['setting']
+    assert_equal 'ApiForYouApiForMe', last_json['value']
+
+    get "/api/account_settings/#{accounts(:boxture).id}/print_node/api_key?environment=production"
+    assert last_response.ok?
+    assert_equal 'print_node.api_key', last_json['setting']
+    assert_nil last_json['value']
+
+    get "/api/account_settings/#{accounts(:boxture).id}/print_node/api_key?environment=test"
+    assert last_response.ok?
+    assert_equal 'print_node.api_key', last_json['setting']
+    assert_equal 'ApiForYouApiForMe', last_json['value']
+  end
+
   def app
     Rails.application
   end
