@@ -12,6 +12,24 @@ class ApiTest < ActiveSupport::TestCase
     assert_equal true, last_json['value']
   end
 
+  test 'include and before is respected' do
+    get "/api/settings_with_one_include_and_before/#{accounts(:boxture).id}/hide_couriers"
+    assert last_response.forbidden?
+    assert_equal 'Access Denied', last_json['error']
+
+    get "/api/settings_with_one_include_and_before/#{accounts(:boxture).id}/hide_couriers?api_key=ThisIsMyApiKey"
+    assert last_response.ok?
+    assert_equal 'hide_couriers', last_json['setting']
+    assert_equal true, last_json['value']
+  end
+
+  test 'use prefix within the route' do
+    get "/api/accounts/#{accounts(:boxture).id}/settings/hide_couriers"
+    assert last_response.ok?
+    assert_equal 'hide_couriers', last_json['setting']
+    assert_equal true, last_json['value']
+  end
+
   test 'set the hide_couriers setting' do
     post "/api/account_settings/#{accounts(:boxture).id}/hide_couriers", JSON.dump({ value: false }), { 'CONTENT_TYPE' => 'application/json' }
     assert last_response.created?
