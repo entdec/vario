@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
-  mount Vario::Engine => "/vario"
-
   resources :accounts
+  resources :products
+
+  mount Vario::Engine, at: '/vario', as: 'vario'
+  mount Api, at: '/api'
 end

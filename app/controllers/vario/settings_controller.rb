@@ -4,8 +4,11 @@ module Vario
   class SettingsController < ApplicationController
 
     def index
-      add_breadcrumb I18n.t('breadcrumbs.vario.settings.index'), settings_path(settable: params[:settable])
-      add_breadcrumb params[:group], settings_path(settable: params[:settable], group: params[:group]) if params[:group]
+      if respond_to?(:add_breadcrumb)
+        add_breadcrumb I18n.t('breadcrumbs.vario.settings.index'), settings_path(settable: params[:settable])
+        add_breadcrumb params[:group], settings_path(settable: params[:settable], group: params[:group]) if params[:group]
+      end
+
       @settable = GlobalID::Locator.locate_signed(params[:settable], for: 'Vario')
       Vario.config.pre_create_settings(@settable)
 
@@ -22,10 +25,13 @@ module Vario
 
     def show
       @setting = Setting.find(params[:id])
-      add_breadcrumb I18n.t('breadcrumbs.vario.settings.index'), breadcrumb_settings_path(@setting)
-      group = @setting.name.split('.').first if @setting.name =~ /\./
-      add_breadcrumb group, breadcrumb_settings_path(@setting, group: group) if group
-      add_breadcrumb @setting.name, setting_path(@setting)
+
+      if respond_to?(:add_breadcrumb)
+        add_breadcrumb I18n.t('breadcrumbs.vario.settings.index'), breadcrumb_settings_path(@setting)
+        group = @setting.name.split('.').first if @setting.name =~ /\./
+        add_breadcrumb group, breadcrumb_settings_path(@setting, group: group) if group
+        add_breadcrumb @setting.name, setting_path(@setting)
+      end
     end
   end
 end
