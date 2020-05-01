@@ -32,7 +32,9 @@ module Vario
         context >= level.conditions_hash
       end
 
-      parse_value(result&.value || current_default || default)
+      return parse_value(result.value) if result.present? && result.value_present?
+
+      parse_value(current_default || default)
     end
 
     def configure
@@ -73,8 +75,8 @@ module Vario
     end
 
     def parse_value(value)
-      return false if [0, '0', 'false', ''].include?(value) && type == :boolean
-      return true if [1, '1', 'true'].include?(value) && type == :boolean
+      return false if [0, '0', 'false', '', false].include?(value) && type == :boolean
+      return true if [1, '1', 'true', true].include?(value) && type == :boolean
       return unless value.present?
       return parse_value_array(value) if type == :array
       return value unless value.is_a?(String)
