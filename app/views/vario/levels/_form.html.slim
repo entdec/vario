@@ -32,4 +32,4 @@
           - else
             = f.input :value
     .col-2
-      = ui_form_actions(f, { extra_buttons: { Delete: 'delete' } }).call
+      = ui_form_actions(f, { extra_buttons: label.present? ? {} : { Delete: 'delete' } }).call
