@@ -26,6 +26,8 @@ module Vario
     end
 
     def update
+      return destroy if params[:commit] == 'delete'
+
       @level = @setting.levels.find { |level| level.id == params[:id] }
       @level.value = level_params[:value]
       @level.conditions = level_params[:conditions].to_h

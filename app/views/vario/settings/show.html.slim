@@ -1,17 +1,13 @@
-= ui_card @setting.name.split('.').each(&:humanize).join(': ')
+= ui_card(:setting, title: @setting.title)
   p= @setting.description
-  .row.levels-header
-    .col-sm-9 <b>Conditions</b>
-    .col-sm-2 <b>Value</b>
-    .col-sm-1 <b>Order</b>
   - @setting.levels.each_with_index do |level, index|
-    = render 'level', level: level, first: index==0, last: index==(@setting.levels.size - 1)
+    .row
+      .col-sm-12
+        = render partial: 'vario/levels/form', locals: { setting: @setting, level: level }
 
   .row
     .col-sm-12
-      br
-      .actions.float-right
-        = link_to "Add level", new_setting_level_path(@setting), class: 'btn btn-primary'
+      = render partial: 'vario/levels/form', locals: { setting: @setting, level: @new_level, label: 'New level' }
 
   - if @setting.name.split('.').size > 1
     = link_to("Back to #{@setting.name.split('.').first}", settings_path(group: @setting.name.split('.').first, settable: @setting.settable.to_sgid(for: 'Vario').to_s))
