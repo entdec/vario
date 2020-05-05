@@ -30,13 +30,21 @@ module Vario
       set_conditions.map { |c| [c.key.to_sym, c.value] }.to_h
     end
 
-    def move_up
-      setting.move_level_up(self)
+    def move(positions)
+      if positions.positive?
+        move_up(positions)
+      else
+        move_down(positions.abs)
+      end
+    end
+
+    def move_up(positions = 1)
+      positions.times { |time| setting.move_level_up(self) }
       setting.save!
     end
 
-    def move_down
-      setting.move_level_down(self)
+    def move_down(positions = 1)
+      positions.times { |time| setting.move_level_down(self) }
       setting.save!
     end
 

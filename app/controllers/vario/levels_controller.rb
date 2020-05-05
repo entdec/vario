@@ -46,6 +46,15 @@ module Vario
       redirect_to setting_path(@setting)
     end
 
+    def move
+      oldIndex = @setting.levels.find_index { |level| level.id == params[:id] }
+      newIndex = params[:index]
+      @level = @setting.levels[oldIndex]
+      @level.move(oldIndex - newIndex)
+
+      render json: { old: oldIndex, new: newIndex }
+    end
+
     def move_up
       @level = @setting.levels.find { |level| level.id == params[:id] }
       @level.move_up
