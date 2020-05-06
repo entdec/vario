@@ -5,24 +5,12 @@ module Vario
 
     before_action :set_objects
 
-    def new
-      @level = Level.new(@setting, {}, true)
-      add_breadcrumb(I18n.t('breadcrumbs.vario.levels.new')) if respond_to?(:add_breadcrumb)
-    end
-
     def create
       @level = Level.new(@setting, level_params)
       @setting.levels.unshift @level
+      @setting.save!
 
-      if @setting.save
-        redirect_to setting_path(@setting)
-      else
-        render :new
-      end
-    end
-
-    def edit
-      @level = @setting.levels.find { |level| level.id == params[:id] }
+      redirect_to setting_path(@setting)
     end
 
     def update
@@ -31,12 +19,9 @@ module Vario
       @level = @setting.levels.find { |level| level.id == params[:id] }
       @level.value = level_params[:value]
       @level.conditions = level_params[:conditions].to_h
+      @setting.save!
 
-      if @setting.save
-        redirect_to setting_path(@setting)
-      else
-        render :new
-      end
+      redirect_to setting_path(@setting)
     end
 
     def destroy
@@ -53,20 +38,6 @@ module Vario
       @level.move(oldIndex - newIndex)
 
       render json: { old: oldIndex, new: newIndex }
-    end
-
-    def move_up
-      @level = @setting.levels.find { |level| level.id == params[:id] }
-      @level.move_up
-
-      redirect_to setting_path(@setting)
-    end
-
-    def move_down
-      @level = @setting.levels.find { |level| level.id == params[:id] }
-      @level.move_down
-
-      redirect_to setting_path(@setting)
     end
 
     private
