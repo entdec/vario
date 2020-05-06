@@ -1,6 +1,6 @@
 - link_back = false if link_back.nil?
 - settings.each do |setting|
-  = render partial: 'setting', locals: { setting: setting, link_back: link_back }
+  = render partial: 'vario/settings/setting', locals: { setting: setting, link_back: link_back }
 
 javascript:
   $(document).on('ajax:error', function(event) {

@@ -1,5 +1,5 @@
 - label = nil unless label.present?
-= ui_form_for([setting, level], id: level.id, remote: true, title: label, footer: false, header: label.present?, padding: label.present?) do |f|
+= ui_form_for([setting, level], id: level.id, url: polymorphic_path([vario, setting, level]), remote: true, title: label, footer: false, header: label.present?, padding: label.present?) do |f|
   .row
     - level.conditions.each do |condition|
       .col-2
