@@ -6,7 +6,7 @@
         = ui_nested_form f, :conditions do |ff|
           - case condition.key_data[:type]
             - when :select
-              = ff.input condition.key, as: :fancy_select, id: "#{condition.key}_#{level.id}", label: condition.key, selected: condition.value, collection: condition.collection, include_blank: true, required: false
+              = ff.input condition.key, as: :fancy_select, label: condition.key, selected: condition.value, collection: condition.collection, include_blank: true, required: false, input_html: { id: "#{condition.key}_#{level.id}" }
             - when :boolean
               =  ff.input condition.key, as: :boolean, label: condition.key, value: condition.value, required: false
             - else
