@@ -25,7 +25,6 @@ module Vario
 
     def show
       @setting = Setting.find(params[:id])
-      @new_level = Level.new(@setting, {}, true)
 
       if respond_to?(:add_breadcrumb)
         add_breadcrumb I18n.t('breadcrumbs.vario.settings.index'), breadcrumb_settings_path(@setting)

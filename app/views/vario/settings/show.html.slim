@@ -1,18 +1,16 @@
-= ui_card(:setting, title: @setting.title)
+= ui_card("setting_#{@setting.id}", title: @setting.title)
   p= @setting.description
 
-  span data-controller="draggable"
-    - @setting.levels.each_with_index do |level, index|
-      .row data-draggable-url="#{move_setting_level_path(@setting, level)}" 
-        .col-sm-12
-          = render partial: 'vario/levels/form', locals: { setting: @setting, level: level }
-
-  .row
-    .col-sm-12
-      = render partial: 'vario/levels/form', locals: { setting: @setting, level: @new_level, label: 'New level' }
+  = render partial: 'levels', setting: @setting
+  = render partial: 'new_level', setting: @setting
 
   - if @setting.name.split('.').size > 1
     = link_to("Back to #{@setting.name.split('.').first}", settings_path(group: @setting.name.split('.').first, settable: @setting.settable.to_sgid(for: 'Vario').to_s))
+
+javascript:
+  $(document).on('ajax:error', function(event) {
+    window.alert('An error has occurred, your changes are likely not saved. Please try again.')
+  })
 
 css:
   .row.level {

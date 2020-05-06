@@ -1,0 +1,5 @@
+span data-controller="draggable" id="#{@setting.id}_levels"
+  - @setting.levels.each_with_index do |level, index|
+    .row data-draggable-url="#{move_setting_level_path(@setting, level)}" 
+      .col-sm-12
+        = render partial: 'vario/levels/form', locals: { setting: @setting, level: level }

@@ -2,7 +2,6 @@ require_dependency 'vario/application_controller'
 
 module Vario
   class LevelsController < ApplicationController
-
     before_action :set_objects
 
     def create
@@ -10,7 +9,10 @@ module Vario
       @setting.levels.unshift @level
       @setting.save!
 
-      redirect_to setting_path(@setting)
+      respond_to do |format|
+        format.html { redirect_to setting_path(@setting) }
+        format.js
+      end
     end
 
     def update
@@ -21,14 +23,20 @@ module Vario
       @level.conditions = level_params[:conditions].to_h
       @setting.save!
 
-      redirect_to setting_path(@setting)
+      respond_to do |format|
+        format.html { redirect_to setting_path(@setting) }
+        format.js
+      end
     end
 
     def destroy
       @setting.levels.reject! { |level| level.id == params[:id] }
       @setting.save!
 
-      redirect_to setting_path(@setting)
+      respond_to do |format|
+        format.html { redirect_to setting_path(@setting) }
+        format.js { render :update }
+      end
     end
 
     def move
