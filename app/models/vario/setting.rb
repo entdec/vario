@@ -137,6 +137,10 @@ module Vario
       @collection
     end
 
+    def new_level
+      Level.new(self, {}, true)
+    end
+
     private
 
     ###

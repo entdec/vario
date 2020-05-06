@@ -74,5 +74,13 @@ module Vario
       setting = Setting.new
       assert_nil setting.title
     end
+
+    test 'new_level gives a new level instance' do
+      setting = Setting.new
+      level   = setting.new_level
+
+      assert_instance_of Level, level
+      assert_same level.setting, setting
+    end
   end
 end
