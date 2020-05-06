@@ -1,0 +1,9 @@
+- link_back = false if link_back.nil?
+= ui_card("setting_#{setting.id}", title: setting.title)
+  p= setting.description
+
+  = render partial: 'levels', setting: setting
+  = render partial: 'new_level', setting: setting
+
+  - if link_back && setting.name.split('.').size > 1
+    = link_to("Back to #{setting.name.split('.').first}", settings_path(group: setting.name.split('.').first, settable: setting.settable.to_sgid(for: 'Vario').to_s))

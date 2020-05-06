@@ -1,0 +1,19 @@
+- settings.each do |setting|
+  = render partial: 'setting', locals: { setting: setting }
+
+javascript:
+  $(document).on('ajax:error', function(event) {
+    window.alert('An error has occurred, your changes are likely not saved. Please try again.')
+  })
+
+css:
+  .row.level {
+    min-height: 32px;
+    padding: 4px 0;
+  }
+  .row.level:nth-of-type(even) {
+    background-color: #f9f9f9;
+  }
+  .row.level:nth-of-type(odd) {
+    background-color: #f0f0f0;
+  }
