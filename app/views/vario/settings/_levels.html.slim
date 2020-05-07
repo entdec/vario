@@ -1,7 +1,7 @@
 - context = {} if context.blank?
 
 span data-controller="draggable" id="#{setting.id}_levels"
-  - setting.levels.each_with_index do |level, index|
+  - setting.levels.each do |level|
     .row data-draggable-url="#{vario.move_setting_level_path(setting_id: setting.id, id: level.id)}" 
       .col-sm-12
         = render partial: 'vario/levels/form', locals: { setting: setting, level: level, context: context }

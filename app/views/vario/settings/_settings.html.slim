@@ -1,4 +1,3 @@
-- link_back     = false if link_back.blank?
 - ui_card_id    = :settings if ui_card_id.blank?
 - ui_card_title = 'Settings' if ui_card_title.blank?
 - context       = {} if context.blank?
@@ -6,7 +5,9 @@
 = ui_card ui_card_id, title: ui_card_title
   - settings.sort_by { |setting| setting.name}.each do |setting|
     - ui_tab setting.name, title: setting.title 
-      = render partial: 'vario/settings/setting', locals: { setting: setting, link_back: link_back, context: context }
+      p= setting.description
+      = render partial: 'vario/settings/levels', locals: { setting: setting, context: context }
+      = render partial: 'vario/settings/new_level', locals: { setting: setting, context: context }
 
 javascript:
   $(document).on('ajax:error', function(event) {
