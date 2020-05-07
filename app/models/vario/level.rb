@@ -22,6 +22,14 @@ module Vario
       end
     end
 
+    def conditions_for(context)
+      conditions.select { |condition| context.key?(condition.key.to_sym) }
+    end
+
+    def conditions_not_for(context)
+      conditions.reject { |condition| context.key?(condition.key.to_sym) }
+    end
+
     def set_conditions
       conditions.reject { |condition| condition.value.blank? }
     end
