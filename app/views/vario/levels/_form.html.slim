@@ -2,9 +2,12 @@
 - context = {} if context.blank?
 
 = ui_form_for([setting, level], id: level.id, url: polymorphic_path([vario, setting, level]), remote: true, title: label, footer: false, header: label.present?, padding: label.present?) do |f|
+  - context.each do |key, value|
+    = f.simple_fields_for :context do |ff|
+      = ff.input key, as: :hidden, input_html: { value: value }
   - level.conditions_for(context).each do |condition|
-    = ui_nested_form f, :conditions do |ff|
-      = ff.input condition.key, label: condition.key, as: :hidden, required: false, input_html: { value: context[condition.key.to_sym] }
+    = f.simple_fields_for :conditions do |ff|
+      = ff.input condition.key, as: :hidden, input_html: { value: context[condition.key.to_sym] }
   .row
     - level.conditions_not_for(context).each do |condition|
       .col-2

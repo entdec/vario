@@ -51,6 +51,7 @@ module Vario
     private
 
     def set_objects
+      @context = params.dig(:level, :context) || {}
       @setting = Setting.find(params[:setting_id])
       if respond_to? :add_breadcrumb
         add_breadcrumb I18n.t('breadcrumbs.vario.settings.index'), breadcrumb_settings_path(@setting)
@@ -59,7 +60,7 @@ module Vario
     end
 
     def level_params
-      params.require(:level).permit(:value, value: [], conditions: {})
+      params.require(:level).permit(:value, value: [], conditions: {}, context: {})
     end
   end
 end
