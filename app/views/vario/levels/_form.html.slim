@@ -1,5 +1,6 @@
-- label   = nil if label.blank?
-- context = {} if context.blank?
+- label     = nil if label.blank?
+- context   = {} if context.blank?
+- draggable = true if draggable.nil?
 
 = ui_form_for([setting, level], id: level.id, url: polymorphic_path([vario, setting, level]), remote: true, title: label, footer: false, header: label.present?, padding: label.present?) do |f|
   - context.each do |key, value|
@@ -9,6 +10,8 @@
     = f.simple_fields_for :conditions do |ff|
       = ff.input condition.key, as: :hidden, input_html: { value: context[condition.key.to_sym] }
   .row
+    - if draggable
+      i.fal.fa-ellipsis-v.fa-3x.draggable style="margin-top: 8px; margin-left: 16px;"
     - level.conditions_not_for(context).each do |condition|
       .col-2
         = ui_nested_form f, :conditions do |ff|
