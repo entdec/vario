@@ -1,16 +1,21 @@
-- label = nil unless label.present?
+- label   = nil if label.blank?
+- context = {} if context.blank?
+
 = ui_form_for([setting, level], id: level.id, url: polymorphic_path([vario, setting, level]), remote: true, title: label, footer: false, header: label.present?, padding: label.present?) do |f|
   .row
-    - level.conditions.each do |condition|
+    - level.conditions_for(context).each do |condition|
+      = ui_nested_form f, :conditions do |ff|
+        = ff.input condition.key, as: :hidden, value: condition.value
+    - level.conditions_not_for(context).each do |condition|
       .col-2
         = ui_nested_form f, :conditions do |ff|
           - case condition.key_data[:type]
             - when :select
               = ff.input condition.key, as: :fancy_select, label: condition.key, selected: condition.value, collection: condition.collection, include_blank: true, required: false, input_html: { id: "#{condition.key}_#{level.id}" }
             - when :boolean
-              =  ff.input condition.key, as: :boolean, label: condition.key, value: condition.value, required: false
+              = ff.input condition.key, as: :boolean, label: condition.key, value: condition.value, required: false
             - else
-              =  ff.input condition.key, label: condition.key, value: condition.value, required: false
+              = ff.input condition.key, label: condition.key, value: condition.value, required: false
     .col-2
       - case setting.type
         - when :array
