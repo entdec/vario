@@ -1,1 +1,2 @@
 $("#<%= @setting.id %>_levels").replaceWith("<%= escape_javascript(render(partial: 'vario/settings/levels', locals: { setting: @setting, context: @context })) %>")
+$("#<%= @setting.id %>_new_level").replaceWith("<%= escape_javascript(render(partial: 'vario/settings/new_level', locals: { setting: @setting, context: @context })) %>")
