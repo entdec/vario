@@ -1,0 +1,27 @@
+- ui_card_id    = :settings if ui_card_id.blank?
+- ui_card_title = 'Settings' if ui_card_title.blank?
+- context       = {} if context.blank?
+
+= ui_card ui_card_id, title: ui_card_title
+  - settings.sort_by { |setting| setting.name}.each do |setting|
+    - ui_tab setting.name, title: setting.title 
+      p= setting.description
+      = render partial: 'vario/settings/levels', locals: { setting: setting, context: context }
+      = render partial: 'vario/settings/new_level', locals: { setting: setting, context: context }
+
+javascript:
+  $(document).on('ajax:error', function(event) {
+    window.alert('An error has occurred, your changes are likely not saved. Please try again.')
+  })
+
+css:
+  .row.level {
+    min-height: 32px;
+    padding: 4px 0;
+  }
+  .row.level:nth-of-type(even) {
+    background-color: #f9f9f9;
+  }
+  .row.level:nth-of-type(odd) {
+    background-color: #f0f0f0;
+  }

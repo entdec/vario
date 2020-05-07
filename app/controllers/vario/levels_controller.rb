@@ -2,38 +2,30 @@ require_dependency 'vario/application_controller'
 
 module Vario
   class LevelsController < ApplicationController
-
     before_action :set_objects
-
-    def new
-      @level = Level.new(@setting, {}, true)
-      add_breadcrumb(I18n.t('breadcrumbs.vario.levels.new')) if respond_to?(:add_breadcrumb)
-    end
 
     def create
       @level = Level.new(@setting, level_params)
       @setting.levels.unshift @level
+      @setting.save!
 
-      if @setting.save
-        redirect_to setting_path(@setting)
-      else
-        render :new
+      respond_to do |format|
+        format.html { redirect_to setting_path(@setting) }
+        format.js
       end
     end
 
-    def edit
-      @level = @setting.levels.find { |level| level.id == params[:id] }
-    end
-
     def update
+      return destroy if params[:commit] == 'delete'
+
       @level = @setting.levels.find { |level| level.id == params[:id] }
       @level.value = level_params[:value]
       @level.conditions = level_params[:conditions].to_h
+      @setting.save!
 
-      if @setting.save
-        redirect_to setting_path(@setting)
-      else
-        render :new
+      respond_to do |format|
+        format.html { redirect_to setting_path(@setting) }
+        format.js
       end
     end
 
@@ -41,26 +33,25 @@ module Vario
       @setting.levels.reject! { |level| level.id == params[:id] }
       @setting.save!
 
-      redirect_to setting_path(@setting)
+      respond_to do |format|
+        format.html { redirect_to setting_path(@setting) }
+        format.js { render :update }
+      end
     end
 
-    def move_up
-      @level = @setting.levels.find { |level| level.id == params[:id] }
-      @level.move_up
+    def move
+      oldIndex = @setting.levels.find_index { |level| level.id == params[:id] }
+      newIndex = params[:index]
+      @level = @setting.levels[oldIndex]
+      @level.move(oldIndex - newIndex)
 
-      redirect_to setting_path(@setting)
-    end
-
-    def move_down
-      @level = @setting.levels.find { |level| level.id == params[:id] }
-      @level.move_down
-
-      redirect_to setting_path(@setting)
+      render json: { old: oldIndex, new: newIndex }
     end
 
     private
 
     def set_objects
+      @context = params.dig(:level, :context) || {}
       @setting = Setting.find(params[:setting_id])
       if respond_to? :add_breadcrumb
         add_breadcrumb I18n.t('breadcrumbs.vario.settings.index'), breadcrumb_settings_path(@setting)
@@ -69,7 +60,7 @@ module Vario
     end
 
     def level_params
-      params.require(:level).permit(:value, value: [], conditions: {})
+      params.require(:level).permit(:value, value: [], conditions: {}, context: {})
     end
   end
 end

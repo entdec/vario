@@ -12,6 +12,28 @@ module Vario
     after_initialize :configure, :levels # pre-init the levels
     before_save :update_level_data
 
+    def group_name
+      return nil if name.blank?
+
+      parts = name.split('.', 2)
+
+      return nil if parts.size == 1
+
+      parts.first
+    end
+
+    def setting_name
+      return name if name.blank?
+
+      name.split('.', 2).last || name
+    end
+
+    def title
+      return "#{group_name.humanize}: #{setting_name.humanize}" if group_name.present?
+
+      setting_name.humanize if setting_name.present?
+    end
+
     def value_for(context)
       current_default = context.delete(:default)
 
@@ -113,6 +135,10 @@ module Vario
       @collection ||= instance_exec(&settable_setting[:collection_proc]) if settable_setting[:collection_proc]
       @collection ||= []
       @collection
+    end
+
+    def new_level
+      Level.new(self, {}, true)
     end
 
     private

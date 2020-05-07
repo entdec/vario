@@ -22,6 +22,14 @@ module Vario
       end
     end
 
+    def conditions_for(context)
+      conditions.select { |condition| context.key?(condition.key.to_sym) }
+    end
+
+    def conditions_not_for(context)
+      conditions.reject { |condition| context.key?(condition.key.to_sym) }
+    end
+
     def set_conditions
       conditions.reject { |condition| condition.value.blank? }
     end
@@ -30,13 +38,30 @@ module Vario
       set_conditions.map { |c| [c.key.to_sym, c.value] }.to_h
     end
 
-    def move_up
-      setting.move_level_up(self)
+    def with_context_values?(context)
+      context.each do |key, value|
+        condition = conditions.find { |condition| condition.key == key.to_s }
+        return false if condition.value != value
+      end
+
+      true
+    end
+
+    def move(positions)
+      if positions.positive?
+        move_up(positions)
+      else
+        move_down(positions.abs)
+      end
+    end
+
+    def move_up(positions = 1)
+      positions.times { |time| setting.move_level_up(self) }
       setting.save!
     end
 
-    def move_down
-      setting.move_level_down(self)
+    def move_down(positions = 1)
+      positions.times { |time| setting.move_level_down(self) }
       setting.save!
     end
 
