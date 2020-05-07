@@ -1,6 +1,11 @@
-- link_back = false if link_back.nil?
-- settings.each do |setting|
-  = render partial: 'vario/settings/setting', locals: { setting: setting, link_back: link_back }
+- link_back     = false if link_back.blank?
+- ui_card_id    = :settings if ui_card_id.blank?
+- ui_card_title = 'Settings' if ui_card_title.blank?
+
+= ui_card ui_card_id, title: ui_card_title
+  - settings.each do |setting|
+    - ui_tab setting.name, title: setting.title 
+      = render partial: 'vario/settings/setting', locals: { setting: setting, link_back: link_back }
 
 javascript:
   $(document).on('ajax:error', function(event) {
