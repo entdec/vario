@@ -38,6 +38,15 @@ module Vario
       set_conditions.map { |c| [c.key.to_sym, c.value] }.to_h
     end
 
+    def with_context_values?(context)
+      context.each do |key, value|
+        condition = conditions.find { |condition| condition.key == key.to_s }
+        return false if condition.value != value
+      end
+
+      true
+    end
+
     def move(positions)
       if positions.positive?
         move_up(positions)
