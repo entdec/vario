@@ -18,7 +18,7 @@ module Vario
 
       def find_settable(id)
         record = settable.find(id)
-        error!(404, "#{settable.name} not found") unless record.present?
+        error!("#{settable.name} not found", 404) unless record.present?
         record
       end
 
