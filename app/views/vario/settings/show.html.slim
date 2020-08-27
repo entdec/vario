@@ -1,5 +1,8 @@
 = ui_card("setting_#{@setting.id}", title: @setting.title)
-  p= @setting.description
+  - if @setting.default.present? 
+    p= "#{@setting.description} (default: #{[*@setting.default].join(', ')})"
+  - else
+    p= @setting.description
 
   = render partial: 'vario/settings/levels', locals: { setting: @setting }
   = render partial: 'vario/settings/new_level', locals: { setting: @setting }
