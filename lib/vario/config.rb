@@ -2,7 +2,7 @@ module Vario
   class Config
     attr_writer :logger, :current_settable
     attr_reader :keys, :settable_types, :settable_settings
-    attr_accessor :base_controller
+    attr_accessor :base_controller, :admin_layout
 
     def initialize
       @logger               = Logger.new(STDOUT)
@@ -13,6 +13,7 @@ module Vario
       @settable_settings = {}
       @settable_type = nil
       @current_settable = nil
+      @admin_layout = 'application'
     end
 
     # Config setters
