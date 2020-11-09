@@ -3,11 +3,11 @@
 - context       = {} if context.blank?
 
 = ui_card ui_card_id, title: ui_card_title
-  - settings.sort_by { |setting| setting.name}.each do |setting|
-    - ui_tab setting.name, title: setting.title 
-      p= setting.description
-      = render partial: 'vario/settings/levels', locals: { setting: setting, context: context }
-      = render partial: 'vario/settings/new_level', locals: { setting: setting, context: context }
+  - settings_with_contexts.sort_by { |setting| setting[:setting].name}.each do |setting|
+    - ui_tab setting[:setting].name, title: setting[:setting].title 
+      p= setting[:setting].description
+      = render partial: 'vario/settings/levels', locals: setting
+      = render partial: 'vario/settings/new_level', locals: setting
 
 javascript:
   $(document).on('ajax:error', function(event) {
