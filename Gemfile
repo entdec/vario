@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
+git_source(:entdec) { |repo_name| "git@code.entropydecelerator.com:#{repo_name}.git" }
 
 # Declare your gem's dependencies in vario.gemspec.
 # Bundler will treat runtime dependencies like base dependencies, and
@@ -13,3 +14,4 @@ gemspec
 
 # To use a debugger
 # gem 'byebug', group: [:development, :test]
+gem 'auxilium', '~> 0.2', entdec: 'components/auxilium'
