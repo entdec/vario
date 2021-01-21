@@ -46,8 +46,6 @@ module Vario
       end
 
       Vario.config.settable_settings[configuration[:settable].name].each do |setting_name, setting_data|
-        raise 'To use the oauth2 option you must setup doorkeeper with wine_bouncer in your app' if configuration[:oauth2].present? && !respond_to?(:oauth2)
-
         before do
           [*configuration[:before]].each do |method|
             send(method) if method.is_a?(Symbol)
@@ -66,8 +64,9 @@ module Vario
                   optional context_key, type: String
                 end
               end
-              oauth2(configuration[:oauth2], "#{configuration[:oath2]}:read") if configuration[:oauth2]
-              get "/#{short_setting_name}" do
+              scopes = [configuration[:oauth2].to_sym, "#{configuration[:oath2]}:read".to_sym] if configuration[:oauth2]
+              scopes ||= nil
+              get "/#{short_setting_name}", scopes: scopes do
                 record  = find_settable(declared_params[:id])
                 context = settable_setting_context(setting_name, declared_params.reject { |key, value| key == 'id' }.to_h )
 
@@ -95,8 +94,9 @@ module Vario
                 end
                 requires :value, type: setting_type, values: setting_data[:collection].present? ? setting_data[:collection].map { |item| item.last.to_s } : nil, documentation: { in: 'body' }
               end
-              oauth2(configuration[:oauth2], "#{configuration[:oath2]}:write") if configuration[:oauth2]
-              route [:post, :put], "/#{short_setting_name}" do
+              scopes = [configuration[:oauth2].to_sym, "#{configuration[:oath2]}:write".to_sym] if configuration[:oauth2]
+              scopes ||= nil
+              route [:post, :put], "/#{short_setting_name}", scopes: scopes do
                 record          = find_settable(declared_params[:id])
                 context         = settable_setting_context(setting_name, declared_params.reject { |key, value| %w[id value].include?(key) }.to_h )
                 vario_setting   = record.settings.find_or_initialize_by(name: setting_name)
@@ -122,8 +122,9 @@ module Vario
                   optional context_key, type: String
                 end
               end
-              oauth2(configuration[:oauth2], "#{configuration[:oath2]}:write") if configuration[:oauth2]
-              delete "/#{short_setting_name}" do
+              scopes = [configuration[:oauth2].to_sym, "#{configuration[:oath2]}:write".to_sym] if configuration[:oauth2]
+              scopes ||= nil
+              delete "/#{short_setting_name}", scopes: scopes do
                 record           = find_settable(declared_params[:id])
                 context          = settable_setting_context(setting_name, declared_params.reject { |key, value| key == 'id' }.to_h )
                 conditions_hash  = context.values.compact.blank? ? {} : context
