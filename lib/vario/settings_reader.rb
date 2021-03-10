@@ -17,7 +17,7 @@ module Vario
             result = nil
 
             # If you specify a settings method or attribute on your model it will read there first
-            result = self.settings&.dig(setting.split('.')) if respond_to?(:settings)
+            result = self.settings&.dig(*setting.split('.')) if respond_to?(:settings)
 
             context = vario_setting[:keys].map { |key| [key, send(key)] }
             result = send(klass.name.underscore.to_sym).setting(setting, context.to_h) if result.nil?
@@ -28,4 +28,3 @@ module Vario
     end
   end
 end
-
