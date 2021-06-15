@@ -12,6 +12,9 @@ module Vario
     after_initialize :configure, :levels # pre-init the levels
     before_save :update_level_data
 
+    scope :for_group, ->(group_name) { where('name ilike ?', "#{group_name}.%") }
+    scope :without_group, -> { where.not('name ilike ?', "%.%") }
+
     def group_name
       return nil if name.blank?
 
