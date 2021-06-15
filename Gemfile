@@ -14,4 +14,5 @@ gemspec
 
 # To use a debugger
 # gem 'byebug', group: [:development, :test]
-gem 'auxilium', '~> 0.2', entdec: 'components/auxilium'
+gem 'auxilium', '~> 3', entdec: 'components/auxilium'
+gem 'caliga', '~> 2', entdec: 'components/caliga'
