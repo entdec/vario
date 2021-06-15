@@ -1,32 +1,31 @@
-- if @groups.present?
-  = clg.card do |card|
-    - card.slot :title
-      = @title
+= clg.card do |card|
+  - card.slot :title
+    = @title
 
-    = clg.layout modifier: 'card' do |layout|
-      - layout.row
-        = clg.tabbable_pane modifier: 'small' do |pane|
-          - @groups.each do |group|
-            - pane.slot :tab, id: group[:name], title: group[:name].humanize
-              table.table
-                thead
-                  th Name
-                  th Levels
-                tbody
-                  - @settings.for_group(group[:name]).each do |setting|
-                    tr
-                      td= link_to(setting.setting_name.humanize, setting_path(setting))
-                      td= setting.levels.count
+  = clg.layout modifier: 'card' do |layout|
+    - layout.row
+      = clg.tabbable_pane modifier: 'small' do |pane|
+        - @groups.each do |group|
+          - pane.slot :tab, id: group[:name], title: group[:name].humanize
+            table.table
+              thead
+                th Name
+                th Levels
+              tbody
+                - @settings.for_group(group[:name]).each do |setting|
+                  tr
+                    td= link_to(setting.setting_name.humanize, setting_path(setting))
+                    td= setting.levels.count
 
-          - if @settings.without_group.present?
-            - pane.slot :tab, id: :ungrouped, title: 'Ungrouped'
-              table.table
-                thead
-                  th Name
-                  th Levels
-                tbody
-                  - @settings.without_group.each do |setting|
-                    tr
-                      td= link_to(setting.setting_name.humanize, setting_path(setting))
-                      td= setting.levels.count
+        - if @settings.without_group.present?
+          - pane.slot :tab, id: :ungrouped, title: 'Ungrouped'
+            table.table
+              thead
+                th Name
+                th Levels
+              tbody
+                - @settings.without_group.each do |setting|
+                  tr
+                    td= link_to(setting.setting_name.humanize, setting_path(setting))
+                    td= setting.levels.count
 
