@@ -14,7 +14,9 @@
             - clg.layout modifier: 'compact' do |layout|
               - layout.row
                 p= setting[:setting].description
+              - layout.row
                 = render partial: 'vario/settings/levels', locals: setting
+              - layout.row
                 = render partial: 'vario/settings/new_level', locals: setting
 
 javascript:
