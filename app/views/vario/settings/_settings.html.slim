@@ -1,13 +1,21 @@
-- ui_card_id    = :settings if ui_card_id.blank?
 - ui_card_title = 'Settings' if ui_card_title.blank?
 - context       = {} if context.blank?
 
-= ui_card ui_card_id, title: ui_card_title
-  - settings_with_contexts.sort_by { |setting| setting[:setting].name}.each do |setting|
-    - ui_tab setting[:setting].name, title: setting[:setting].title 
-      p= setting[:setting].description
-      = render partial: 'vario/settings/levels', locals: setting
-      = render partial: 'vario/settings/new_level', locals: setting
+= clg.card do |card|
+  
+  - card.slot :title
+    = ui_card_title
+
+  - clg.layout modifier: 'card' do |layout|
+    - layout.row
+      = clg.tabbable_pane modifier: 'small' do |pane|
+        - settings_with_contexts.sort_by { |setting| setting[:setting].name}.each do |setting|
+          - pane.slot :tab, id: setting[:setting].name, title: setting[:setting].title
+            - clg.layout modifier: 'compact' do |layout|
+              - layout.row
+                p= setting[:setting].description
+                = render partial: 'vario/settings/levels', locals: setting
+                = render partial: 'vario/settings/new_level', locals: setting
 
 javascript:
   $(document).on('ajax:error', function(event) {
