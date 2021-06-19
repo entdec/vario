@@ -5,3 +5,17 @@
     - layout.row html: { data: { 'draggable-url' => "#{vario.move_setting_level_path(setting_id: setting.id, id: level.id)}" }, class: "#{"hidden" unless level.with_context_values?(context)}"}
       - layout.cell
         = render partial: 'vario/levels/form', locals: { setting: setting, level: level, context: context }
+
+javascript:
+  function reloadAfterDrag() {
+    document.querySelector("[data-id='#{setting.id}_levels']").addEventListener('draggable.success', function(e) {
+      fetch("#{levels_setting_path(setting)}")
+        .then(response => response.text())
+        .then(function(html) {
+          e.detail.element.outerHTML = html
+          reloadAfterDrag()
+        })
+    })
+  }
+
+  reloadAfterDrag()

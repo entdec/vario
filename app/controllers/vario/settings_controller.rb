@@ -2,7 +2,6 @@ require_dependency 'vario/application_controller'
 
 module Vario
   class SettingsController < ApplicationController
-
     def index
       if respond_to?(:add_breadcrumb)
         add_breadcrumb I18n.t('breadcrumbs.vario.settings.index'), settings_path(settable: params[:settable])
@@ -25,6 +24,11 @@ module Vario
         add_breadcrumb I18n.t('breadcrumbs.vario.settings.index'), breadcrumb_settings_path(@setting)
         add_breadcrumb @setting.name, setting_path(@setting)
       end
+    end
+
+    def levels
+      @setting = Setting.find(params[:id])
+      render :levels, layout: false
     end
   end
 end
