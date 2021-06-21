@@ -2,6 +2,9 @@ require_dependency 'vario/application_controller'
 
 module Vario
   class LevelsController < ApplicationController
+    self.responder = Auxilium::Responder
+    respond_to :html, :js
+
     before_action :set_objects
 
     def create
@@ -9,34 +12,28 @@ module Vario
       @setting.levels.unshift @level
       @setting.save!
 
-      respond_to do |format|
-        format.html { redirect_to setting_path(@setting) }
-        format.js
-      end
+      respond_with @setting, collection_location: setting_path(@setting)
     end
 
     def update
-      return destroy if params[:commit] == 'delete'
+      if params[:commit] == 'delete'
+        self.action_name = 'destroy'
+        return destroy
+      end
 
       @level = @setting.levels.find { |level| level.id == params[:id] }
       @level.value = level_params[:value]
       @level.conditions = level_params[:conditions].to_h
       @setting.save!
 
-      respond_to do |format|
-        format.html { redirect_to setting_path(@setting) }
-        format.js
-      end
+      respond_with @setting, collection_location: setting_path(@setting)
     end
 
     def destroy
       @setting.levels.reject! { |level| level.id == params[:id] }
       @setting.save!
 
-      respond_to do |format|
-        format.html { redirect_to setting_path(@setting) }
-        format.js { render :update }
-      end
+      respond_with @setting, collection_location: setting_path(@setting)
     end
 
     def move
