@@ -44,7 +44,7 @@
           = f.input :value, as: :text, input_html: { data: {controller: 'editor', target: 'editor.textarea', mode: 'application/yaml'}}
         - else
           - if setting.collection.present?
-            = f.input :value, as: :collection_select, collection: setting.collection, required: false
+            = f.input :value, as: :dropdown, collection: setting.collection, required: false
           - else
             = f.input :value
     .col-span-1.p-3
