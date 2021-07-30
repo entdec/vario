@@ -1,9 +1,9 @@
 - context = {} if context.blank?
 
-= clg.layout modifier: 'compact', data: { controller: 'draggable', 'draggable-handle' => '.draggable', id: "#{setting.id}_levels" } do |layout|
-  - setting.levels.each do |level|
-    - layout.row html: { data: { 'draggable-url' => "#{vario.move_setting_level_path(setting_id: setting.id, id: level.id)}" }, class: "#{"hidden" unless level.with_context_values?(context)}"}
-      - layout.cell
+div data-id="#{setting.id}_levels"
+  .grid.grid-cols-12.gap-4 data-controller='draggable' data-draggable-handle='.draggable'
+    - setting.levels.each do |level|
+      .col-span-12 data-draggable-url="#{vario.move_setting_level_path(setting_id: setting.id, id: level.id)}" class= "#{"hidden" unless level.with_context_values?(context)}"
         = render partial: 'vario/levels/form', locals: { setting: setting, level: level, context: context }
 
 - function_name = "reload_#{setting.id.gsub('-', '')}"

@@ -1,23 +1,16 @@
 - ui_card_title = 'Settings' if ui_card_title.blank?
 - context       = {} if context.blank?
 
-= clg.card do |card|
-  
-  - card.slot :title
-    = ui_card_title
-
-  - clg.layout modifier: 'card' do |layout|
-    - layout.row
-      = clg.tabbable_pane modifier: 'small' do |pane|
-        - settings_with_contexts.sort_by { |setting| setting[:setting].name}.each do |setting|
-          - pane.slot :tab, id: setting[:setting].name, title: setting[:setting].title
-            - clg.layout modifier: 'compact' do |layout|
-              - layout.row
-                p= setting[:setting].description
-              - layout.row
-                = render partial: 'vario/settings/levels', locals: setting
-              - layout.row
-                = render partial: 'vario/settings/new_level', locals: setting
+= sts.card title: ui_card_title, icon: 'fad fa-slider' do |card|
+  - settings_with_contexts.sort_by { |setting| setting[:setting].name}.each do |setting|
+    - card.tab setting[:setting].name, title: setting[:setting].title, padding: true
+      .grid.grid-cols-12.gap-4
+        .col-span-12.prose
+          p= setting[:setting].description
+        .col-span-12
+          = render partial: 'vario/settings/levels', locals: setting
+        .col-span-12
+          = render partial: 'vario/settings/new_level', locals: setting
 
 javascript:
   $(document).on('ajax:error', function(event) {

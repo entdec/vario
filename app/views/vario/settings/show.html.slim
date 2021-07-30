@@ -1,18 +1,16 @@
-= clg.card do |card|
-  - card.slot :title
-    = @setting.title
+= sts.card title: @setting.title, icon: 'fad fa-sliders' do |card|
 
-  - card.slot :action
-    = link_to("Back", settings_path(settable: @setting.settable.to_sgid(for: 'Vario').to_s), class: clg.bem('button').block)
+  - card.action
+    = link_to("Back", settings_path(settable: @setting.settable.to_sgid(for: 'Vario').to_s), class: 'button')
 
-  - clg.layout modifier: 'card' do |layout|
-    - layout.row
-      - if @setting.default.present? 
+  .grid.grid-cols-12.gap-4
+    .col-span-12.prose
+      - if @setting.default.present?
         p= "#{@setting.description} (default: #{[*@setting.default].join(', ')})"
       - else
         p= @setting.description
 
-    - layout.row
+    .col-span-12
       = render partial: 'vario/settings/levels', locals: { setting: @setting }
-    - layout.row
+    .col-span-12
       = render partial: 'vario/settings/new_level', locals: { setting: @setting }

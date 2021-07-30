@@ -2,52 +2,52 @@
 - context   = {} if context.blank?
 - draggable = true if draggable.nil?
 
-= clg.simple_form_for([setting, level], id: level.id, url: polymorphic_path([vario, setting, level]), remote: true, title: label, footer: false, header: label.present?, padding: label.present?) do |f|
+= sts.form_for([setting, level], id: level.id, url: polymorphic_path([vario, setting, level]), remote: true, title: label, footer: false, header: label.present?, padding: label.present?) do |f|
   - context.each do |key, value|
-    = f.simple_fields_for :context do |ff|
+    = f.fields_for :context do |ff|
       = ff.input key, as: :hidden, input_html: { value: value }
   - level.conditions_for(context).each do |condition|
-    = f.simple_fields_for :conditions do |ff|
+    = f.fields_for :conditions do |ff|
       = ff.input condition.key, as: :hidden, input_html: { value: context[condition.key.to_sym] }
-  = clg.layout modifier: 'compact' do |layout|
-    - layout.row
+  .grid.grid-cols-12.gap-4
+    .col-span-1
       - if draggable
-        - layout.cell grow: 0, basis: '30px;'
-          i.draggable class="#{Caliga.config.prefix}fal #{Caliga.config.prefix}fa-ellipsis-v #{Caliga.config.prefix}fa-3x" style="margin-top: 8px; margin-left: 16px;"
-      - level.conditions_not_for(context).each do |condition|
-        - layout.cell
-          = f.simple_fields_for :conditions do |ff|
-            - case condition.key_data[:type]
-              - when :select
-                = ff.input condition.key, as: :collection_select, label: condition.key, selected: condition.value, collection: condition.collection, include_blank: true, required: false, input_html: { id: "#{condition.key}_#{level.id}" }
-              - when :boolean
-                = ff.input condition.key, as: :boolean, label: condition.key, value: condition.value, required: false
-              - else
-                = ff.input condition.key, label: condition.key, required: false, input_html: { value: context[condition.key.to_sym] }
+        button.draggable
+          i class="fal fa-grip-lines" style="margin-top: 8px; margin-left: 16px;"
+    .col-span-7
+      .grid.grid-cols-12.gap-4
+        - level.conditions_not_for(context).each do |condition|
+          .col-span-3
+            = f.fields_for :conditions do |ff|
+              - case condition.key_data[:type]
+                - when :select
+                  = ff.input condition.key, as: :dropdown, label: condition.key, collection: condition.collection, include_blank: true, required: false, input_html: { id: "#{condition.key}_#{level.id}", value: condition.value }
+                - when :boolean
+                  = ff.input condition.key, as: :switch, label: condition.key, value: condition.value, required: false
+                - else
+                  = ff.input condition.key, label: condition.key, required: false, input_html: { value: context[condition.key.to_sym] }
 
-      - layout.cell
-        - case setting.type
-          - when :array
-            - if setting.collection.present?
-              = f.input :value, as: :collection_select, input_html: { multiple: true, id: "value_#{level.id}" }, collection: [["All", 'all']] + setting.collection, required: false
-            - else
-              = f.input :value, as: :text, input_html: { rows: 10, style: 'height: auto' },  hint: 'Multiple values possible, separate with "," or new lines.'
-          - when :integer
-            = f.input :value, as: :integer
-          - when :boolean
-            = f.input :value, as: :boolean
-          - when :text
-            = f.input :value, as: :text, input_html: { data: {controller: 'editor', target: 'editor.textarea', mode: 'text/plain'}}
-          - when :hash
-            = f.input :value, as: :text, input_html: { data: {controller: 'editor', target: 'editor.textarea', mode: 'application/yaml'}}
+    .col-span-2
+      - case setting.type
+        - when :array
+          - if setting.collection.present?
+            = f.input :value, as: :select, input_html: { multiple: true, id: "value_#{level.id}" }, collection: [["All", 'all']] + setting.collection, required: false
           - else
-            - if setting.collection.present?
-              = f.input :value, as: :collection_select, collection: setting.collection, required: false
-            - else
-              = f.input :value
-      - layout.cell
-        .clg-card-actions style='padding-top: 26px'
-          .clg-card-action
-            = f.button :button, t('.save'), name: 'commit', value: 'save', class: 'clg-button clg-button--primary'
-          .clg-card-action
-            = f.button :button, t('.delete'), name: 'commit', value: 'delete', class: 'clg-button' unless label.present?
+            = f.input :value, as: :text, input_html: { rows: 10, style: 'height: auto' },  hint: 'Multiple values possible, separate with "," or new lines.'
+        - when :integer
+          = f.input :value, as: :number
+        - when :boolean
+          = f.input :value, as: :switch
+        - when :text
+          = f.input :value, as: :text, input_html: { data: {controller: 'editor', target: 'editor.textarea', mode: 'text/plain'}}
+        - when :hash
+          = f.input :value, as: :text, input_html: { data: {controller: 'editor', target: 'editor.textarea', mode: 'application/yaml'}}
+        - else
+          - if setting.collection.present?
+            = f.input :value, as: :collection_select, collection: setting.collection, required: false
+          - else
+            = f.input :value
+    .col-span-1.p-3
+      = f.button t('.save'), value: 'save'
+    .col-span-1.p-3
+      = f.button t('.delete'), value: 'delete' unless label.present?

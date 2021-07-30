@@ -1,7 +1,7 @@
 - context = {} if context.blank?
 - level   = setting.new_level
 
-= clg.layout modifier: 'compact', data: { id: "#{setting.id}_new_level" } do |layout|
-  - layout.row html: { class: "#{"hidden" if level.conditions_not_for(context).size == 0 && setting.levels.find { |level| level.with_context_values?(context)}.present?}" }
-    - layout.cell
+div data-id="#{setting.id}_new_level"
+  .grid.grid-cols-12.gap-4
+    .col-span-12 class="#{"hidden" if level.conditions_not_for(context).size == 0 && setting.levels.find { |level| level.with_context_values?(context)}.present?}"
       = render partial: 'vario/levels/form', locals: { setting: setting, level: level, label: 'New level', context: context, draggable: false }

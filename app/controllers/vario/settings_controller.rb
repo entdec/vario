@@ -14,7 +14,7 @@ module Vario
 
       @settings = Setting.where(settable: @settable).order(:name).includes(:settable)
       @groups = @settings.map(&:name).select { |setting| setting =~ /\./ }.map { |setting| setting.split('.').first }
-      @groups = @groups.reduce(Hash.new(0)) {|h,v| h[v] += 1 ; h }.map{ |k,v| { name: k, settings: v } }
+      @groups = @groups.each_with_object(Hash.new(0)) { |v, h| h[v] += 1; }.map { |k, v| { name: k, settings: v } }
     end
 
     def show

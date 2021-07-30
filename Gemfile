@@ -15,4 +15,4 @@ gemspec
 # To use a debugger
 # gem 'byebug', group: [:development, :test]
 gem 'auxilium', '~> 3', entdec: 'components/auxilium'
-gem 'caliga', '~> 2', entdec: 'components/caliga'
+gem 'satis', '~> 0', entdec: 'components/satis'

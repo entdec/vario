@@ -1,4 +1,4 @@
-$:.push File.expand_path("lib", __dir__)
+$:.push File.expand_path('lib', __dir__)
 
 # Maintain your gem's version:
 require 'vario/version'
@@ -13,12 +13,12 @@ Gem::Specification.new do |s|
   s.summary     = 'Vario adds custom runtime configuration to your Rails app.'
   s.license     = 'MIT'
 
-  s.files = Dir["{app,config,db,lib}/**/*", 'MIT-LICENSE', 'Rakefile', 'README.md']
+  s.files = Dir['{app,config,db,lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
 
-  s.add_runtime_dependency 'caliga', '~> 2'
   s.add_runtime_dependency 'grape', '~> 1.2'
   s.add_runtime_dependency 'grape-swagger', '>= 0.33'
   s.add_runtime_dependency 'rails', '>= 5.2'
+  s.add_runtime_dependency 'satis', '~> 0'
   s.add_runtime_dependency 'slim', '~> 4'
 
   s.add_development_dependency 'auxilium', '~> 3'

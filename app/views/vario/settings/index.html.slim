@@ -1,31 +1,28 @@
-= clg.card do |card|
-  - card.slot :title
-    = @title
+= sts.card title: @title, icon: 'fad fa-sliders' do |card|
+  .grid.grid-cols-12.gap-4
+    .col-span-4
 
-  = clg.layout modifier: 'card' do |layout|
-    - layout.row
-      = clg.tabbable_pane modifier: 'small' do |pane|
-        - @groups.each do |group|
-          - pane.slot :tab, id: group[:name], title: group[:name].humanize
-            table.table
-              thead
-                th Name
-                th Levels
-              tbody
-                - @settings.for_group(group[:name]).each do |setting|
-                  tr
-                    td= link_to(setting.setting_name.humanize, setting_path(setting))
-                    td= setting.levels.count
+      - @groups.each do |group|
+        - card.tab group[:name], padding: true
+          table.table
+            thead
+              th Name
+              th Levels
+            tbody
+              - @settings.for_group(group[:name]).each do |setting|
+                tr
+                  td= link_to(setting.setting_name.humanize, setting_path(setting))
+                  td= setting.levels.count
 
-        - if @settings.without_group.present?
-          - pane.slot :tab, id: :ungrouped, title: 'Ungrouped'
-            table.table
-              thead
-                th Name
-                th Levels
-              tbody
-                - @settings.without_group.each do |setting|
-                  tr
-                    td= link_to(setting.setting_name.humanize, setting_path(setting))
-                    td= setting.levels.count
+      - if @settings.without_group.present?
+        - card.tab :ungrouped, padding: true
+          table.table
+            thead
+              th Name
+              th Levels
+            tbody
+              - @settings.without_group.each do |setting|
+                tr
+                  td= link_to(setting.setting_name.humanize, setting_path(setting))
+                  td= setting.levels.count
 
