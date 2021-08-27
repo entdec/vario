@@ -16,9 +16,16 @@ module Vario
           define_method(method_name.to_sym) do
             result = nil
 
-            context = vario_setting[:keys].map { |key| [key, send(key)] }
-            result = self.setting(setting, context.to_h) if respond_to?(:settings) && self.class.name == klass.name
-            result = send(klass.name.underscore.to_sym)&.setting(setting, context.to_h) if result.nil?
+            if respond_to?(:settings) && self.settings.respond_to?(:dig)
+              result = self.settings.dig(*setting.split('.'))
+            end
+
+            if result.nil?
+              context = vario_setting[:keys].map { |key| [key, send(key)] }
+              result = self.setting(setting, context.to_h) if respond_to?(:settings) && self.class.name == klass.name
+              result = send(klass.name.underscore.to_sym)&.setting(setting, context.to_h) if result.nil?
+            end
+
             result
           end
         end
