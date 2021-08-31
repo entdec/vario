@@ -23,7 +23,7 @@ module Vario
             if result.nil?
               context = vario_setting[:keys].map { |key| [key, send(key)] }
               result = self.setting(setting, context.to_h) if respond_to?(:settings) && self.class.name == klass.name
-              result = send(klass.name.underscore.to_sym)&.setting(setting, context.to_h) if result.nil?
+              result = send(klass.name.underscore.to_sym)&.setting(setting, context.to_h) if result.nil? && self.respond_to?(klass.name.underscore.to_sym)
             end
 
             result
