@@ -8,6 +8,7 @@ module Vario
 
     belongs_to :settable, polymorphic: true, optional: true
     validates :name, uniqueness: { scope: %i[settable_type settable_id] }
+    validate :validate_levels
 
     after_initialize :configure, :levels # pre-init the levels
     before_save :update_level_data
@@ -160,6 +161,10 @@ module Vario
     def validate_context(context)
       missing = keys.map(&:to_sym) - context.keys
       raise ArgumentError, "missing context '#{missing.join(', ')}''" if missing.present?
+    end
+
+    def validate_levels
+      errors.add(:levels, I18n.t('errors.messages.taken')) if levels.map(&:conditions_hash).uniq.size != levels.size
     end
   end
 end

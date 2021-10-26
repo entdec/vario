@@ -1,2 +1,4 @@
-document.querySelector("[data-id='<%= @setting.id %>_levels']").innerHTML = "<%= escape_javascript(render(partial: 'vario/settings/levels', locals: { setting: @setting, context: @context })) %>"
-document.querySelector("[data-id='<%= @setting.id %>_new_level']").innerHTML = "<%= escape_javascript(render(partial: 'vario/settings/new_level', locals: { setting: @setting, context: @context })) %>"
+<% if @setting.saved_changes? %>
+  document.querySelector("[data-id='<%= @setting.id %>_levels']").innerHTML = "<%= escape_javascript(render(partial: 'vario/settings/levels', locals: { setting: @setting, context: @context })) %>"
+  document.querySelector("[data-id='<%= @setting.id %>_new_level']").innerHTML = "<%= escape_javascript(render(partial: 'vario/settings/new_level', locals: { setting: @setting, context: @context })) %>"
+<% end %>

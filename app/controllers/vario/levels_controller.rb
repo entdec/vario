@@ -10,7 +10,7 @@ module Vario
     def create
       @level = Level.new(@setting, level_params)
       @setting.levels.unshift @level
-      @setting.save!
+      @setting.save
 
       respond_with @setting, collection_location: setting_path(@setting)
     end
@@ -24,14 +24,14 @@ module Vario
       @level = @setting.levels.find { |level| level.id == params[:id] }
       @level.value = level_params[:value]
       @level.conditions = level_params[:conditions].to_h
-      @setting.save!
+      @setting.save
 
       respond_with @setting, collection_location: setting_path(@setting)
     end
 
     def destroy
       @setting.levels.reject! { |level| level.id == params[:id] }
-      @setting.save!
+      @setting.save
 
       respond_with @setting, collection_location: setting_path(@setting)
     end
