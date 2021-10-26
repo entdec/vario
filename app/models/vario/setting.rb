@@ -79,6 +79,24 @@ module Vario
       @levels ||= (attributes['levels'] || []).map { |level| Level.new(self, level) }
     end
 
+    def uniq_levels
+      selected = []
+
+      levels.each do |level|
+        next if selected.select { |uniq_level| uniq_level.conditions_hash == level.conditions_hash}.present?
+
+        selected << level
+      end
+
+      selected
+    end
+
+    def uniq_levels!
+      self.levels = uniq_levels.select { |l| l.value_present? }.map(&:to_h)
+      @levels = nil
+      save!
+    end
+
     def update_level_data
       self.levels = levels.select { |l| l.value_present? }.map(&:to_h)
     end
