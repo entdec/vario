@@ -10,6 +10,7 @@ module Vario
         config.setting 'test'
         config.setting 'setting1'
         config.setting 'setting2'
+        config.setting 'setting3', keys: %i[name number]
       end
     end
 
@@ -81,6 +82,72 @@ module Vario
 
       assert_instance_of Level, level
       assert_same level.setting, setting
+    end
+
+    test 'cannot have multiple levels with the same conditions' do
+      setting = Setting.new(name: 'setting3')
+      first_level = setting.new_level
+      first_level.conditions = { name: 'Tom', number: '(513) 736-7069 x0026' }
+      first_level.value = '1'
+
+      second_level = setting.new_level
+      second_level.conditions = { name: 'Tom', number: '(513) 736-7069 x0026' }
+      second_level.value = '2'
+
+      setting.levels.unshift first_level
+      assert setting.valid?
+
+      setting.levels.unshift second_level
+      refute setting.valid?
+      assert_equal ['has already been taken'], setting.errors[:levels]
+
+      second_level.conditions = { name: 'Piet', number: '(513) 736-7069 x0026' }
+      assert setting.valid?
+    end
+
+    test 'uniq_levels returns unique levels based on keys' do
+      setting = Setting.new(name: 'setting3',
+                            levels: [{ conditions: { name: 'Tom',
+                                                     number: '(513) 736-7069 x0026' }, value: 1 },
+                                     { conditions: { name: 'Piet',
+                                                     number: '(513) 736-7069 x0026' }, value: 3 },
+                                     { conditions: { name: 'Tom',
+                                                     number: '(513) 736-7069 x0026' }, value: 2 }])
+
+      levels = setting.uniq_levels
+      assert_equal 2, levels.size
+
+      level = levels[0]
+      assert_equal({ name: 'Tom', number: '(513) 736-7069 x0026' }, level.conditions_hash)
+      assert_equal 1, level.value
+
+      level = levels[1]
+      assert_equal({ name: 'Piet', number: '(513) 736-7069 x0026' }, level.conditions_hash)
+      assert_equal 3, level.value
+    end
+
+    test 'uniq_levels! updates setting with unique levels based on keys' do
+      setting = Setting.new(name: 'setting3',
+                            levels: [{ conditions: { name: 'Tom',
+                                                     number: '(513) 736-7069 x0026' }, value: 1 },
+                                     { conditions: { name: 'Piet',
+                                                     number: '(513) 736-7069 x0026' }, value: 3 },
+                                     { conditions: { name: 'Tom',
+                                                     number: '(513) 736-7069 x0026' }, value: 2 }])
+
+      setting.uniq_levels!
+
+      setting = setting.reload
+      levels = setting.levels
+      assert_equal 2, levels.size
+
+      level = levels[0]
+      assert_equal({ name: 'Tom', number: '(513) 736-7069 x0026' }, level.conditions_hash)
+      assert_equal 1, level.value
+
+      level = levels[1]
+      assert_equal({ name: 'Piet', number: '(513) 736-7069 x0026' }, level.conditions_hash)
+      assert_equal 3, level.value
     end
   end
 end
