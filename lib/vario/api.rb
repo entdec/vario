@@ -52,7 +52,10 @@ module Vario
           end
         end if configuration[:before].present?
 
-        group_name, short_setting_name  = setting_name.split('.', 2)
+        group_name, short_setting_name = setting_name.split('.', 2)
+
+        next unless Vario.config.show_group?(group_name)
+
         route_param :id, type: String do
           namespace configuration[:prefix] do
             namespace group_name do

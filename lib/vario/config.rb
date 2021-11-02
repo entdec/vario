@@ -14,6 +14,7 @@ module Vario
       @settable_type = nil
       @current_settable = nil
       @admin_layout = 'application'
+      @show_group_if = {}
     end
 
     # Config setters
@@ -23,6 +24,18 @@ module Vario
       raise ArgumentError, 'name is required' unless options.keys.include?(:name)
       raise ArgumentError, 'type is required' unless options.keys.include?(:type)
       keys[name.to_s] = options
+    end
+
+    def show_group_if(name, block)
+      @show_group_if[name] = block
+    end
+
+    def show_group?(name)
+      if @show_group_if[name].is_a?(Proc)
+        @show_group_if[name].call
+      else
+        true
+      end
     end
 
     def setting(name, options = {})
