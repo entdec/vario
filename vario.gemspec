@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.version     = Vario::VERSION
   s.authors     = ['Andre Meij']
   s.email       = ['andre@itsmeij.com']
-  s.homepage    = 'https://code.entropydecelerator.com/components/vario'
+  s.homepage    = 'https://github.com/entdec/vario'
   s.summary     = 'Vario adds custom runtime configuration to your Rails app.'
   s.license     = 'MIT'
 
