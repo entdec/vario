@@ -17,7 +17,7 @@
     .col-span-7
       .grid.grid-cols-12.gap-4
         - level.conditions_not_for(context).each do |condition|
-          .col-span-3
+          div class="col-span-#{[12 / level.conditions_not_for(context).size, 3].max}"
             = f.fields_for :conditions do |ff|
               - case condition.key_data[:type]
                 - when :select
