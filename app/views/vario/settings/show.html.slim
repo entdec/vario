@@ -9,8 +9,5 @@
         p= "#{@setting.description} (default: #{[*@setting.default].join(', ')})"
       - else
         p= @setting.description
-
-    .col-span-12
-      = render partial: 'vario/settings/levels', locals: { setting: @setting }
-    .col-span-12
-      = render partial: 'vario/settings/new_level', locals: { setting: @setting }
+    .col-span-12= render partial: 'vario/settings/levels', locals: { setting: @setting }
+    .col-span-12= render partial: 'vario/settings/new_level', locals: { setting: @setting }
