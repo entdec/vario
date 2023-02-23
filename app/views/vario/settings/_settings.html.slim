@@ -11,12 +11,6 @@
           = render partial: 'vario/settings/levels', locals: setting
         .col-span-12
           = render partial: 'vario/settings/new_level', locals: setting
-
-javascript:
-  $(document).on('ajax:error', function(event) {
-    window.alert('An error has occurred, your changes are likely not saved. Please try again.')
-  })
-
 css:
   .row.level {
     min-height: 32px;
