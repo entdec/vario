@@ -1,4 +1,4 @@
-= sts.card title: @setting.title, icon: 'fad fa-sliders' do |card|
+= sts.card :"vario_settings #{@setting.title}", :title: @setting.title, icon: 'fad fa-sliders' do |card|
 
   - card.action
     = link_to("Back", settings_path(settable: @setting.settable.to_sgid(for: 'Vario').to_s), class: 'button')
