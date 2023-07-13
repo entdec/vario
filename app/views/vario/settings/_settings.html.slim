@@ -1,7 +1,7 @@
 - ui_card_title = 'Settings' if ui_card_title.blank?
 - context       = {} if context.blank?
 
-= sts.card title: ui_card_title, icon: 'fad fa-slider' do |card|
+= sts.card :"vario_settings #{ui_card_title}", title: ui_card_title, icon: 'fad fa-slider' do |card|
   - settings_with_contexts.sort_by { |setting| setting[:setting].name}.each do |setting|
     - card.tab setting[:setting].name, title: setting[:setting].title, padding: true
       .grid.grid-cols-12.gap-4
