@@ -13,7 +13,7 @@ module Vario
 
     def human_value
       if key_data[:type] == :select
-        collection.find { |entry| entry.last == value }.first
+        find_in_collection(value)&.first
       else
         value
       end
@@ -26,14 +26,29 @@ module Vario
     def collection
       return @collection if @collection
 
-      @collection = key_data[:collection]
-      @collection ||= instance_exec(&key_data[:collection_proc]) if key_data[:collection_proc]
-      @collection ||= []
-      if value.present?
-        current_value = @collection.find { |entry| entry.last == value }
-        @collection << ["<#{value}>", value] unless current_value
+      collection = key_data[:collection]
+      collection ||= key_data[:collection_proc]
+      collection ||= []
+      if value.present? && collection.is_a?(Array)
+        current_value = collection.find { |entry| entry.last == value }
+        collection << ["<#{value}>", value] unless current_value
       end
-      @collection
+
+      @collection = collection if collection.is_a?(Array)
+      collection
     end
+
+    def find_in_collection(value)
+      if collection.is_a?(Array)
+        collection.find { |entry| entry.last == value }
+      elsif collection.is_a?(Proc)
+        if collection.parameters.size == 1
+          instance_exec(value, &collection)
+        else
+          instance_exec(&collection)
+        end
+      end
+    end
+
   end
 end

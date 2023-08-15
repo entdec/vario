@@ -36,20 +36,34 @@ module Vario
     end
 
     def filter_collection
-      @setting = Setting.find(params[:id])
-      @setting = Condition.new(@setting, params[:condition_key], params[:condition_value])
+      @setting = Setting.find(params[:setting_id])
+      @settable = GlobalID::Locator.locate_signed(params[:settable], for: 'Vario')
+      @setting.settable = @settable
+
+      if params[:condition_key].present?
+        target = Condition.new(@setting, params[:condition_key], params[:condition_value])
+        @value_method, @text_method = target.key_data[:value_text_methods]&.call
+      else
+        target = @setting
+        @value_method, @text_method =  target.settable_setting[:value_text_methods]&.call
+      end
+
 
       @filter_items = true
 
-      if @setting.collection.is_a?(Proc)
-        if @setting.collection.parameters.size == 1
-          @filter_items = false
-          @items = @setting.collection.call(params[:term])
-        else
-          @items = @setting.collection.call
+      if target.collection.is_a?(Proc)
+        if target.collection.parameters.size == 1
+            @filter_items = false
+            @items = target.instance_exec(params[:term], &target.collection)
+          else
+            @items = target.instance_exec(&target.collection)
+        end
+
+        if params[:id].present? && @items.is_a?(ActiveRecord::Relation)
+          @items = @items.where(id: params[:id])
         end
       else
-        @items = @setting.collection
+        @items = target.collection
       end
 
       if @filter_items && @items.is_a?(Array)
@@ -59,9 +73,10 @@ module Vario
       end
 
       @pagy, @items = @items.is_a?(Array) ? pagy_array(@items) : pagy(@items)
-      @value_method, @text_method = value_text_methods(@items)
+      @value_method, @text_method = value_text_methods(@items) if @value_method.blank? && @text_method.blank?
 
       render layout: false
     end
+
   end
 end
