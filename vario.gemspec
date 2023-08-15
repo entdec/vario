@@ -15,11 +15,14 @@ Gem::Specification.new do |s|
 
   s.files = Dir['{app,config,db,lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
 
+  s.add_dependency 'pagy', '>=5.10.1'
+
   s.add_runtime_dependency 'grape', '~> 1.2'
   s.add_runtime_dependency 'grape-swagger', '>= 0.33'
   s.add_runtime_dependency 'rails', '>= 5.2'
   s.add_runtime_dependency 'satis', '~> 1'
   s.add_runtime_dependency 'slim', '~> 4'
+
 
   s.add_development_dependency 'auxilium', '~> 3'
   s.add_development_dependency 'pg'

@@ -9,6 +9,7 @@
   - level.conditions_for(context).each do |condition|
     = f.fields_for :conditions do |ff|
       = ff.input condition.key, as: :hidden, input_html: { value: context[condition.key.to_sym] }
+
   .grid.grid-cols-12.gap-4
     .col-span-1
       - if draggable
@@ -21,7 +22,8 @@
             = f.fields_for :conditions do |ff|
               - case condition.key_data[:type]
                 - when :select
-                  = ff.input condition.key, as: :dropdown, label: condition.key, collection: condition.collection, include_blank: true, required: false, input_html: { id: "#{condition.key}_#{level.id}", value: condition.value }
+                  = binding.pry
+                  = ff.input condition.key, as: :dropdown, label: condition.key, selected: condition.value, url:  filter_collection_setting_path(condition.instance_variable_get("@setting")), url_params: {condition_key: condition.key}, include_blank: true, required: false, input_html: { id: "#{condition.key}_#{level.id}" }
                 - when :boolean
                   = ff.input condition.key, as: :switch, label: condition.key, value: condition.value, required: false
                 - else
