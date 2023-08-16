@@ -40,6 +40,7 @@ module Vario
       @settable = GlobalID::Locator.locate_signed(params[:settable], for: 'Vario')
       @setting.settable = @settable
 
+
       if params[:condition_key].present?
         target = Condition.new(@setting, params[:condition_key], params[:condition_value])
         @value_method, @text_method = target.key_data[:value_text_methods]&.call
@@ -47,7 +48,6 @@ module Vario
         target = @setting
         @value_method, @text_method =  target.settable_setting[:value_text_methods]&.call
       end
-
 
       @filter_items = true
 
@@ -72,7 +72,12 @@ module Vario
         end
       end
 
-      @pagy, @items = @items.is_a?(Array) ? pagy_array(@items) : pagy(@items)
+      if @items.is_a?(Array) || @items.is_a?(ActiveRecord::Relation)
+        @pagy, @items = @items.is_a?(Array) ? pagy_array(@items) : pagy(@items)
+      else
+        @items = []
+      end
+
       @value_method, @text_method = value_text_methods(@items) if @value_method.blank? && @text_method.blank?
 
       render layout: false

@@ -22,7 +22,7 @@
             = f.fields_for :conditions do |ff|
               - case condition.key_data[:type]
                 - when :select
-                  = ff.input condition.key, as: :dropdown, label: condition.key, selected: condition.value, url:  filter_collection_settings_path(setting_id: setting.id,  settable: setting.settable.to_sgid(for: 'Vario').to_s), url_params: {condition_key: condition.key, condition_value: condition.value}, include_blank: true, required: false, input_html: { id: "#{condition.key}_#{level.id}" }
+                  = ff.input condition.key, as: :dropdown, label: condition.key, selected: condition.value, url:  Vario::Engine.routes.url_helpers.filter_collection_settings_path(setting_id: setting.id,  settable: setting.settable.to_sgid(for: 'Vario').to_s), url_params: {condition_key: condition.key, condition_value: condition.value}, include_blank: true, required: false, input_html: { id: "#{condition.key}_#{level.id}" }
                 - when :boolean
                   = ff.input condition.key, as: :switch, label: condition.key, value: condition.value, required: false
                 - else
@@ -45,7 +45,7 @@
           = f.input :value, as: :editor, mode: 'application/yaml'
         - else
           - if setting.collection.present?
-            = f.input :value, as: :dropdown, url:  filter_collection_settings_path(setting_id: setting.id,  settable: setting.settable.to_sgid(for: 'Vario').to_s), include_blank: true, required: false
+            = f.input :value, as: :dropdown, url:  Vario::Engine.routes.url_helpers.filter_collection_settings_path(setting_id: setting.id,  settable: setting.settable.to_sgid(for: 'Vario').to_s), include_blank: true, required: false
           - else
             = f.input :value
     .col-span-1.p-3
