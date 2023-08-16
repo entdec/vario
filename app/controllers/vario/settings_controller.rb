@@ -54,7 +54,7 @@ module Vario
       if target.collection.is_a?(Proc)
         if target.collection.parameters.size == 1
             @filter_items = false
-            @items = target.instance_exec(params[:term], &target.collection)
+            @items = target.instance_exec(params[:term] , &target.collection)
           else
             @items = target.instance_exec(&target.collection)
         end
@@ -72,7 +72,7 @@ module Vario
         end
       end
 
-      if @items.is_a?(Array) || @items.is_a?(ActiveRecord::Relation)
+      if @items
         @pagy, @items = @items.is_a?(Array) ? pagy_array(@items) : pagy(@items)
       else
         @items = []
