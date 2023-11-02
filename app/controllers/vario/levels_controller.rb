@@ -10,6 +10,8 @@ module Vario
     def create
       @level = Level.new(@setting, level_params)
       @setting.levels.unshift @level
+      @level.conditions = normalize_booleans(level_params[:conditions].to_h)
+      @level.conditions = normalize_booleans(level_params[:conditions].to_h)
       @setting.save
 
       respond_with @setting, collection_location: setting_path(@setting)
@@ -23,7 +25,7 @@ module Vario
 
       @level = @setting.levels.find { |level| level.id == params[:id] }
       @level.value = level_params[:value]
-      @level.conditions = level_params[:conditions].to_h
+      @level.conditions = normalize_booleans(level_params[:conditions].to_h)
       @setting.save
 
       respond_with @setting, collection_location: setting_path(@setting)
@@ -58,6 +60,14 @@ module Vario
 
     def level_params
       params.require(:level).permit(:value, value: [], conditions: {}, context: {})
+    end
+
+    def normalize_booleans(conditions)
+      boolean_keys = Vario.config.keys.select {|k,v|v[:type] == :boolean}.keys
+      boolean_keys.each do |k|
+        conditions[k.to_sym] = conditions[k] == "1" ? true : false
+      end
+      conditions
     end
   end
 end
