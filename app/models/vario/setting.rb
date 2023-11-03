@@ -159,6 +159,13 @@ module Vario
       @collection
     end
 
+    def collection_method?
+      result = collection.present?
+      result || if settable_setting
+                  settable_setting.key?(:collection_proc) || settable_setting.key?(:collection)
+                end
+    end
+
     def new_level
       Level.new(self, {}, true)
     end
