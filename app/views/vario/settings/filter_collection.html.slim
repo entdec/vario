@@ -1,0 +1,7 @@
+- @items.each do |item|
+  div data-satis-dropdown-item-value=item.send(@value_method) data-satis-dropdown-item-text=item.send(@text_method)
+    .cursor-pointer.w-full.border-gray-100.rounded-t.border-b.hover:bg-primary-200
+      .flex.flex-col.w-full.items-center.p-2.pl-2.border-transparent.border-l-2.hover:border-teal-100
+        .w-full.items-center.flex
+          .mx-2.-mt-1
+            span = item.send(@text_method)

@@ -133,9 +133,9 @@ module Vario
     def human_value(value)
       parsed_value = parse_value(value)
       return parsed_value if collection.blank?
-      return parsed_value.map { |pv| collection.find { |i| i.last == pv }.first } if type == :array
+      return parsed_value.map { |pv| find_in_collection(pv)&.first } if type == :array
 
-      collection.find { |i| i.last == parsed_value }.first
+      find_in_collection(parsed_value)&.first
     end
 
     def parse_value_array(value)
@@ -153,11 +153,26 @@ module Vario
       return @collection if @collection
       return unless settable_setting
 
-      @collection = settable_setting[:collection]
-      @collection ||= instance_exec(&settable_setting[:collection_proc]) if settable_setting[:collection_proc]
-      @collection ||= []
-      @collection
+      collection = settable_setting[:collection]
+      collection ||= settable_setting[:collection_proc] if settable_setting[:collection_proc]
+      collection ||= []
+
+      @collection = collection if collection.is_a?(Array)
+      collection
     end
+
+    def find_in_collection(value)
+      if collection.is_a?(Array)
+        collection.find { |entry| entry.last == value }
+      elsif collection.is_a?(Proc)
+        if collection.parameters.size == 1
+          instance_exec(value, &collection)
+        else
+          instance_exec(&collection)
+        end
+      end
+    end
+
 
     def new_level
       Level.new(self, {}, true)
