@@ -3,7 +3,7 @@
     .col-span-4
 
       - @groups.each do |group|
-        - card.tab group[:name], padding: true
+        - card.with_tab group[:name], padding: true
           table.table
             thead
               th Name
@@ -15,7 +15,7 @@
                   td= setting.levels.count
 
       - if @settings.without_group.present?
-        - card.tab :ungrouped, padding: true
+        - card.with_tab :ungrouped, padding: true
           table.table
             thead
               th Name
