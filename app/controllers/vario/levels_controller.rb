@@ -14,7 +14,7 @@ module Vario
       @level.conditions = normalize_booleans(level_params[:conditions].to_h)
       @setting.save
 
-      respond_with @setting, collection_location: setting_path(@setting)
+      respond_with @setting, collection_location: -> { setting_path(@setting) }
     end
 
     def update
@@ -28,14 +28,14 @@ module Vario
       @level.conditions = normalize_booleans(level_params[:conditions].to_h)
       @setting.save
 
-      respond_with @setting, collection_location: setting_path(@setting)
+      respond_with @setting, collection_location: -> { setting_path(@setting) }
     end
 
     def destroy
       @setting.levels.reject! { |level| level.id == params[:id] }
       @setting.save
 
-      respond_with @setting, collection_location: setting_path(@setting)
+      respond_with @setting, collection_location: -> { setting_path(@setting) }
     end
 
     def move
