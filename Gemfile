@@ -15,3 +15,4 @@ gemspec
 # To use a debugger
 # gem 'byebug', group: [:development, :test]
 gem "satis", "~> 2", entdec: "satis", branch: "develop"
+gem "sprockets-rails"
