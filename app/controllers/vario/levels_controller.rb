@@ -27,8 +27,11 @@ module Vario
       @level.value = level_params[:value]
       @level.conditions = normalize_booleans(level_params[:conditions].to_h)
       @setting.save
-
-      respond_with @setting, collection_location: -> { setting_path(@setting) }
+      if request.referer.present? && URI.parse(request.referer).path != setting_path(@setting)
+        redirect_to request.referer
+      else
+        respond_with @setting, collection_location: -> { setting_path(@setting) }
+      end
     end
 
     def destroy
