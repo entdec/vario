@@ -13,8 +13,11 @@ module Vario
       @level.conditions = normalize_booleans(level_params[:conditions].to_h)
       @level.conditions = normalize_booleans(level_params[:conditions].to_h)
       @setting.save
-
-      respond_with @setting, collection_location: -> { setting_path(@setting) }
+      if request.referer.present? && URI.parse(request.referer).path != setting_path(@setting)
+        redirect_to request.referer
+      else
+        respond_with @setting, collection_location: -> { setting_path(@setting) }
+      end
     end
 
     def update
@@ -37,8 +40,11 @@ module Vario
     def destroy
       @setting.levels.reject! { |level| level.id == params[:id] }
       @setting.save
-
-      respond_with @setting, collection_location: -> { setting_path(@setting) }
+      if request.referer.present? && URI.parse(request.referer).path != setting_path(@setting)
+        redirect_to request.referer
+      else
+        respond_with @setting, collection_location: -> { setting_path(@setting) }
+      end
     end
 
     def move
