@@ -12,12 +12,16 @@ module Vario
       @setting.levels.unshift @level
       @level.conditions = normalize_booleans(level_params[:conditions].to_h)
       @level.conditions = normalize_booleans(level_params[:conditions].to_h)
-      @setting.save
-      if request.referer.present? && URI.parse(request.referer).path != setting_path(@setting)
-        redirect_to request.referer
+      if @setting.save
+        if request.referer.present? && URI.parse(request.referer).path != setting_path(@setting)
+          redirect_to request.referer
+        else
+          respond_with @setting, collection_location: -> { setting_path(@setting) }
+        end
       else
-        respond_with @setting, collection_location: -> { setting_path(@setting) }
-      end
+         Signum.error(current_user, text:  @setting.errors.full_messages.join(","))
+        redirect_to setting_path(@setting)
+      end  
     end
 
     def update
@@ -29,12 +33,16 @@ module Vario
       @level = @setting.levels.find { |level| level.id == params[:id] }
       @level.value = level_params[:value]
       @level.conditions = normalize_booleans(level_params[:conditions].to_h)
-      @setting.save
-      if request.referer.present? && URI.parse(request.referer).path != setting_path(@setting)
-        redirect_to request.referer
+      if @setting.save
+        if request.referer.present? && URI.parse(request.referer).path != setting_path(@setting)
+          redirect_to request.referer
+        else
+          respond_with @setting, collection_location: -> { setting_path(@setting) }
+        end
       else
-        respond_with @setting, collection_location: -> { setting_path(@setting) }
-      end
+        Signum.error(current_user, text:  @setting.errors.full_messages.join(","))
+        redirect_to setting_path(@setting)
+      end  
     end
 
     def destroy
@@ -55,6 +63,10 @@ module Vario
 
       render json: { old: oldIndex, new: newIndex }
     end
+
+    def index; end
+    
+    def show; end
 
     private
 
