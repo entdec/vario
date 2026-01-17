@@ -30,7 +30,7 @@
     .col-span-2
       - case setting.type
         - when :array
-          - if setting.collection.present?
+          - if setting.collection_method?
             = f.input :value, as: :select, input_html: { multiple: true, id: "value_#{level.id}" }, collection: [["All", 'all']] + setting.collection, required: false
           - else
             = f.input :value, as: :text, input_html: { rows: 10, style: 'height: auto' },  hint: 'Multiple values possible, separate with "," or new lines.'
@@ -43,7 +43,7 @@
         - when :hash
           = f.input :value, as: :editor, mode: 'application/yaml'
         - else
-          - if setting.collection.present?
+          - if setting.collection_method?
             = f.input :value, as: :dropdown, collection: setting.collection, required: false
           - else
             = f.input :value
