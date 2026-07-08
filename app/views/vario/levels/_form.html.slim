@@ -37,7 +37,7 @@
         - when :integer
           = f.input :value, as: :number
         - when :boolean
-          = f.input :value, as: :switch
+          = f.input :value, as: :switch, value: level.value || setting.default
         - when :text
           = f.input :value, as: :editor, mode: 'text/plain'
         - when :hash
