@@ -53,6 +53,56 @@ module Vario
         type if type.is_a?(Class)
       end
 
+      # A value as the setting's type, from a form, the database or 1.x; nil
+      # for nothing (the default applies)
+      def cast(value)
+        value_type.cast(value) unless Types.blank?(value)
+      end
+
+      # As stored, in jsonb: decimals as text, so they stay exact
+      def serialize(value)
+        value = cast(value)
+        value.is_a?(BigDecimal) ? value.to_s : value
+      end
+
+      # A stored value as the setting's. 1.x's "all" of an array with
+      # choices is all of them, as they are now; the block gives the
+      # settable, for choices that depend on it.
+      def read(value, &settable)
+        value = cast(value)
+        return choice_values(settable&.call) if type == :array && choices && value&.any? { |element| element.to_s == 'all' }
+
+        value
+      end
+
+      def default_value
+        cast(default)
+      end
+
+      # The choices, a list of values or of [label, value]; a lambda gets the
+      # settable when it takes an argument
+      def choices_for(settable = nil)
+        list = choices.respond_to?(:call) ? (choices.arity.zero? ? choices.call : choices.call(settable)) : choices
+        Array(list)
+      end
+
+      def choice_values(settable = nil)
+        choices_for(settable).map { |choice| choice.is_a?(Array) ? choice.last : choice }
+      end
+
+      def value_type
+        @value_type ||= case type
+                        when :boolean then ActiveModel::Type::Boolean.new
+                        when :integer then ActiveModel::Type::Integer.new
+                        when :decimal then ActiveModel::Type::Decimal.new
+                        when :string, :text then ActiveModel::Type::String.new
+                        when :time then Types::TimeOfDay.new
+                        when :array then Types::List.new
+                        when :hash then Types::Map.new
+                        else Types::Reference.new(type)
+                        end
+      end
+
       # What its refinements may look at: the topic's context, or the part
       # of it the setting names
       def context

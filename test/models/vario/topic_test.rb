@@ -25,8 +25,8 @@ module Vario
     end
 
     test 'the topics of a settable, its record or its class, by title' do
-      assert_equal [GeneralSettings, PrintNodeSettings], Topic.for(Account)
-      assert_equal [GeneralSettings, PrintNodeSettings], Topic.for(accounts(:boxture))
+      assert_equal [ExamplesSettings, GeneralSettings, PrintNodeSettings], Topic.for(Account)
+      assert_equal [ExamplesSettings, GeneralSettings, PrintNodeSettings], Topic.for(accounts(:boxture))
       assert_equal [StockSettings], Topic.for(products(:apple))
       assert_equal PrintNodeSettings, Topic.find(Account, :print_node)
       assert_nil Topic.find(Product, :print_node)

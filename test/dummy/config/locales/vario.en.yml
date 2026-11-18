@@ -13,3 +13,6 @@ en:
         settings:
           hide_couriers:
             label: Hide couriers
+      examples:
+        title: Examples
+        description: A setting of every type.

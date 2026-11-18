@@ -37,12 +37,13 @@ module Vario
       assert_equal %w[staging], Setting.find(@setting.id).refinements.map(&:value)
     end
 
-    test 'values keep their type' do
+    test 'jsonb keeps the type of a value no topic defines' do
+      setting = accounts(:boxture).settings.create!(name: 'undefined.value')
       [true, false, 13, 2.5, '13:00', %w[1 2], { 'a' => 1 }].each do |value|
-        @setting.update!(value: value)
-        refinement = @setting.refinements.create!(value: value)
+        setting.update!(value: value)
+        refinement = setting.refinements.create!(value: value)
 
-        assert_equal value, Setting.find(@setting.id).value
+        assert_equal value, Setting.find(setting.id).value
         assert_equal value, Refinement.find(refinement.id).value
       end
     end

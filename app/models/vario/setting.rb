@@ -11,10 +11,30 @@ module Vario
     validate :validate_levels
 
     after_initialize :configure, :levels # pre-init the levels
+    before_validation :serialize_value
     before_save :update_level_data
 
     scope :for_group, ->(group_name) { where('name ilike ?', "#{group_name}.%") }
     scope :without_group, -> { where.not('name ilike ?', "%.%") }
+
+    # How the setting is defined, in its settable's topics (Vario::Topic)
+    def definition
+      return unless settable_type && name
+
+      @definition = nil unless @definition_for == [settable_type, name]
+      @definition_for = [settable_type, name]
+      @definition ||= Vario::Topic.definition(settable_type.safe_constantize, name)
+    end
+
+    # The settable's own value, as the setting's type
+    def value
+      definition ? definition.read(self[:value]) { settable } : self[:value]
+    end
+
+    # A record is its id (the jsonb column would take it as JSON)
+    def value=(value)
+      super(value.is_a?(ActiveRecord::Base) ? value.id : value)
+    end
 
     def group_name
       return nil if name.blank?
@@ -164,6 +184,10 @@ module Vario
     end
 
     private
+
+    def serialize_value
+      self[:value] = definition.serialize(self[:value]) if definition
+    end
 
     ###
     # Fill blank values for which we've got a value_proc
