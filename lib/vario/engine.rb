@@ -1,4 +1,5 @@
 require 'importmap-rails'
+require 'liquid'
 require 'form_components'
 
 module Vario

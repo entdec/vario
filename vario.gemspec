@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'grape'
   s.add_runtime_dependency 'grape-swagger', '>= 0.33'
   s.add_runtime_dependency 'importmap-rails', '>= 2'
+  s.add_runtime_dependency 'liquid', '>= 5.5', '< 6'
   s.add_runtime_dependency 'rails', '>= 7.1'
 
   s.add_development_dependency 'pg'

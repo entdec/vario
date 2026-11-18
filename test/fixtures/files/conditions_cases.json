@@ -1,0 +1,162 @@
+{
+  "about": "Conditions as the browser (app/javascript/flow_forms/conditions.js) and the server (FlowForms::Visibility, Nuntius::Conditions) work them out, run by test/models/flow_forms/visibility_test.rb and test/javascript/flow_forms_conditions_test.js. A rule case is one input x of its type, filled in with value (null: not sent), and a Condition block after it with the rules (on values.x unless they say otherwise): met or not. A design case is a form, filled in with values: the ids of the blocks that don't show.",
+  "rules": [
+    {"name": "a number below", "input": "flow_number", "value": "2", "rules": [{"operator": "lt", "value": "3"}], "met": true},
+    {"name": "a number not below itself", "input": "flow_number", "value": "3", "rules": [{"operator": "lt", "value": "3"}], "met": false},
+    {"name": "a number at most itself", "input": "flow_number", "value": "3", "rules": [{"operator": "lteq", "value": "3"}], "met": true},
+    {"name": "a decimal at least itself", "input": "flow_number", "value": "2.5", "rules": [{"operator": "gteq", "value": "2.5"}], "met": true},
+    {"name": "a number above, written with an exponent", "input": "flow_number", "value": "1e2", "rules": [{"operator": "gt", "value": "99"}], "met": true},
+    {"name": "an empty number compared", "input": "flow_number", "value": "", "rules": [{"operator": "gt", "value": "3"}], "met": false},
+    {"name": "a number not sent compared", "input": "flow_number", "value": null, "rules": [{"operator": "lteq", "value": "3"}], "met": false},
+    {"name": "a number is the same number written otherwise", "input": "flow_number", "value": "2", "rules": [{"operator": "is", "value": "2.0"}], "met": true},
+    {"name": "a number with underscores", "input": "flow_number", "value": "1000", "rules": [{"operator": "is", "value": "1_000"}], "met": true},
+    {"name": "a number isn't text", "input": "flow_number", "value": "2", "rules": [{"operator": "is", "value": "abc"}], "met": false},
+    {"name": "a number isnt text", "input": "flow_number", "value": "2", "rules": [{"operator": "isnt", "value": "abc"}], "met": true},
+    {"name": "a number compared with text", "input": "flow_number", "value": "2", "rules": [{"operator": "lt", "value": "abc"}], "met": false},
+    {"name": "text in a number input counts as 0", "input": "flow_number", "value": "abc", "rules": [{"operator": "is", "value": "0"}], "met": true},
+    {"name": "a number's leading digits", "input": "flow_number", "value": " 12abc", "rules": [{"operator": "is", "value": "12"}], "met": true},
+    {"name": "a number between, at the start", "input": "flow_number", "value": "2", "rules": [{"operator": "between", "value": "2", "value_to": "3"}], "met": true},
+    {"name": "a number not between", "input": "flow_number", "value": "4", "rules": [{"operator": "between", "value": "2", "value_to": "3"}], "met": false},
+    {"name": "between without an end", "input": "flow_number", "value": "2", "rules": [{"operator": "between", "value": "2", "value_to": ""}], "met": false},
+    {"name": "an empty number is empty", "input": "flow_number", "value": "", "rules": [{"operator": "is_empty"}], "met": true},
+    {"name": "0 isn't empty", "input": "flow_number", "value": "0", "rules": [{"operator": "isnt_empty"}], "met": true},
+    {"name": "a rating at least", "input": "flow_rating", "value": "4", "rules": [{"operator": "gteq", "value": "4"}], "met": true},
+    {"name": "a scale's 0", "input": "flow_scale", "value": "0", "rules": [{"operator": "lt", "value": "1"}], "met": true},
+
+    {"name": "text is text in other capitals", "input": "flow_short_text", "value": "abc", "rules": [{"operator": "is", "value": "ABC"}], "met": true},
+    {"name": "text isnt other text", "input": "flow_short_text", "value": "abc", "rules": [{"operator": "isnt", "value": "abd"}], "met": true},
+    {"name": "text contains", "input": "flow_long_text", "value": "Het was te koud", "rules": [{"operator": "matches", "value": "KOUD"}], "met": true},
+    {"name": "text doesn't contain", "input": "flow_short_text", "value": "abc", "rules": [{"operator": "does_not_match", "value": "z"}], "met": true},
+    {"name": "text with spaces around the rule's value", "input": "flow_email", "value": "a@b.nl", "rules": [{"operator": "is", "value": "  a@b.nl "}], "met": true},
+    {"name": "text not sent is the empty text", "input": "flow_short_text", "value": null, "rules": [{"operator": "is", "value": ""}], "met": true},
+    {"name": "text not sent isn't some text", "input": "flow_short_text", "value": null, "rules": [{"operator": "is", "value": "x"}], "met": false},
+    {"name": "empty text is empty", "input": "flow_short_text", "value": "", "rules": [{"operator": "is_empty"}], "met": true},
+    {"name": "a space isn't empty", "input": "flow_short_text", "value": " ", "rules": [{"operator": "isnt_empty"}], "met": true},
+    {"name": "a hidden input's value", "input": "flow_hidden", "value": "nl", "rules": [{"operator": "is", "value": "nl"}], "met": true},
+
+    {"name": "a date after", "input": "flow_date", "value": "2026-02-01", "rules": [{"operator": "gt", "value": "2026-01-01"}], "met": true},
+    {"name": "a date is itself", "input": "flow_date", "value": "2026-02-01", "rules": [{"operator": "is", "value": "2026-02-01"}], "met": true},
+    {"name": "a date between", "input": "flow_date", "value": "2026-02-01", "rules": [{"operator": "between", "value": "2026-01-01", "value_to": "2026-12-31"}], "met": true},
+    {"name": "a date before, not filled in", "input": "flow_date", "value": "", "rules": [{"operator": "lt", "value": "2026-01-01"}], "met": false},
+    {"name": "a date isn't a date that doesn't exist", "input": "flow_date", "value": "2026-02-01", "rules": [{"operator": "is", "value": "2026-13-01"}], "met": false},
+    {"name": "a date that doesn't exist is empty", "input": "flow_date", "value": "2026-02-30", "rules": [{"operator": "is_empty"}], "met": true},
+
+    {"name": "yes is true", "input": "flow_yes_no", "value": "true", "rules": [{"operator": "is", "value": "true"}], "met": true},
+    {"name": "yes is ja", "input": "flow_yes_no", "value": "true", "rules": [{"operator": "is", "value": "Ja"}], "met": true},
+    {"name": "no is false", "input": "flow_yes_no", "value": "false", "rules": [{"operator": "is", "value": "false"}], "met": true},
+    {"name": "no is anything but yes", "input": "flow_yes_no", "value": "false", "rules": [{"operator": "is", "value": "no"}], "met": true},
+    {"name": "no isnt true", "input": "flow_yes_no", "value": "false", "rules": [{"operator": "isnt", "value": "true"}], "met": true},
+    {"name": "not answered isn't yes", "input": "flow_yes_no", "value": null, "rules": [{"operator": "is", "value": "true"}], "met": false},
+    {"name": "not answered isnt yes", "input": "flow_yes_no", "value": null, "rules": [{"operator": "isnt", "value": "true"}], "met": true},
+    {"name": "not answered isn't no either", "input": "flow_yes_no", "value": "", "rules": [{"operator": "is", "value": "false"}], "met": false},
+    {"name": "a consent given", "input": "flow_consent", "value": "1", "rules": [{"operator": "is", "value": "true"}], "met": true},
+    {"name": "a consent not given", "input": "flow_consent", "value": "0", "rules": [{"operator": "is", "value": "true"}], "met": false},
+
+    {"name": "a choice", "input": "flow_single_choice", "value": "a", "rules": [{"operator": "is", "value": "a"}], "met": true},
+    {"name": "one of the choices", "input": "flow_multiple_choice", "value": ["a", "b"], "rules": [{"operator": "is", "value": "b"}], "met": true},
+    {"name": "one of the choices in other capitals", "input": "flow_multiple_choice", "value": ["a", "b"], "rules": [{"operator": "is", "value": "B"}], "met": true},
+    {"name": "none of the choices", "input": "flow_multiple_choice", "value": ["a"], "rules": [{"operator": "isnt", "value": "c"}], "met": true},
+    {"name": "no choices is empty", "input": "flow_multiple_choice", "value": [], "rules": [{"operator": "is_empty"}], "met": true},
+    {"name": "choices not sent is empty", "input": "flow_multiple_choice", "value": null, "rules": [{"operator": "is_empty"}], "met": true},
+    {"name": "an empty choice doesn't count", "input": "flow_multiple_choice", "value": [""], "rules": [{"operator": "isnt_empty"}], "met": false},
+    {"name": "choices contain", "input": "flow_multiple_choice", "value": ["rood", "blauw"], "rules": [{"operator": "matches", "value": "d, b"}], "met": true},
+
+    {"name": "any of the rules", "input": "flow_number", "value": "5", "match": "any", "rules": [{"operator": "lt", "value": "2"}, {"operator": "gt", "value": "4"}], "met": true},
+    {"name": "all of the rules", "input": "flow_number", "value": "5", "match": "all", "rules": [{"operator": "lt", "value": "2"}, {"operator": "gt", "value": "4"}], "met": false},
+    {"name": "all, when the match is neither", "input": "flow_number", "value": "5", "match": "some", "rules": [{"operator": "lt", "value": "2"}, {"operator": "gt", "value": "4"}], "met": false},
+    {"name": "no rules", "input": "flow_number", "value": "5", "rules": [], "met": true},
+    {"name": "a rule without its operator doesn't count", "input": "flow_number", "value": "5", "rules": [{"operator": "around", "value": "1"}], "met": true},
+    {"name": "a rule without its input doesn't count", "input": "flow_number", "value": "5", "rules": [{"variable": " ", "operator": "lt", "value": "1"}], "met": true},
+    {"name": "rules numbered, as a form sends them", "input": "flow_number", "value": "5", "rules": {"0": {"operator": "gt", "value": "4"}, "1": {"operator": "lt", "value": "6"}}, "met": true},
+    {"name": "a rule's value a number", "input": "flow_number", "value": "5", "rules": [{"operator": "is", "value": 5}], "met": true},
+    {"name": "an input the form doesn't have", "input": "flow_number", "value": "5", "rules": [{"variable": "values.other", "operator": "is_empty"}], "met": true}
+  ],
+  "designs": [
+    {
+      "name": "a follow-up question shows for a low rating",
+      "design": {"id": "f", "type": "flow_form", "children": [
+        {"id": "p1", "type": "flow_page", "children": [
+          {"id": "rating", "type": "flow_rating", "data": {"key": "rating"}},
+          {"id": "c1", "type": "flow_condition", "data": {"match": "all", "rules": [{"variable": "values.rating", "operator": "lt", "value": "3"}]}, "children": [
+            {"id": "why", "type": "flow_long_text", "data": {"key": "why"}},
+            {"id": "t1", "type": "text", "data": {}}
+          ]}
+        ]}
+      ]},
+      "examples": [
+        {"values": {"rating": "2", "why": "Koud"}, "hidden": []},
+        {"values": {"rating": "4", "why": "Koud"}, "hidden": ["c1", "t1", "why"]},
+        {"values": {}, "hidden": ["c1", "t1", "why"]}
+      ]
+    },
+    {
+      "name": "a hidden input's value counts as empty further on",
+      "design": {"id": "f", "type": "flow_form", "children": [
+        {"id": "p1", "type": "flow_page", "children": [
+          {"id": "member", "type": "flow_yes_no", "data": {"key": "member"}},
+          {"id": "c1", "type": "flow_condition", "data": {"rules": [{"variable": "values.member", "operator": "is", "value": "true"}]}, "children": [
+            {"id": "number", "type": "flow_short_text", "data": {"key": "number"}}
+          ]},
+          {"id": "c2", "type": "flow_condition", "data": {"rules": [{"variable": "values.number", "operator": "isnt_empty"}]}, "children": [
+            {"id": "thanks", "type": "text", "data": {}}
+          ]}
+        ]}
+      ]},
+      "examples": [
+        {"values": {"member": "true", "number": "123"}, "hidden": []},
+        {"values": {"member": "false", "number": "123"}, "hidden": ["c1", "c2", "number", "thanks"]},
+        {"values": {"member": "true", "number": ""}, "hidden": ["c2", "thanks"]}
+      ]
+    },
+    {
+      "name": "a Condition block in one that isn't met doesn't show",
+      "design": {"id": "f", "type": "flow_form", "children": [
+        {"id": "p1", "type": "flow_page", "children": [
+          {"id": "age", "type": "flow_number", "data": {"key": "age"}},
+          {"id": "c1", "type": "flow_condition", "data": {"rules": [{"variable": "values.age", "operator": "gteq", "value": "18"}]}, "children": [
+            {"id": "c2", "type": "flow_condition", "data": {"rules": [{"variable": "values.age", "operator": "lt", "value": "100"}]}, "children": [
+              {"id": "drink", "type": "flow_single_choice", "data": {"key": "drink"}}
+            ]}
+          ]}
+        ]}
+      ]},
+      "examples": [
+        {"values": {"age": "40"}, "hidden": []},
+        {"values": {"age": "120"}, "hidden": ["c2", "drink"]},
+        {"values": {"age": "12"}, "hidden": ["c1", "c2", "drink"]}
+      ]
+    },
+    {
+      "name": "a page in a Condition block",
+      "design": {"id": "f", "type": "flow_form", "children": [
+        {"id": "p1", "type": "flow_page", "children": [
+          {"id": "topics", "type": "flow_multiple_choice", "data": {"key": "topics"}}
+        ]},
+        {"id": "c1", "type": "flow_condition", "data": {"match": "any", "rules": [{"variable": "values.topics", "operator": "is", "value": "food"}, {"variable": "values.topics", "operator": "is", "value": "drinks"}]}, "children": [
+          {"id": "p2", "type": "flow_page", "children": [
+            {"id": "diet", "type": "flow_short_text", "data": {"key": "diet"}}
+          ]}
+        ]}
+      ]},
+      "examples": [
+        {"values": {"topics": ["music", "drinks"]}, "hidden": []},
+        {"values": {"topics": ["music"]}, "hidden": ["c1", "diet", "p2"]},
+        {"values": {}, "hidden": ["c1", "diet", "p2"]}
+      ]
+    },
+    {
+      "name": "a rule on an input after its Condition block sees it empty",
+      "design": {"id": "f", "type": "flow_form", "children": [
+        {"id": "p1", "type": "flow_page", "children": [
+          {"id": "c1", "type": "flow_condition", "data": {"rules": [{"variable": "values.later", "operator": "isnt_empty"}]}, "children": [
+            {"id": "t1", "type": "text", "data": {}}
+          ]},
+          {"id": "later", "type": "flow_short_text", "data": {"key": "later"}}
+        ]}
+      ]},
+      "examples": [
+        {"values": {"later": "x"}, "hidden": ["c1", "t1"]}
+      ]
+    }
+  ]
+}
