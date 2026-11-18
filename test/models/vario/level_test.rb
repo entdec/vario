@@ -6,6 +6,7 @@ require 'vario'
 module Vario
   class LevelTest < ActiveSupport::TestCase
     setup do
+      @config = Vario.config
       Vario.setup do |config|
         config.key :name, name: 'Name', type: :select, collection_proc: -> { [%w[Andre andre] %w[Mark mark] %w[Tom tom]] }
         config.key :day, name: 'Day', type: :string
@@ -16,6 +17,10 @@ module Vario
 
       @lucky_number_setting = Setting.new(name: 'lucky_number')
       @says_hi_setting      = Setting.new(name: 'says_hi')
+    end
+
+    teardown do
+      Vario.instance_variable_set(:@config, @config)
     end
 
     test 'new level with conditions' do

@@ -6,12 +6,17 @@ require 'vario'
 module Vario
   class SettingTest < ActiveSupport::TestCase
     setup do
+      @config = Vario.config
       Vario.setup do |config|
         config.setting 'test'
         config.setting 'setting1'
         config.setting 'setting2'
         config.setting 'setting3', keys: %i[name number]
       end
+    end
+
+    teardown do
+      Vario.instance_variable_set(:@config, @config)
     end
 
     test 'can store a setting' do
