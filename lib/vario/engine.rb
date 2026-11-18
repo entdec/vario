@@ -17,6 +17,12 @@ module Vario
       end
     end
 
+    # Topics (Vario::Topic) in app/settings/ of the app and its engines, also
+    # after a reload
+    config.to_prepare do
+      Vario::Topic.load!
+    end
+
     initializer 'vario.assets' do |app|
       app.config.assets.paths << root.join('app/javascript') if app.config.respond_to?(:assets)
     end

@@ -1,0 +1,15 @@
+en:
+  vario:
+    topics:
+      print_node:
+        title: PrintNode
+        description: Printing labels and documents through PrintNode.
+        settings:
+          api_key:
+            label: API key
+            description: The key of the PrintNode account to print with.
+      general:
+        title: General
+        settings:
+          hide_couriers:
+            label: Hide couriers
