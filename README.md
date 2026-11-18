@@ -32,6 +32,26 @@ Then add a menu entry, or link to the settings page:
 link_to("Settings", vario.settings_path(settable: Current&.account&.to_sgid(for: "Vario").to_s))
 ```
 
+The settings pages need importmap-rails, Propshaft and Tailwind CSS 4 through tailwindcss-rails 4.3 or later (for engine support), and [FormComponents](https://github.com/entdec/form_components) for their forms, a dependency from GitHub: add `gem "form_components", github: "entdec/form_components"` to your Gemfile. Import Vario's JavaScript, which uses your app's Stimulus application (`window.Stimulus`) or starts one, and register FormComponents' controllers with it:
+
+```js
+// app/javascript/application.js
+import "vario"
+import { registerFormComponents } from "form_components"
+
+registerFormComponents(window.Stimulus)
+```
+
+and add the styles of Vario and FormComponents to your Tailwind CSS:
+
+```css
+/* app/assets/tailwind/application.css */
+@import "../builds/tailwind/vario";
+@import "../builds/tailwind/form_components";
+```
+
+The icons are [Font Awesome](https://fontawesome.com)'s, which your app loads.
+
 ## Installation
 
 Add this line to your application's Gemfile:

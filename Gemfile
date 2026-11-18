@@ -14,5 +14,10 @@ gemspec
 
 # To use a debugger
 # gem 'byebug', group: [:development, :test]
-gem "satis", "~> 2", entdec: "satis", branch: "develop"
-gem "sprockets-rails"
+gem "form_components", entdec: "form_components"
+
+# The dummy app's server and assets
+gem "puma"
+gem "propshaft"
+gem "stimulus-rails"
+gem "tailwindcss-rails", "~> 4.0"

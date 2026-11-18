@@ -1,0 +1,12 @@
+// Entry point. It registers vario's controllers with the host app's Stimulus
+// application (window.Stimulus), which it starts if nothing has yet.
+
+import { Application } from "@hotwired/stimulus"
+
+import SortableController from "vario/controllers/sortable_controller"
+import TabsController from "vario/controllers/tabs_controller"
+
+window.Stimulus ||= Application.start()
+
+window.Stimulus.register("vario--sortable", SortableController)
+window.Stimulus.register("vario--tabs", TabsController)

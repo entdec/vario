@@ -1,0 +1,25 @@
+<%# A card: its title and actions over its tabs, or its content. Locals: name (its id), title, icon, card
+    (Vario::Card, with the tabs and actions), body (the content of a card without tabs) %>
+<div class="vario-card" id="<%= name %>" data-controller="vario--tabs">
+  <div class="vario-card__header">
+    <% if icon %>
+      <i class="vario-card__icon <%= icon %>"></i>
+    <% end %>
+    <div class="vario-card__title"><%= title %></div>
+    <% if card.actions.any? %>
+      <div class="vario-card__actions"><%= safe_join(card.actions) %></div>
+    <% end %>
+  </div>
+  <% if card.tabs.any? %>
+    <div class="vario-card__tabs" role="tablist">
+      <% card.tabs.each_with_index do |tab, index| %>
+        <button type="button" role="tab" class="vario-card__tab" id="<%= name %>_<%= tab.id %>_tab" aria-controls="<%= name %>_<%= tab.id %>" aria-selected="<%= index.zero? %>" data-vario--tabs-target="tab" data-action="vario--tabs#select"><%= tab.title %></button>
+      <% end %>
+    </div>
+    <% card.tabs.each_with_index do |tab, index| %>
+      <%= tag.div tab.content, role: 'tabpanel', id: "#{name}_#{tab.id}", class: ('vario-card__body' if tab.padding), hidden: !index.zero?, 'aria-labelledby': "#{name}_#{tab.id}_tab", data: { 'vario--tabs-target': 'panel' } %>
+    <% end %>
+  <% else %>
+    <div class="vario-card__body"><%= body %></div>
+  <% end %>
+</div>

@@ -15,3 +15,5 @@ ssh-keygen -F github.com >/dev/null 2>&1 || ssh-keyscan -t ed25519 github.com 2>
 "$MISE" exec -- bundle install
 # A Rails engine: its bin/rails has the dummy app's tasks under app:
 "$MISE" exec -- bin/rails app:db:prepare
+# The dummy app's styles, with those of vario and form_components
+"$MISE" exec -- bin/rails app:tailwindcss:build

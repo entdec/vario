@@ -1,0 +1,94 @@
+/* A card (shared/_card): a header with its icon, title and actions, over its tabs or its content */
+.vario-card {
+  @apply overflow-hidden bg-white sm:rounded-lg sm:shadow dark:bg-gray-800;
+}
+
+.vario-card__header {
+  @apply flex flex-wrap items-center gap-4 border-b border-gray-200 bg-white px-4 py-5 sm:px-6 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300;
+}
+
+.vario-card__icon {
+  @apply shrink-0 text-primary-600 dark:text-gray-300;
+}
+
+.vario-card__title {
+  @apply min-w-0 flex-1 text-lg leading-6 font-medium text-gray-900 dark:text-white;
+}
+
+.vario-card__actions {
+  @apply flex shrink-0 flex-wrap gap-1;
+}
+
+.vario-card__tabs {
+  @apply flex gap-6 overflow-x-auto border-b border-gray-200 px-4 sm:px-6 dark:border-gray-700 dark:bg-gray-900;
+}
+
+.vario-card__tab {
+  @apply -mb-px shrink-0 cursor-pointer border-b-2 border-transparent px-1 py-4 text-sm font-medium whitespace-nowrap text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-300;
+}
+
+.vario-card__tab[aria-selected="true"] {
+  @apply border-primary-500 text-primary-600 dark:text-white;
+}
+
+.vario-card__body {
+  @apply px-6 py-6;
+}
+
+.vario-button {
+  @apply inline-flex cursor-pointer items-center justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200;
+}
+
+.vario-button--danger {
+  @apply border-red-300 text-red-700 hover:bg-red-50;
+}
+
+/* The settings of a group (settings/index) */
+.vario-table {
+  @apply min-w-full divide-y divide-gray-200 text-sm dark:divide-gray-700;
+}
+
+.vario-table th {
+  @apply py-2 pr-4 text-left font-medium text-gray-500 dark:text-gray-400;
+}
+
+.vario-table td {
+  @apply py-2 pr-4 text-gray-900 dark:text-white;
+}
+
+.vario-table a {
+  @apply text-primary-600 hover:underline;
+}
+
+.vario-description {
+  @apply mb-4 text-sm text-gray-600 dark:text-gray-400;
+}
+
+/* A setting's levels (settings/_levels), each a form (levels/_form) */
+.vario-levels {
+  @apply flex flex-col gap-2;
+}
+
+.vario-level {
+  @apply grid grid-cols-12 items-end gap-4 rounded-md bg-gray-50 p-3 dark:bg-gray-900;
+}
+
+.vario-level__title {
+  @apply col-span-12 text-sm font-medium text-gray-900 dark:text-white;
+}
+
+.vario-level__handle {
+  @apply col-span-1 cursor-grab self-center text-gray-400 hover:text-gray-600;
+}
+
+.vario-level__conditions {
+  @apply col-span-6 grid grid-cols-12 gap-4;
+}
+
+.vario-level__value {
+  @apply col-span-3;
+}
+
+.vario-level__buttons {
+  @apply col-span-2 flex gap-2;
+}

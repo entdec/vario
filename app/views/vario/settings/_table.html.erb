@@ -1,0 +1,16 @@
+<table class="vario-table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Levels</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% settings.each do |setting| %>
+      <tr>
+        <td><%= link_to(setting.setting_name.humanize, setting_path(setting)) %></td>
+        <td><%= setting.levels.count %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

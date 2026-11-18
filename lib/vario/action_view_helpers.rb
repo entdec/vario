@@ -27,5 +27,19 @@ module Vario
         settings_with_contexts: settings_with_contexts
       }
     end
+
+    # A card with a title and icon, and the actions and tabs its block adds
+    # (Vario::Card), else what the block gives
+    #
+    #   <%= vario_card :vario_settings, title: 'Settings', icon: 'fad fa-sliders' do |card| %>
+    #     <% card.tab :shipping do %>
+    #       ...
+    #     <% end %>
+    #   <% end %>
+    def vario_card(name, title:, icon: nil, &block)
+      card = Vario::Card.new(self)
+      body = capture(card, &block)
+      render 'vario/shared/card', name: name.to_s.parameterize(separator: '_'), title: title, icon: icon, card: card, body: body
+    end
   end
 end

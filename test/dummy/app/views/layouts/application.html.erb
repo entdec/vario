@@ -2,14 +2,18 @@
 <html>
   <head>
     <title>Dummy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= stylesheet_link_tag    'application', media: 'all' %>
-    <%= javascript_include_tag 'application' %>
+    <%= stylesheet_link_tag 'tailwind' %>
+    <%= javascript_importmap_tags %>
   </head>
 
-  <body>
+  <body class="bg-gray-100 p-6">
+    <% flash.each do |type, message| %>
+      <p class="mb-4 text-sm <%= type == 'alert' ? 'text-red-700' : 'text-green-700' %>" role="<%= type == 'alert' ? 'alert' : 'status' %>"><%= message %></p>
+    <% end %>
     <%= yield %>
   </body>
 </html>

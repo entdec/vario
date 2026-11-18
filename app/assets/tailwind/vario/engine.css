@@ -1,0 +1,6 @@
+/* Entry point for tailwindcss-rails v4 (Tailwind CSS v4).
+   The host app includes it with: @import "../builds/tailwind/vario";
+   Imported into the components layer so utility classes still override component styles */
+@import "../../stylesheets/vario/application.css" layer(components);
+
+@source "../../..";

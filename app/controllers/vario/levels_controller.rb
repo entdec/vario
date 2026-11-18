@@ -2,9 +2,6 @@ require_dependency 'vario/application_controller'
 
 module Vario
   class LevelsController < ApplicationController
-    self.responder = Auxilium::Responder
-    respond_to :html, :js
-
     before_action :set_objects
 
     def create
@@ -13,15 +10,10 @@ module Vario
       @level.conditions = normalize_booleans(level_params[:conditions].to_h)
       @level.conditions = normalize_booleans(level_params[:conditions].to_h)
       if @setting.save
-        if request.referer.present? && URI.parse(request.referer).path != setting_path(@setting)
-          redirect_to request.referer
-        else
-          respond_with @setting, collection_location: -> { setting_path(@setting) }
-        end
+        redirect_back_or_to_setting
       else
-         Signum.error(current_user, text:  @setting.errors.full_messages.join(","))
-        redirect_to setting_path(@setting)
-      end  
+        redirect_to setting_path(@setting), alert: @setting.errors.full_messages.join(',')
+      end
     end
 
     def update
@@ -34,25 +26,16 @@ module Vario
       @level.value = level_params[:value]
       @level.conditions = normalize_booleans(level_params[:conditions].to_h)
       if @setting.save
-        if request.referer.present? && URI.parse(request.referer).path != setting_path(@setting)
-          redirect_to request.referer
-        else
-          respond_with @setting, collection_location: -> { setting_path(@setting) }
-        end
+        redirect_back_or_to_setting
       else
-        Signum.error(current_user, text:  @setting.errors.full_messages.join(","))
-        redirect_to setting_path(@setting)
-      end  
+        redirect_to setting_path(@setting), alert: @setting.errors.full_messages.join(',')
+      end
     end
 
     def destroy
       @setting.levels.reject! { |level| level.id == params[:id] }
       @setting.save
-      if request.referer.present? && URI.parse(request.referer).path != setting_path(@setting)
-        redirect_to request.referer
-      else
-        respond_with @setting, collection_location: -> { setting_path(@setting) }
-      end
+      redirect_back_or_to_setting
     end
 
     def move
@@ -69,6 +52,16 @@ module Vario
     def show; end
 
     private
+
+    # Back to the page the level was changed on, a host's page with
+    # render_vario_settings, else the setting's
+    def redirect_back_or_to_setting
+      if request.referer.present? && URI.parse(request.referer).path != setting_path(@setting)
+        redirect_to request.referer
+      else
+        redirect_to setting_path(@setting)
+      end
+    end
 
     def set_objects
       @context = params.dig(:level, :context) || {}

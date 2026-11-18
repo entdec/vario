@@ -1,3 +1,6 @@
+require 'importmap-rails'
+require 'form_components'
+
 module Vario
   class Engine < ::Rails::Engine
     config.autoload_paths << File.expand_path("../../lib", __dir__)
@@ -10,6 +13,15 @@ module Vario
           app.config.paths['db/migrate'] << expanded_path
         end
       end
+    end
+
+    initializer 'vario.assets' do |app|
+      app.config.assets.paths << root.join('app/javascript') if app.config.respond_to?(:assets)
+    end
+
+    initializer 'vario.importmap', before: 'importmap' do |app|
+      app.config.importmap.paths << root.join('config/importmap.rb')
+      app.config.importmap.cache_sweepers << root.join('app/javascript')
     end
   end
 end
