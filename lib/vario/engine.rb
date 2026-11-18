@@ -1,5 +1,6 @@
 require 'importmap-rails'
 require 'liquid'
+require 'positioning'
 require 'form_components'
 
 module Vario

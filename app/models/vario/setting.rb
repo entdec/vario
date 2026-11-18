@@ -4,10 +4,10 @@ module Vario
   class Setting < ApplicationRecord
     attr_reader :settable_setting, :type, :default, :description
 
-    has_paper_trail if respond_to?(:has_paper_trail)
-
     belongs_to :settable, polymorphic: true, optional: true
-    validates :name, uniqueness: { scope: %i[settable_type settable_id] }
+    has_many :refinements, -> { order(:position) }, inverse_of: :setting
+    accepts_nested_attributes_for :refinements, allow_destroy: true
+
     validate :validate_levels
 
     after_initialize :configure, :levels # pre-init the levels

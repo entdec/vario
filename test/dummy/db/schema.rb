@@ -10,11 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_27_040546) do
-
+ActiveRecord::Schema[8.1].define(version: 2026_11_18_190100) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
-  enable_extension "plpgsql"
   enable_extension "uuid-ossp"
 
   create_table "accounts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -25,8 +24,20 @@ ActiveRecord::Schema.define(version: 2021_10_27_040546) do
 
   create_table "products", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "vario_refinements", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "setting_id", null: false
+    t.integer "position", null: false
+    t.boolean "enabled", default: true, null: false
+    t.text "note"
+    t.jsonb "conditions", default: {"match" => "all", "rules" => []}, null: false
+    t.jsonb "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["setting_id", "position"], name: "index_vario_refinements_on_setting_id_and_position", unique: true
   end
 
   create_table "vario_settings", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -37,7 +48,10 @@ ActiveRecord::Schema.define(version: 2021_10_27_040546) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "keys", array: true
+    t.jsonb "value"
+    t.index ["settable_type", "settable_id", "name"], name: "index_vario_settings_on_settable_type_and_settable_id_and_name", unique: true
     t.index ["settable_type", "settable_id"], name: "index_vario_settings_on_settable_type_and_settable_id"
   end
 
+  add_foreign_key "vario_refinements", "vario_settings", column: "setting_id", on_delete: :cascade
 end
