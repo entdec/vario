@@ -17,6 +17,13 @@ module Vario
       definition ? definition.read(self[:value]) { setting.settable } : self[:value]
     end
 
+    # Its conditions, read once
+    def rules
+      @rules = nil unless @rules_for.equal?(conditions)
+      @rules_for = conditions
+      @rules ||= Conditions.new(conditions)
+    end
+
     # A record is its id (the jsonb column would take it as JSON)
     def value=(value)
       super(value.is_a?(ActiveRecord::Base) ? value.id : value)

@@ -1,7 +1,7 @@
 module Vario
   class Config
     attr_writer :logger, :current_settable
-    attr_reader :keys, :settable_types, :settable_settings
+    attr_reader :keys, :settable_types, :settable_settings, :context_defaults, :legacy_keys
     attr_accessor :base_controller, :admin_layout
 
     def initialize
@@ -15,6 +15,27 @@ module Vario
       @current_settable = nil
       @admin_layout = 'application'
       @show_group_if = {}
+      @context_defaults = {}
+      @legacy_keys = {}
+    end
+
+    # The value of a context root when a setting is read without it, for the
+    # settings whose context has it:
+    #
+    #   config.context_default :environment, -> { Rails.env }
+    def context_default(name, value)
+      context_defaults[name.to_s] = value
+    end
+
+    # 1.x's keys, as the variables of the context they are now, so settings
+    # read with them (customer_id: id) meet refinements on those:
+    #
+    #   config.legacy_key :customer_id, 'order.customer'
+    #
+    # location_id needs none for location: a rule on location takes
+    # location_id when there is no location.
+    def legacy_key(key, variable)
+      legacy_keys[key.to_s] = variable.to_s
     end
 
     # Config setters

@@ -11,10 +11,11 @@ module Vario
 
     class_methods do
       def settable(options = {})
-        include Vario::Settable
-
         configuration = { name: :settings }
         configuration.update(options) if options.is_a?(Hash)
+
+        class_attribute :vario_settings_association, instance_writer: false, default: configuration[:name]
+        include Vario::Settable
 
         has_many configuration[:name], as: :settable, class_name: 'Vario::Setting'
       end
