@@ -4,7 +4,7 @@
 class ExamplesSettings < Vario::Topic
   settable Account
   icon 'fal fa-flask'
-  context environment: :string
+  context environment: :string, product: Product
 
   setting :enabled, :boolean, default: false
   setting :quantity, :integer, default: 1

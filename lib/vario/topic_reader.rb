@@ -23,6 +23,11 @@ module Vario
       @settable.explain(definition.name, @context).value
     end
 
+    # All of them, by key
+    def to_h
+      @definitions.transform_values { |definition| @settable.explain(definition.name, @context).value }
+    end
+
     def respond_to_missing?(method, include_private = false)
       @definitions.key?(method.to_s.delete_suffix('?')) || super
     end

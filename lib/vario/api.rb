@@ -1,4 +1,4 @@
-# frozen_literal_string: true
+# frozen_string_literal: true
 
 require 'grape-swagger'
 
@@ -22,21 +22,53 @@ module Vario
         record
       end
 
-      def settable_settings
-        Vario.config.settable_settings[settable.name]
+      # The keys it was called with, without blanks
+      def context_params
+        declared_params.except('id', 'value').to_h.compact_blank
       end
 
-      def settable_setting(setting)
-        settable_settings[setting]
-      end
-
-      def settable_setting_context(setting, context)
-        vario_setting = settable_setting(setting)
-        context.symbolize_keys!
-        vario_setting[:keys].each do |key|
-          context[key] ||= nil
+      # The rules of a refinement on exactly those keys, as the variables
+      # they are: a legacy key's (config.legacy_key), location for
+      # location_id, else the key
+      def rules_for(definition, context)
+        context.map do |key, value|
+          variable = Vario.config.legacy_keys[key]
+          variable ||= key.delete_suffix('_id') if key.end_with?('_id') && definition.context.key?(key.delete_suffix('_id'))
+          { 'variable' => variable || key, 'operator' => 'is', 'value' => value.to_s }
         end
-        context
+      end
+
+      def equal_rules(rules)
+        rules.map { |rule| [rule['variable'], rule['operator'], rule['value'].to_s] }.sort
+      end
+
+      def refinements_on(vario_setting, rules)
+        vario_setting.refinements.select do |refinement|
+          refinement.conditions['match'] == 'all' && equal_rules(refinement.conditions['rules']) == equal_rules(rules)
+        end
+      end
+
+      def setting_response(record, name, context)
+        { setting: name, value: record.reload.setting(name, context) }
+      end
+    end
+
+    class << self
+      # The keys a setting takes, 1.x's: for its context roots the root
+      # (order_type) or, for a drop or a model, its id (location_id), and the
+      # legacy keys of variables in those roots (customer_id)
+      def keys_for(definition)
+        keys = definition.context.map { |root, type| type.is_a?(Symbol) ? root : "#{root}_id" }
+        keys + Vario.config.legacy_keys.select { |_key, variable| definition.context.key?(variable.split('.').first) }.keys
+      end
+
+      def value_type_for(definition)
+        case definition.type
+        when :array then Array[String]
+        when :boolean then Grape::API::Boolean
+        when :integer then Integer
+        else String
+        end
       end
     end
 
@@ -45,98 +77,97 @@ module Vario
         include m
       end
 
-      Vario.config.settable_settings[configuration[:settable].name].each do |setting_name, setting_data|
-        before do
-          [*configuration[:before]].each do |method|
-            send(method) if method.is_a?(Symbol)
-          end
-        end if configuration[:before].present?
+      before do
+        [*configuration[:before]].each do |method|
+          send(method) if method.is_a?(Symbol)
+        end
+      end if configuration[:before].present?
 
+      Vario::Topic.for(configuration[:settable]).flat_map { |topic| topic.definitions.values }.each do |definition|
+        setting_name = definition.name
         group_name, short_setting_name = setting_name.split('.', 2)
 
         next unless Vario.config.show_group?(group_name)
+
+        keys        = API.keys_for(definition)
+        description = definition.description || definition.label
+        choices     = definition.choice_values.map(&:to_s) if definition.choices.is_a?(Array)
 
         route_param :id, type: String do
           namespace configuration[:prefix] do
             namespace group_name do
               desc "Get setting value" do
-                detail "Get the setting value for #{setting_name}. Setting description: #{setting_data[:description]}"
+                detail "Get the setting value for #{setting_name}. Setting description: #{description}"
               end
               params do
-                setting_data[:keys].each do |context_key|
+                keys.each do |context_key|
                   optional context_key, type: String
                 end
               end
               scopes = [configuration[:oauth2].to_sym, "#{configuration[:oath2]}:read".to_sym] if configuration[:oauth2]
               scopes ||= nil
               get "/#{short_setting_name}", scopes: scopes do
-                record  = find_settable(declared_params[:id])
-                context = settable_setting_context(setting_name, declared_params.reject { |key, value| key == 'id' }.to_h )
+                record = find_settable(declared_params[:id])
 
-                { setting: setting_name, value: record.setting(setting_name, context) }
+                { setting: setting_name, value: record.setting(setting_name, context_params) }
               end
-
-              setting_type =
-                case setting_data[:type]
-                when :array
-                  Array[String]
-                when :boolean
-                  Boolean
-                when :integer
-                  Integer
-                else
-                  String
-                end
 
               desc "Add or change setting value" do
-                detail "Add or change setting value for #{setting_name}. Setting description: #{setting_data[:description]}"
+                detail "Add or change setting value for #{setting_name}. Setting description: #{description}"
               end
               params do
-                setting_data[:keys].each do |context_key|
+                keys.each do |context_key|
                   optional context_key, type: String, documentation: { in: 'body' }
                 end
-                requires :value, type: setting_type, values: setting_data[:collection].present? ? setting_data[:collection].map { |item| item.last.to_s } : nil, documentation: { in: 'body' }
+                requires :value, type: API.value_type_for(definition), values: choices, documentation: { in: 'body' }
               end
               scopes = [configuration[:oauth2].to_sym, "#{configuration[:oath2]}:write".to_sym] if configuration[:oauth2]
               scopes ||= nil
+              # Without keys the settable's own value, else the value of the
+              # refinement on exactly those (a new one goes first, as 1.x's
+              # levels did)
               route [:post, :put], "/#{short_setting_name}", scopes: scopes do
-                record          = find_settable(declared_params[:id])
-                context         = settable_setting_context(setting_name, declared_params.reject { |key, value| %w[id value].include?(key) }.to_h )
-                vario_setting   = record.settings.find_or_initialize_by(name: setting_name)
-                conditions_hash = context.values.compact.blank? ? {} : context
-                level           = vario_setting.levels.find { |level| conditions_hash == level.conditions_hash }
+                record        = find_settable(declared_params[:id])
+                context       = context_params
+                vario_setting = record.settings.find_or_initialize_by(name: setting_name)
 
-                if level.nil?
-                  level = Level.new(vario_setting, { conditions: context })
-                  vario_setting.levels.unshift level
+                if context.empty?
+                  vario_setting.update!(value: declared_params[:value])
+                else
+                  vario_setting.save! if vario_setting.new_record?
+                  rules      = rules_for(definition, context)
+                  refinement = refinements_on(vario_setting, rules).first
+                  refinement ||= vario_setting.refinements.build(position: :first, conditions: { 'match' => 'all', 'rules' => rules })
+                  refinement.update!(value: declared_params[:value])
                 end
 
-                level.value = declared_params[:value]
-                vario_setting.save!
-
-                { setting: setting_name, value: record.setting(setting_name, context) }
+                setting_response(record, setting_name, context)
               end
 
               desc "Remove setting value" do
-                detail "Remove setting value for #{setting_name}. Setting description: #{setting_data[:description]}"
+                detail "Remove setting value for #{setting_name}. Setting description: #{description}"
               end
               params do
-                setting_data[:keys].each do |context_key|
+                keys.each do |context_key|
                   optional context_key, type: String
                 end
               end
               scopes = [configuration[:oauth2].to_sym, "#{configuration[:oath2]}:write".to_sym] if configuration[:oauth2]
               scopes ||= nil
+              # Without keys the settable's own value, else the refinements
+              # on exactly those
               delete "/#{short_setting_name}", scopes: scopes do
-                record           = find_settable(declared_params[:id])
-                context          = settable_setting_context(setting_name, declared_params.reject { |key, value| key == 'id' }.to_h )
-                conditions_hash  = context.values.compact.blank? ? {} : context
+                record        = find_settable(declared_params[:id])
+                context       = context_params
+                vario_setting = record.settings.find_by(name: setting_name)
 
-                vario_setting = record.settings.find_or_initialize_by(name: setting_name)
-                vario_setting.levels.reject! { |level| conditions_hash == level.conditions_hash }
-                vario_setting.save!
+                if vario_setting && context.empty?
+                  vario_setting.update!(value: nil)
+                elsif vario_setting
+                  refinements_on(vario_setting, rules_for(definition, context)).each(&:destroy!)
+                end
 
-                { setting: setting_name, value: record.setting(setting_name, context) }
+                setting_response(record, setting_name, context)
               end
             end
           end
@@ -145,4 +176,3 @@ module Vario
     end
   end
 end
-

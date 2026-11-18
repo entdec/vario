@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 Vario.setup do |config|
+  config.context_default :environment, -> { Rails.env }
+
+  # 1.x's, for the settings pages until they are on topics
   config.key :environment, name: 'Environment', type: :select, collection_proc: -> { [%w[Production production], %w[Test test], %w[Development development]] }, value_proc: -> { Rails.env }
 
   config.for_settable_type 'Account' do |settable|

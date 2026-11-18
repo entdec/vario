@@ -138,11 +138,25 @@ module Vario
       # Drops the topics a reload replaced, and loads those in app/settings/
       # of the app and its engines, which register themselves as they load
       def load!
+        @loading = true
         registered.select! { |topic| topic.name && topic.name.safe_constantize.equal?(topic) }
         ([Rails.application] + Rails::Engine.subclasses.map(&:instance)).uniq.each do |engine|
           directory = engine.root.join('app/settings')
           Rails.autoloaders.main.eager_load_dir(directory) if directory.directory?
         end
+        @loading = false
+        @loaded = true
+        @when_loaded.shift.call while @when_loaded&.any?
+      ensure
+        @loading = false
+      end
+
+      # Runs the block once the topics are loaded: now, or when they are (a
+      # model may load before them, or while they load: a topic may name it)
+      def when_loaded(&block)
+        return yield if @loaded && !@loading
+
+        (@when_loaded ||= []) << block
       end
 
       # The topics of a settable, a record or its class (or all of them),

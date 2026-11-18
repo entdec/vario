@@ -35,39 +35,27 @@ module Vario
         end
       end
 
+      # What a setting is in a context (1.x's way to read it, as explain)
+      #
+      #   account.setting('shipping.cutoff_time', location_id: id, default: '13:00')
       def setting(name, context = {})
-        name = name.to_s
-        context.symbolize_keys!
-        @vario_setting_cache ||= {}
-        @vario_setting_cache[name] ||= settings.find_or_initialize_by(name: name)
-        @vario_setting_cache[name]&.value_for(context)
+        explain(name, context).value
       end
 
+      # The values of a topic's settings by their keys (1.x)
       def settings_hash(name, context = {})
-        name = name.to_s
-        context.symbolize_keys!
-        raise ArgumentError, 'Cannot request hash with a default' if context.key?(:default)
+        raise ArgumentError, 'Cannot request hash with a default' if context.key?(:default) || context.key?('default')
 
-        settings.where('name ILIKE ?', "#{name}.%").map do |vario_setting|
-          [vario_setting.name.gsub("#{name}.", ''), vario_setting.value_for(context)]
-        end.to_h.with_indifferent_access
+        TopicReader.new(self, name, context).to_h.with_indifferent_access
       end
 
-      def settings_save_unsaved
-        return unless @vario_setting_cache
+      # From 1.x, which created settings when they were read; 2.0 creates none
+      def settings_save_unsaved; end
 
-        @vario_setting_cache.each do |_key, vario_setting|
-          vario_setting.save unless vario_setting.persisted?
-        end
-      end
-
+      # From 1.x; settings are loaded once anyway
       def settings_prepopulate_cache
-        return if @vario_setting_cache
-
-        @vario_setting_cache ||= {}
-        settings.map do |vario_setting|
-          @vario_setting_cache[vario_setting.name] ||= vario_setting
-        end
+        vario_settings_by_name
+        nil
       end
     end
   end

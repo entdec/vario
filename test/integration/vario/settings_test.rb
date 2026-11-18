@@ -58,7 +58,8 @@ module Vario
       post "/settings/settings/#{setting.id}/levels", params: { level: { value: 'Secret', conditions: { environment: 'production' } } }
 
       assert_redirected_to "/settings/settings/#{setting.id}"
-      assert_equal 'Secret', @account.reload.setting('print_node.api_key', environment: 'production')
+      # The 1.x pages edit levels, which 2.0 doesn't read
+      assert_equal 'Secret', Vario::Setting.find(setting.id).value_for(environment: 'production')
     end
 
     test 'changing a level goes back to the page it was changed on' do
@@ -67,7 +68,7 @@ module Vario
       patch "/settings/settings/#{setting.id}/levels/one", params: { commit: 'save', level: { value: 'Other', conditions: { environment: 'test' } } }, headers: { 'Referer' => "http://www.example.com/accounts/#{@account.id}" }
 
       assert_redirected_to "http://www.example.com/accounts/#{@account.id}"
-      assert_equal 'Other', @account.reload.setting('print_node.api_key', environment: 'test')
+      assert_equal 'Other', Vario::Setting.find(setting.id).value_for(environment: 'test')
     end
 
     test 'deleting a level' do
