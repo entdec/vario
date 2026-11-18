@@ -1,0 +1,46 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/ruby-rails-postgres
+{
+    "name": "vario",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "app",
+    "features": {
+        "ghcr.io/devcontainers/features/node:2": {},
+        "ghcr.io/devcontainers/features/common-utils:2.7.1": {
+            "configureZshAsDefaultShell": true,
+            "installOhMyZsh": false,
+            "installOhMyZshConfig": false
+        },
+        "ghcr.io/rails/devcontainer/features/activestorage": {},
+        "ghcr.io/rails/devcontainer/features/postgres-client": {
+            "version": "18"
+        },
+        "ghcr.io/devcontainers/features/github-cli:1": {},
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {
+            "moby": false
+        },
+        // Your own tools from ~/.config/de/config.json, written by bin/de
+        // initialize, see https://github.com/tdegrunt/de#your-own-tools
+        "./de-host": {}
+    },
+    "mounts": [
+        "source=/run/host-services/ssh-auth.sock,target=/ssh-agent,type=bind,consistency=cached",
+        "source=${localEnv:HOME}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,consistency=cached"
+    ],
+    "initializeCommand": "bin/de initialize",
+    // Closing the editor leaves the environment running, bin/de down stops it
+    "shutdownAction": "none",
+    "postStartCommand": ".devcontainer/postStart.sh",
+    "containerEnv": {
+        "VISUAL": "vi",
+        "SSH_AUTH_SOCK": "/ssh-agent"
+    },
+    "remoteEnv": {
+        // The repository's bin/, so `rails test` works in terminals
+        "PATH": "${containerWorkspaceFolder}/bin:${containerEnv:PATH}"
+    },
+    "customizations": {},
+    // Where docker-compose.yml mounts this checkout, see env_init in bin/de.
+    // /workspaces/vario links here too, but only once the container runs.
+    "workspaceFolder": "/workspaces${localWorkspaceFolder}"
+}
