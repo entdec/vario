@@ -43,6 +43,8 @@ en:
         then: then
         value: Value
         note: Note
+      values:
+        title: Settings
       update:
         saved: The settings have been saved.
         not_saved: The settings couldn't be saved.

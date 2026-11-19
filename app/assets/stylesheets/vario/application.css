@@ -244,3 +244,12 @@
 .vario-applies__table tbody th {
   @apply font-medium text-gray-900 dark:text-white;
 }
+
+/* Settings on a page of the host's (values/_form) */
+.vario-values {
+  @apply flex flex-col gap-8;
+}
+
+.vario-values__actions {
+  @apply flex justify-end;
+}

@@ -2,30 +2,30 @@
 
 module Vario
   module ActionViewHelpers
+    # Settings on a page of the host's, as 1.x's: those of a settable, with
+    # a context, the values on exactly that (customer_id: 5, as the API's),
+    # else its own values. A form per settable, back to the page when saved.
+    #
+    #   <%= render_vario_settings(Current.account, 'allocation.auto_allocate', 'shipping.partial_shipping', { customer_id: @customer.id }) %>
+    #   <%= render_vario_settings([account, 'hide_couriers'], [account, 'print_node.api_key']) %>
     def render_vario_settings(*args)
-      settings_with_contexts = []
-
       args = [args] unless args.first.is_a?(Array)
-      args.each do |argument_set|
-        settable = argument_set.first
 
-        if argument_set.last.is_a?(Hash)
-          setting_names = argument_set[1..-2]
-          context       = argument_set.last
-        else
-          setting_names = argument_set[1..-1]
-          context       = {}
+      safe_join(args.map do |settable, *names|
+        context = names.last.is_a?(Hash) ? names.pop : {}
+        context = context.to_h { |key, value| [key.to_s, value.to_s] }
+        definitions = names.map do |name|
+          definition = Topic.definition(settable, name)
+          raise UnknownSetting, "Setting '#{name}' is not defined for #{settable.class.name}" unless definition
+
+          unknown = context.keys - definition.legacy_keys
+          raise ArgumentError, "Setting '#{name}' doesn't take #{unknown.join(', ')}" if unknown.any?
+
+          definition
         end
 
-        Vario.config.pre_create_settings(settable)
-        settable.settings.where(name: setting_names).each do |setting|
-          settings_with_contexts << { setting: setting, context: context }
-        end
-      end
-
-      render partial: 'vario/settings/settings', locals: {
-        settings_with_contexts: settings_with_contexts
-      }
+        render 'vario/values/form', settable: settable, definitions: definitions, context: context
+      end)
     end
 
     # The control for a setting's own value, or a refinement's, by the

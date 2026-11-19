@@ -27,22 +27,6 @@ module Vario
         declared_params.except('id', 'value').to_h.compact_blank
       end
 
-      # The rules of a refinement on exactly those keys, as the variables
-      # they are now
-      def rules_for(definition, context)
-        context.map { |key, value| { 'variable' => definition.variable_for(key), 'operator' => 'is', 'value' => value.to_s } }
-      end
-
-      def equal_rules(rules)
-        rules.map { |rule| [rule['variable'], rule['operator'], rule['value'].to_s] }.sort
-      end
-
-      def refinements_on(vario_setting, rules)
-        vario_setting.refinements.select do |refinement|
-          refinement.conditions['match'] == 'all' && equal_rules(refinement.conditions['rules']) == equal_rules(rules)
-        end
-      end
-
       def setting_response(record, name, context)
         { setting: name, value: record.reload.setting(name, context) }
       end
@@ -118,15 +102,7 @@ module Vario
                 context       = context_params
                 vario_setting = record.settings.find_or_initialize_by(name: setting_name)
 
-                if context.empty?
-                  vario_setting.update!(value: declared_params[:value])
-                else
-                  vario_setting.save! if vario_setting.new_record?
-                  rules      = rules_for(definition, context)
-                  refinement = refinements_on(vario_setting, rules).first
-                  refinement ||= vario_setting.refinements.build(position: :first, conditions: { 'match' => 'all', 'rules' => rules })
-                  refinement.update!(value: declared_params[:value])
-                end
+                vario_setting.value_on!(context, declared_params[:value])
 
                 setting_response(record, setting_name, context)
               end
@@ -148,11 +124,7 @@ module Vario
                 context       = context_params
                 vario_setting = record.settings.find_by(name: setting_name)
 
-                if vario_setting && context.empty?
-                  vario_setting.update!(value: nil)
-                elsif vario_setting
-                  refinements_on(vario_setting, rules_for(definition, context)).each(&:destroy!)
-                end
+                vario_setting&.value_on!(context, nil)
 
                 setting_response(record, setting_name, context)
               end

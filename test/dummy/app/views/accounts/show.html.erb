@@ -1,2 +1,7 @@
 <h1><%= @account.name %></h1>
 <%= render_vario_settings(@account, 'hide_couriers', 'print_node.api_key') %>
+
+<% if (product = Product.order(:name).first) %>
+  <h2>For <%= product.name %></h2>
+  <%= render_vario_settings(@account, 'examples.quantity', 'examples.enabled', { product_id: product.id }) %>
+<% end %>

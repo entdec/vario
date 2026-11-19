@@ -10,13 +10,6 @@ Vario::Engine.routes.draw do
     end
   end
 
-  # 1.x's pages, until they go
-  resources :settings do
-    get :levels, on: :member
-    resources :levels do
-      member do
-        patch :move
-      end
-    end
-  end
+  # Settings on a page of the host's (render_vario_settings)
+  resource :values, only: :update
 end

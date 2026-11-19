@@ -26,6 +26,12 @@ module Vario
       @config = Vario::Config.new
       yield config
     end
+
+    # Signs what a page of the host's gives the settings it renders
+    # (render_vario_settings)
+    def verifier
+      Rails.application.message_verifier('vario/values')
+    end
   end
 
   # Include helpers

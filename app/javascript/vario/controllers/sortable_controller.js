@@ -1,12 +1,11 @@
 import { Controller } from "@hotwired/stimulus"
 
 // A list whose items are dragged by their handle to another place, with the
-// browser's own drag and drop. The item's URL then gets a PATCH with its new
-// index among the items: {"index": 2}. Without one, the list fires
-// vario--sortable:sorted, for a form that saves the order itself.
+// browser's own drag and drop. Dropped, the list fires vario--sortable:sorted,
+// for the form that saves the order (vario--refinements numbers them).
 //
 //   div data-controller="vario--sortable"
-//     div data-vario--sortable-target="item" data-url="/settings/1/levels/2/move"
+//     div data-vario--sortable-target="item"
 //       button data-vario--sortable-target="handle"
 export default class extends Controller {
   static targets = ["item", "handle"]
@@ -33,7 +32,7 @@ export default class extends Controller {
       this.origin = [item.parentNode, item.nextSibling]
       event.dataTransfer.effectAllowed = "move"
     })
-    // Dropped elsewhere: back where it was, as nothing was saved
+    // Dropped elsewhere: back where it was
     item.addEventListener("dragend", () => {
       if (!this.dropped) this.origin[0].insertBefore(item, this.origin[1])
       item.draggable = false
@@ -57,19 +56,6 @@ export default class extends Controller {
 
     event.preventDefault()
     this.dropped = true
-    const item = this.dragged
-    if (!item.dataset.url) return this.dispatch("sorted", { detail: { item } })
-
-    fetch(item.dataset.url, {
-      method: "PATCH",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "X-CSRF-Token": document.querySelector("meta[name=csrf-token]")?.content,
-      },
-      body: JSON.stringify({ index: this.itemTargets.indexOf(item) }),
-    }).then((response) => {
-      if (!response.ok) window.alert(this.element.dataset.errorMessage)
-    })
+    this.dispatch("sorted", { detail: { item: this.dragged } })
   }
 }

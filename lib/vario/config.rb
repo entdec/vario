@@ -121,14 +121,5 @@ module Vario
     def default_keys?(settable_type)
       settable_types.dig(settable_type, :default_keys) || []
     end
-
-    def pre_create_settings(settable)
-      return unless settable_settings[settable.class.name]
-
-      settable_settings[settable.class.name].keys.each do |key|
-        s = settable.settings.find_or_initialize_by(name: key)
-        s.save unless s.persisted?
-      end
-    end
   end
 end

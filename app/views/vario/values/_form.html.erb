@@ -1,0 +1,20 @@
+<%# Settings on a page of the host's (render_vario_settings): the values on exactly its context, or its own %>
+<%= vario_card :vario_settings, title: t('vario.pages.values.title'), icon: 'fal fa-sliders' do %>
+  <%= form_with url: vario.values_path, method: :patch, builder: FormComponents::FormBuilder, class: 'vario-values' do |form| %>
+    <%= hidden_field_tag :settable, settable.to_sgid(for: 'Vario').to_s, id: nil %>
+    <%= hidden_field_tag :context, Vario.verifier.generate(context), id: nil %>
+    <% definitions.each do |definition| %>
+      <% setting = settable.vario_settings_by_name[definition.name] %>
+      <% object = context.empty? ? setting : setting&.refinement_on(context) %>
+      <% object ||= context.empty? ? Vario::Setting.new(name: definition.name, settable: settable) : Vario::Refinement.new %>
+      <%= fields_for "values[#{definition.name}]", object, builder: FormComponents::FormBuilder do |f| %>
+        <%= f.fieldset definition.label, description: definition.description, legend_position: :beside, id: "vario_value_#{definition.name.parameterize(separator: '_')}" do %>
+          <%= vario_value_field(f, definition, settable) %>
+        <% end %>
+      <% end %>
+    <% end %>
+    <div class="vario-values__actions">
+      <%= form.submit t('vario.pages.show.save'), class: 'vario-button vario-button--primary' %>
+    </div>
+  <% end %>
+<% end %>

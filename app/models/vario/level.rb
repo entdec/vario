@@ -38,11 +38,6 @@ module Vario
       set_conditions.map { |c| [c.key.to_sym, c.value] }.to_h
     end
 
-    # The conditions' values as an object, for the form's fields_for
-    def condition_values
-      ConditionValues.new(conditions.to_h { |condition| [condition.key.to_s, condition.value] })
-    end
-
     def with_context_values?(context)
       context.each do |key, value|
         condition = conditions.find { |condition| condition.key == key.to_s }
@@ -94,24 +89,6 @@ module Vario
 
     def persisted?
       !@new_record
-    end
-
-    # A reader per condition key, and the model API FormComponents' fields
-    # ask their object for (validators, errors)
-    class ConditionValues
-      include ActiveModel::Model
-
-      def initialize(values)
-        @values = values
-      end
-
-      def respond_to_missing?(name, include_private = false)
-        @values.key?(name.to_s) || super
-      end
-
-      def method_missing(name, *args)
-        @values.key?(name.to_s) ? @values[name.to_s] : super
-      end
     end
   end
 end

@@ -36,6 +36,43 @@ module Vario
       super(value.is_a?(ActiveRecord::Base) ? value.id : value)
     end
 
+    # The value on exactly a context (1.x's keys: customer_id: 5), as a
+    # refinement with an is rule per key: without keys its own value. A new
+    # refinement goes first, as 1.x's levels did; nothing removes it.
+    #
+    #   setting.value_on!({ 'customer_id' => '5' }, 'false')
+    def value_on!(context, value)
+      transaction do
+        next update!(value: value) if context.empty?
+
+        save! if new_record?
+        refinement = refinement_on(context)
+        if Types.blank?(value)
+          refinement&.destroy!
+        else
+          refinement ||= refinements.build(position: :first, conditions: { 'match' => 'all', 'rules' => rules_on(context) })
+          refinement.update!(value: value)
+        end
+      end
+    end
+
+    # The refinement whose rules are exactly an is per key of a context
+    def refinement_on(context)
+      expected = Setting.equal_rules(rules_on(context))
+      refinements.find do |refinement|
+        conditions = refinement.conditions.to_h.stringify_keys
+        conditions['match'] == 'all' && Setting.equal_rules(conditions['rules']) == expected
+      end
+    end
+
+    def rules_on(context)
+      context.map { |key, value| { 'variable' => definition.variable_for(key), 'operator' => 'is', 'value' => value.to_s } }
+    end
+
+    def self.equal_rules(rules)
+      Array(rules).map { |rule| rule.to_h.stringify_keys.values_at('variable', 'operator', 'value').tap { |values| values[2] = values[2].to_s } }.sort
+    end
+
     def group_name
       return nil if name.blank?
 

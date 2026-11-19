@@ -43,6 +43,8 @@ nl:
         then: dan
         value: Waarde
         note: Notitie
+      values:
+        title: Instellingen
       update:
         saved: De instellingen zijn opgeslagen.
         not_saved: De instellingen konden niet worden opgeslagen.

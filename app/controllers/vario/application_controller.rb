@@ -8,8 +8,18 @@ module Vario
       method(:add_breadcrumbs).super_method&.call(*args)
     end
 
-    def breadcrumb_settings_path(setting, options  = {})
-      settings_path(options.merge(settable: setting.settable.to_sgid(for: 'Vario').to_s))
+    private
+
+    # A topic of a settable's policy (Vario::TopicPolicy)
+    def policy(topic)
+      Pundit.policy!(vario_user, topic)
+    end
+
+    # The host's Pundit user, else its current user
+    def vario_user
+      return pundit_user if respond_to?(:pundit_user, true)
+
+      current_user if respond_to?(:current_user, true)
     end
   end
 end

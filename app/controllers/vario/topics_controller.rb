@@ -126,16 +126,5 @@ module Vario
       rules = conditions['rules'].to_h.values.map { |rule| rule.to_h.slice('variable', 'operator', 'value', 'value_to') }
       { 'match' => conditions['match'].presence || 'all', 'rules' => rules.reject { |rule| rule['variable'].blank? } }
     end
-
-    def policy(topic)
-      Pundit.policy!(vario_user, topic)
-    end
-
-    # The host's Pundit user, else its current user
-    def vario_user
-      return pundit_user if respond_to?(:pundit_user, true)
-
-      current_user if respond_to?(:current_user, true)
-    end
   end
 end
