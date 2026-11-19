@@ -21,7 +21,7 @@ module Vario
         end
       end
 
-      redirect_back_or_to topics_path(settable: params[:settable]), notice: t('vario.pages.update.saved')
+      redirect_back_or_to topics_path, notice: t('vario.pages.update.saved')
     end
   end
 end

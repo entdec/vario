@@ -4,14 +4,14 @@
   <ul class="vario-topics__list">
     <% topics.each do |topic| %>
       <li data-vario--search-target="topic" data-keywords="<%= topic.title %>">
-        <%= link_to topic_path(topic.key, settable: params[:settable]), class: 'vario-topics__link', aria: { current: (topic == current ? 'page' : nil) } do %>
+        <%= link_to topic_path(topic.key), class: 'vario-topics__link', aria: { current: (topic == current ? 'page' : nil) } do %>
           <% if topic.topic.icon %><i class="<%= topic.topic.icon %> fa-fw" aria-hidden="true"></i><% end %>
           <span><%= topic.title %></span>
         <% end %>
         <ul class="vario-topics__settings">
           <% topic.topic.definitions.each_value do |definition| %>
             <li hidden data-vario--search-target="setting" data-keywords="<%= [definition.label, definition.description].compact.join(' ') %>">
-              <%= link_to definition.label, topic_path(topic.key, settable: params[:settable], anchor: "setting_#{definition.key}"), class: 'vario-topics__setting' %>
+              <%= link_to definition.label, topic_path(topic.key, anchor: "setting_#{definition.key}"), class: 'vario-topics__setting' %>
             </li>
           <% end %>
         </ul>

@@ -5,7 +5,6 @@
   <p class="vario-applies__intro"><%= t('vario.pages.applies.intro') %></p>
 
   <%= form_with url: topic_path(topic.key), method: :get, builder: FormComponents::FormBuilder, scope: :applies, class: 'vario-applies__form', data: { turbo: false } do |form| %>
-    <%= hidden_field_tag :settable, params[:settable], id: nil %>
     <% topic.topic.context.each_key do |root| %>
       <% label = variables.describe(root).first %>
       <% model = variables.model(root) %>

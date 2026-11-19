@@ -1,7 +1,7 @@
 <%# A setting's refinements: the first enabled one whose conditions are met gives its value. In order of priority, dragged by their handles; closed to a line until opened %>
 <% variables = Vario::ContextVariables.new(definition.context) %>
-<% urls = { variables_url: variables_topic_path(topic.key, settable: params[:settable], setting: definition.key),
-            records_url: records_topic_path(topic.key, settable: params[:settable], setting: definition.key) } %>
+<% urls = { variables_url: variables_topic_path(topic.key, setting: definition.key),
+            records_url: records_topic_path(topic.key, setting: definition.key) } %>
 <div class="vario-refinements" data-controller="vario--refinements vario--sortable"
      data-action="vario--sortable:sorted->vario--refinements#renumber nested-form:add->vario--refinements#renumber nested-form:remove->vario--refinements#renumber">
   <p class="vario-refinements__head">

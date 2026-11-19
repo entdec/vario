@@ -8,6 +8,7 @@ class AccountsController < ApplicationController
   end
   def show
     @account = Account.find(params[:id])
+    session[:account_id] = @account.id
   end
   def index
     @accounts = Account.order(:name)

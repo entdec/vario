@@ -98,6 +98,10 @@ module Vario
       @logger.is_a?(Proc) ? instance_exec(&@logger) : @logger
     end
 
+    # The settable whose topics the settings pages show, which is always the
+    # current one:
+    #
+    #   config.current_settable = -> { Current.account }
     def current_settable
       @current_settable.is_a?(Proc) ? instance_exec(&@current_settable) : @current_settable
     end

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 Vario.setup do |config|
+  config.current_settable = -> { Current.account }
   config.context_default :environment, -> { Rails.env }
 
   # 1.x's, for its Setting#value_for in the parity suite

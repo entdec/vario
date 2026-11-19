@@ -1,4 +1,4 @@
 <%= link_to 'New account', new_account_path %>
 <% @accounts.each do |account| %>
-  <p><%= account.name %> (<%= link_to 'Settings', vario.topics_path(settable: account.to_sgid(for: 'Vario').to_s) %>)</p>
+  <p><%= link_to account.name, account_path(account) %></p>
 <% end %>

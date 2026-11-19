@@ -7,19 +7,21 @@ module Vario
     # Hidden from everyone, and one that can be seen but not changed
     setup do
       @account = accounts(:boxture)
-      @settable = @account.to_sgid(for: 'Vario').to_s
+      @current_settable = Vario.config.instance_variable_get(:@current_settable)
+      Vario.config.current_settable = @account
 
       Object.const_set(:GeneralSettingsPolicy, Class.new(TopicPolicy) { def show? = false })
       Object.const_set(:PrintNodeSettingsPolicy, Class.new(TopicPolicy) { def update? = false })
     end
 
     teardown do
+      Vario.config.current_settable = @current_settable
       Object.send(:remove_const, :GeneralSettingsPolicy)
       Object.send(:remove_const, :PrintNodeSettingsPolicy)
     end
 
     def path(key = nil)
-      ["/settings/topics", key].compact.join('/') + "?settable=#{CGI.escape(@settable)}"
+      ["/settings/topics", key].compact.join('/')
     end
 
     def save(settings)
@@ -122,15 +124,15 @@ module Vario
     end
 
     test "the variables a setting's refinements can look at, and an object's records" do
-      get "/settings/topics/examples/variables?settable=#{CGI.escape(@settable)}&setting=quantity&path="
+      get "/settings/topics/examples/variables?setting=quantity&path="
       assert_equal [%w[environment string], %w[product object]], response.parsed_body['variables'].map { |variable| variable.values_at('name', 'type') }
 
-      get "/settings/topics/examples/records?settable=#{CGI.escape(@settable)}&setting=quantity&path=product"
+      get "/settings/topics/examples/records?setting=quantity&path=product"
       assert_equal %w[Apple Lemon Orange], response.parsed_body['records'].map { |record| record['label'] }.sort
 
-      get "/settings/topics/examples/records?settable=#{CGI.escape(@settable)}&setting=quantity&path=environment"
+      get "/settings/topics/examples/records?setting=quantity&path=environment"
       assert_response :not_found
-      get "/settings/topics/examples/variables?settable=#{CGI.escape(@settable)}&setting=nothing&path="
+      get "/settings/topics/examples/variables?setting=nothing&path="
       assert_response :not_found
     end
 
@@ -178,7 +180,7 @@ module Vario
       assert_select '#applies input[name="applies[environment]"]'
       assert_select '.vario-applies__table', count: 0
 
-      get path('examples') + "&applies[product]=#{apple.id}&applies[environment]="
+      get path('examples') + "?applies[product]=#{apple.id}&applies[environment]="
 
       assert_select '#applies select[name="applies[product]"] option[selected]', text: 'Apple'
       rows = css_select('.vario-applies__table tbody tr').to_h { |row| [row.at('th').text, row.css('td').map { |cell| cell.text.strip }] }
@@ -188,8 +190,18 @@ module Vario
       assert_equal ['Nothing', 'The default'], rows['Price']
     end
 
-    test 'an unknown settable' do
-      @settable = 'nothing'
+    test "the app's current settable: the account last shown" do
+      Vario.config.current_settable = @current_settable
+      @account.settings.create!(name: 'examples.quantity', value: 3)
+
+      get "/accounts/#{@account.id}"
+      get path('examples')
+
+      assert_select 'fieldset#setting_quantity input[name="settings[quantity][value]"][value="3"]'
+    end
+
+    test 'without a current settable' do
+      Vario.config.current_settable = nil
       get path('examples')
 
       assert_response :not_found

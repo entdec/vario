@@ -10,7 +10,7 @@ module Vario
 
     def index
       topic = @topics.first
-      return redirect_to topic_path(topic.key, settable: params[:settable]) if topic
+      return redirect_to topic_path(topic.key) if topic
 
       render :index
     end
@@ -30,7 +30,7 @@ module Vario
       end
 
       if save(@settings.values)
-        redirect_to topic_path(@topic.key, settable: params[:settable]), notice: t('vario.pages.update.saved')
+        redirect_to topic_path(@topic.key), notice: t('vario.pages.update.saved')
       else
         flash.now[:alert] = t('vario.pages.update.not_saved')
         render :show, status: :unprocessable_content
@@ -70,9 +70,10 @@ module Vario
       raise ActiveRecord::RecordNotFound, "Unknown setting #{params[:setting]}" unless @definition
     end
 
+    # config.current_settable: the pages are always the current one's (account)
     def set_settable
-      @settable = GlobalID::Locator.locate_signed(params[:settable], for: 'Vario')
-      raise ActiveRecord::RecordNotFound, 'Unknown settable' unless @settable
+      @settable = Vario.config.current_settable
+      raise ActiveRecord::RecordNotFound, 'No current settable' unless @settable
 
       @topics = Topic.for(@settable).map { |topic| SettableTopic.new(settable: @settable, topic: topic) }.select { |topic| policy(topic).show? }
     end

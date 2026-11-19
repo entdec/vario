@@ -1,4 +1,5 @@
 <h1><%= @account.name %></h1>
+<p><%= link_to 'All settings', vario.topics_path %></p>
 <%= render_vario_settings(@account, 'hide_couriers', 'print_node.api_key') %>
 
 <% if (product = Product.order(:name).first) %>

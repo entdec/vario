@@ -26,10 +26,18 @@ Next add vario to your routes.rb:
   mount Vario::Engine, at: "/settings", as: "vario"
 ```
 
+The settings pages show the topics of the current settable, which you set in the initializer:
+
+```ruby
+Vario.setup do |config|
+  config.current_settable = -> { Current.account }
+end
+```
+
 Then add a menu entry, or link to the settings page:
 
 ```ruby
-link_to("Settings", vario.settings_path(settable: Current&.account&.to_sgid(for: "Vario").to_s))
+link_to("Settings", vario.topics_path)
 ```
 
 The settings pages need importmap-rails, Propshaft and Tailwind CSS 4 through tailwindcss-rails 4.3 or later (for engine support), and [FormComponents](https://github.com/entdec/form_components) for their forms, a dependency from GitHub: add `gem "form_components", github: "entdec/form_components"` to your Gemfile. Import Vario's JavaScript, which uses your app's Stimulus application (`window.Stimulus`) or starts one, and register FormComponents' controllers with it:
