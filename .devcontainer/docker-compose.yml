@@ -24,6 +24,9 @@ services:
       # The global gitignore. Here, not in devcontainer.json, which drops
       # readonly from its mounts.
       - ${ENV_GIT_CONFIG_DIR}:/home/vscode/.config/git:ro
+      # Until its record rules are released: the view_components checkout next
+      # to this one, for the path: gem in the Gemfile
+      - ${ENV_PATH}/../view_components:/workspaces/view_components:ro
 
     environment:
       DEV_ENV_NAME: ${ENV_NAME}

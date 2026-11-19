@@ -15,11 +15,13 @@ Gem::Specification.new do |s|
 
   s.files = Dir['{app,config,db,lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
 
+  s.add_runtime_dependency 'entdec-view_components', '>= 0.1'
   s.add_runtime_dependency 'form_components', '>= 0.1.9'
   s.add_runtime_dependency 'grape'
   s.add_runtime_dependency 'grape-swagger', '>= 0.33'
   s.add_runtime_dependency 'importmap-rails', '>= 2'
   s.add_runtime_dependency 'liquid', '>= 5.5', '< 6'
+  s.add_runtime_dependency 'liquidum', '>= 1.3'
   s.add_runtime_dependency 'positioning', '~> 0.4'
   s.add_runtime_dependency 'pundit', '>= 2.3'
   s.add_runtime_dependency 'rails', '>= 7.1'

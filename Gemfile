@@ -15,6 +15,9 @@ gemspec
 # To use a debugger
 # gem 'byebug', group: [:development, :test]
 gem "form_components", entdec: "form_components"
+# Its record rules aren't released yet: the checkout next to this one,
+# mounted in the devcontainer (.devcontainer/docker-compose.yml)
+gem "entdec-view_components", path: "/workspaces/view_components"
 
 # The dummy app's server and assets
 gem "puma"
