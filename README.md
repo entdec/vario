@@ -40,6 +40,16 @@ Then add a menu entry, or link to the settings page:
 link_to("Settings", vario.topics_path)
 ```
 
+The pages render in your layout (`config.admin_layout`), with their topics listed beside the topic page. When your own menu lists the topics instead, set `config.layout = :host` and add them to it: `vario_menu_items` adds an item per topic the user may see, with a label, icon and link, and the topic's setting labels and descriptions as the link's `data-keywords`, for a menu that searches:
+
+```ruby
+Menus::Builder.build(:settings) do |m|
+  m.group :settings do
+    vario_menu_items(m) # the current settable's; vario_menu_items(m, account) for another
+  end
+end
+```
+
 The settings pages need importmap-rails, Propshaft and Tailwind CSS 4 through tailwindcss-rails 4.3 or later (for engine support), and [FormComponents](https://github.com/entdec/form_components) for their forms, a dependency from GitHub: add `gem "form_components", github: "entdec/form_components"` to your Gemfile. Import Vario's JavaScript, which uses your app's Stimulus application (`window.Stimulus`) or starts one, and register FormComponents' controllers with it:
 
 ```js

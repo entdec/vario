@@ -2,7 +2,7 @@ module Vario
   class Config
     attr_writer :logger, :current_settable
     attr_reader :keys, :settable_types, :settable_settings, :context_defaults, :legacy_keys
-    attr_accessor :base_controller, :admin_layout, :topic_policy
+    attr_accessor :base_controller, :admin_layout, :topic_policy, :layout
 
     def initialize
       @logger               = Logger.new(STDOUT)
@@ -18,6 +18,14 @@ module Vario
       @context_defaults = {}
       @legacy_keys = {}
       @topic_policy = 'Vario::TopicPolicy'
+      @layout = :standalone
+    end
+
+    # How the settings pages sit in the host's layout (admin_layout):
+    # :standalone with their topics listed beside the topic page, :host
+    # without, for a host whose own menu lists them (vario_menu_items)
+    def standalone?
+      layout == :standalone
     end
 
     # The value of a context root when a setting is read without it, for the

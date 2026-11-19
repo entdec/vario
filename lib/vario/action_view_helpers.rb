@@ -2,6 +2,23 @@
 
 module Vario
   module ActionViewHelpers
+    # The settings topics the user may see, as items of the host's menu
+    # (Menus::Builder's, with config.layout = :host): their settings'
+    # labels and descriptions as the link's keywords, for its search.
+    #
+    #   m.group :settings do
+    #     vario_menu_items(m)
+    #   end
+    def vario_menu_items(menu, settable = Vario.config.current_settable)
+      return unless settable
+
+      SettableTopic.visible(settable, SettableTopic.user_of(controller)).each do |topic|
+        keywords = topic.topic.definitions.values.flat_map { |definition| [definition.label, definition.description] }.compact.join(' ')
+        menu.item :"vario_#{topic.key}", label: topic.title, icon: topic.topic.icon, link: vario.topic_path(topic.key),
+                                         link_attributes: { data: { keywords: keywords } }
+      end
+    end
+
     # Settings on a page of the host's, as 1.x's: those of a settable, with
     # a context, the values on exactly that (customer_id: 5, as the API's),
     # else its own values. A form per settable, back to the page when saved.

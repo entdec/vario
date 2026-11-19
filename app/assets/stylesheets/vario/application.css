@@ -102,6 +102,11 @@
   @apply grid gap-6 md:grid-cols-[14rem_1fr];
 }
 
+/* config.layout = :host: the host's menu lists the topics */
+.vario-topics--host {
+  @apply md:grid-cols-1;
+}
+
 .vario-topics__nav {
   @apply flex flex-col gap-2 md:sticky md:top-4 md:max-h-[calc(100vh-2rem)] md:self-start md:overflow-y-auto;
 }

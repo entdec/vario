@@ -4,8 +4,8 @@ Rails.application.routes.draw do
   resources :accounts
   resources :products
 
-  # The engine has no root: its index needs a settable, the first account's here
-  get '/settings', to: redirect { Vario::Engine.routes.url_helpers.topics_path(settable: Account.order(:name).first&.to_sgid(for: 'Vario').to_s) }
+  # The engine has no root: its topics are
+  get '/settings', to: redirect('/settings/topics')
   mount Vario::Engine, at: '/settings', as: 'vario'
   mount Api, at: '/api'
 end

@@ -1,5 +1,5 @@
-<div class="vario-topics">
-  <%= render 'vario/topics/nav', topics: @topics, current: @topic %>
+<div class="vario-topics<%= ' vario-topics--host' unless Vario.config.standalone? %>">
+  <%= render 'vario/topics/nav', topics: @topics, current: @topic if Vario.config.standalone? %>
 
   <main class="vario-topic">
     <%= form_with url: topic_path(@topic.key), method: :patch, builder: FormComponents::FormBuilder,

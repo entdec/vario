@@ -75,7 +75,7 @@ module Vario
       @settable = Vario.config.current_settable
       raise ActiveRecord::RecordNotFound, 'No current settable' unless @settable
 
-      @topics = Topic.for(@settable).map { |topic| SettableTopic.new(settable: @settable, topic: topic) }.select { |topic| policy(topic).show? }
+      @topics = SettableTopic.visible(@settable, vario_user)
     end
 
     def set_topic

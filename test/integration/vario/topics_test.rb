@@ -200,6 +200,17 @@ module Vario
       assert_select 'fieldset#setting_quantity input[name="settings[quantity][value]"][value="3"]'
     end
 
+    test 'in the host layout (config.layout = :host): the topic page, without the topics, which its menu lists' do
+      Vario.config.layout = :host
+      get path('examples')
+
+      assert_select '.vario-topics--host'
+      assert_select '.vario-topics__nav', count: 0
+      assert_select 'fieldset#setting_quantity'
+    ensure
+      Vario.config.layout = :standalone
+    end
+
     test 'without a current settable' do
       Vario.config.current_settable = nil
       get path('examples')

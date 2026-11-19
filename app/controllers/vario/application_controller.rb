@@ -15,11 +15,8 @@ module Vario
       Pundit.policy!(vario_user, topic)
     end
 
-    # The host's Pundit user, else its current user
     def vario_user
-      return pundit_user if respond_to?(:pundit_user, true)
-
-      current_user if respond_to?(:current_user, true)
+      SettableTopic.user_of(self)
     end
   end
 end
