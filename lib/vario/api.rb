@@ -28,14 +28,9 @@ module Vario
       end
 
       # The rules of a refinement on exactly those keys, as the variables
-      # they are: a legacy key's (config.legacy_key), location for
-      # location_id, else the key
+      # they are now
       def rules_for(definition, context)
-        context.map do |key, value|
-          variable = Vario.config.legacy_keys[key]
-          variable ||= key.delete_suffix('_id') if key.end_with?('_id') && definition.context.key?(key.delete_suffix('_id'))
-          { 'variable' => variable || key, 'operator' => 'is', 'value' => value.to_s }
-        end
+        context.map { |key, value| { 'variable' => definition.variable_for(key), 'operator' => 'is', 'value' => value.to_s } }
       end
 
       def equal_rules(rules)
@@ -54,14 +49,6 @@ module Vario
     end
 
     class << self
-      # The keys a setting takes, 1.x's: for its context roots the root
-      # (order_type) or, for a drop or a model, its id (location_id), and the
-      # legacy keys of variables in those roots (customer_id)
-      def keys_for(definition)
-        keys = definition.context.map { |root, type| type.is_a?(Symbol) ? root : "#{root}_id" }
-        keys + Vario.config.legacy_keys.select { |_key, variable| definition.context.key?(variable.split('.').first) }.keys
-      end
-
       def value_type_for(definition)
         case definition.type
         when :array then Array[String]
@@ -89,7 +76,7 @@ module Vario
 
         next unless Vario.config.show_group?(group_name)
 
-        keys        = API.keys_for(definition)
+        keys        = definition.legacy_keys
         description = definition.description || definition.label
         choices     = definition.choice_values.map(&:to_s) if definition.choices.is_a?(Array)
 

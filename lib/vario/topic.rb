@@ -109,6 +109,22 @@ module Vario
         @context ? topic.context.slice(*@context) : topic.context
       end
 
+      # 1.x's keys it takes: for its context roots the root (order_type) or,
+      # for a drop or a model, its id (location_id), and the legacy keys of
+      # variables in those roots (customer_id)
+      def legacy_keys
+        keys = context.map { |root, type| type.is_a?(Symbol) ? root : "#{root}_id" }
+        keys + Vario.config.legacy_keys.select { |_key, variable| context.key?(variable.split('.').first) }.keys
+      end
+
+      # The variable a 1.x key is now: a legacy key's (config.legacy_key),
+      # location for location_id when location is a root, else the key
+      def variable_for(key)
+        key = key.to_s
+        root = key.delete_suffix('_id')
+        Vario.config.legacy_keys[key] || (key.end_with?('_id') && context.key?(root) ? root : key)
+      end
+
       def label
         I18n.t(:label, scope: i18n_scope, default: key.humanize)
       end

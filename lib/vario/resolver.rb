@@ -40,12 +40,13 @@ module Vario
     private
 
     # The context the refinements look at: as given, with the default of the
-    # setting's context roots that aren't (config.context_default), and 1.x's
-    # keys at the variables they are now (config.legacy_key)
+    # setting's context roots it hasn't or that are nil, as 1.x's value_proc
+    # (config.context_default), and 1.x's keys at the variables they are now
+    # (config.legacy_key)
     def assigns(definition, context)
       definition.context.each_key do |root|
         default = Vario.config.context_defaults[root]
-        context[root] = default.respond_to?(:call) ? default.call : default if default && !context.key?(root)
+        context[root] = default.respond_to?(:call) ? default.call : default if default && context[root].nil?
       end
 
       Vario.config.legacy_keys.each do |key, variable|

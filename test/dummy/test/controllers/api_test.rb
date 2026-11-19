@@ -128,8 +128,8 @@ class ApiTest < ActiveSupport::TestCase
     Vario.config.legacy_key :product_code, 'product.code'
     Vario.config.legacy_key :customer_id, 'order.customer'
 
-    assert_equal %w[environment product_id product_code], Vario::API.keys_for(Vario::Topic.definition(Account, 'examples.quantity'))
-    assert_equal [], Vario::API.keys_for(Vario::Topic.definition(Account, 'hide_couriers'))
+    assert_equal %w[environment product_id product_code], Vario::Topic.definition(Account, 'examples.quantity').legacy_keys
+    assert_equal [], Vario::Topic.definition(Account, 'hide_couriers').legacy_keys
   ensure
     Vario.config.legacy_keys.replace(legacy_keys)
   end

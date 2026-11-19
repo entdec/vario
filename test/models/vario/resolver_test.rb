@@ -88,6 +88,7 @@ module Vario
       @account.reload
 
       assert_equal 10, @account.explain('examples.quantity').value
+      assert_equal 10, @account.explain('examples.quantity', environment: nil).value
       assert_equal 1, @account.explain('examples.quantity', environment: 'production').value
       # hide_couriers' topic has no environment in its context
       assert_equal true, @account.explain('hide_couriers').value

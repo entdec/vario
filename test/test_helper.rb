@@ -16,3 +16,5 @@ ActiveSupport::TestCase.fixture_paths = [File.expand_path('fixtures', __dir__)]
 ActionDispatch::IntegrationTest.fixture_paths = ActiveSupport::TestCase.fixture_paths
 ActiveSupport::TestCase.file_fixture_path = File.expand_path('fixtures/files', __dir__)
 ActiveSupport::TestCase.fixtures :all
+
+Dir[File.expand_path('support/**/*.rb', __dir__)].each { |file| require file }

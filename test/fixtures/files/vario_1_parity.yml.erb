@@ -1,0 +1,131 @@
+# 1.x settings (as their rows and config were) and contexts to read them
+# in: 2.0 has to read each converted setting as 1.x did (parity_test.rb).
+# The ids are the fixtures'.
+<% apple = ActiveRecord::FixtureSet.identify(:apple, :uuid); orange = ActiveRecord::FixtureSet.identify(:orange, :uuid) %>
+
+- name: examples.quantity
+  type: integer
+  keys: [order_type, product_id]
+  levels:
+    - { conditions: { order_type: SalesOrder, product_id: <%= apple %> }, value: '9' }
+    - { conditions: { order_type: SalesOrder }, value: '5' }
+    - { conditions: { product_id: <%= orange %> }, value: 6 }
+    - { conditions: {}, value: '3' }
+    - { conditions: { order_type: ReturnOrder }, value: '7' }
+  contexts:
+    - {}
+    - { order_type: SalesOrder }
+    - { order_type: SalesOrder, product_id: <%= apple %> }
+    - { order_type: SalesOrder, product_id: <%= orange %> }
+    - { order_type: ReturnOrder, product_id: <%= orange %> }
+    - { order_type: ReturnOrder }
+    - { order_type: TransferOrder, default: 4 }
+
+- name: examples.quantity
+  description: without a value of its own, the default
+  type: integer
+  default: 1
+  keys: [order_type]
+  levels:
+    - { conditions: { order_type: SalesOrder }, value: '5' }
+  contexts:
+    - {}
+    - { order_type: SalesOrder }
+    - { order_type: ReturnOrder }
+    - { order_type: ReturnOrder, default: 8 }
+
+- name: examples.quantity
+  description: conditions on keys it no longer has don't count
+  type: integer
+  default: 1
+  keys: [order_type]
+  levels:
+    - { conditions: { order_type: SalesOrder, location_id: '12' }, value: '5' }
+    - { conditions: { location_id: '13' }, value: '6' }
+    - { conditions: {}, value: '2' }
+  contexts:
+    - {}
+    - { order_type: SalesOrder }
+    - { order_type: SalesOrder, location_id: '13' }
+
+- name: examples.enabled
+  type: boolean
+  default: false
+  keys: [environment]
+  levels:
+    - { conditions: { environment: production }, value: '1' }
+    - { conditions: { environment: test }, value: 'false' }
+    - { conditions: {}, value: true }
+  contexts:
+    - {}
+    - { environment: production }
+    - { environment: test }
+    - { environment: development }
+    - { environment: null }
+
+- name: examples.enabled
+  description: from the value_proc (Rails.env) without an environment
+  type: boolean
+  default: false
+  keys: [environment]
+  levels:
+    - { conditions: { environment: test }, value: '1' }
+  contexts:
+    - {}
+    - { environment: production }
+
+- name: examples.name
+  type: string
+  keys: [customer_id]
+  levels:
+    - { conditions: { customer_id: '5' }, value: Five }
+    - { conditions: { customer_id: '' }, value: Blank }
+    - { conditions: {}, value: Boxture }
+  contexts:
+    - {}
+    - { customer_id: '5' }
+    - { customer_id: '6' }
+
+- name: examples.working_days
+  type: array
+  default: ['1', '2', '3', '4', '5']
+  collection: [[Monday, '1'], [Tuesday, '2'], [Wednesday, '3'], [Thursday, '4'], [Friday, '5'], [Saturday, '6'], [Sunday, '7']]
+  keys: [product_id]
+  levels:
+    - { conditions: { product_id: <%= apple %> }, value: "1,2\n3" }
+    - { conditions: { product_id: <%= orange %> }, value: [all] }
+    - { conditions: {}, value: ['', '6', '7'] }
+  contexts:
+    - {}
+    - { product_id: <%= apple %> }
+    - { product_id: <%= orange %> }
+
+- name: examples.working_days
+  description: without levels, the default
+  type: array
+  default: ['1', '2', '3', '4', '5']
+  keys: []
+  levels: []
+  contexts:
+    - {}
+
+- name: examples.options
+  type: hash
+  keys: [order_type]
+  levels:
+    - { conditions: { order_type: SalesOrder }, value: "a: 1\nb:\n  c: d\n" }
+    - { conditions: {}, value: "a: 2" }
+  contexts:
+    - {}
+    - { order_type: SalesOrder }
+
+- name: examples.size
+  type: string
+  keys: [order_type]
+  levels:
+    - { conditions: {}, value: small }
+    - { conditions: {}, value: large }
+    - { conditions: { order_type: SalesOrder }, value: medium }
+  contexts:
+    - {}
+    - { order_type: SalesOrder }
