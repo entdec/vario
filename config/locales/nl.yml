@@ -16,6 +16,17 @@ nl:
       setting:
         default: "Standaard: %{value}"
         use_default: Standaard
+      applies:
+        title: Wat geldt?
+        intro: Kies waar je naar wilt kijken, en zie welke waarde elke instelling krijgt, en waarom.
+        show: Toon
+        setting: Instelling
+        value: Waarde
+        why: Waarom
+        nothing: Niets
+        refinement: "Verfijning %{priority} (%{summary})"
+        value_source: Eigen waarde
+        default: Standaard
       refinement:
         all: en
         any: of

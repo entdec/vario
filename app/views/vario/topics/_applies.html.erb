@@ -1,0 +1,50 @@
+<%# What applies: a context to choose, and for every setting what it is in that context, and why. A test bench for the refinements, as saved %>
+<% variables = Vario::ContextVariables.new(topic.topic.context) %>
+<section class="vario-applies" id="applies" aria-labelledby="applies_title">
+  <h2 id="applies_title"><%= t('vario.pages.applies.title') %></h2>
+  <p class="vario-applies__intro"><%= t('vario.pages.applies.intro') %></p>
+
+  <%= form_with url: topic_path(topic.key), method: :get, builder: FormComponents::FormBuilder, scope: :applies, class: 'vario-applies__form', data: { turbo: false } do |form| %>
+    <%= hidden_field_tag :settable, params[:settable], id: nil %>
+    <% topic.topic.context.each_key do |root| %>
+      <% label = variables.describe(root).first %>
+      <% model = variables.model(root) %>
+      <% selected = params.dig(:applies, root) %>
+      <% if model %>
+        <%= form.select root, Vario::Topic.records_of(model, settable).map { |record| [Vario::Topic.label_of(record), record.id.to_s] }, { include_blank: true, selected: selected, label: label } %>
+      <% else %>
+        <%= form.text_field root, value: selected, label: label %>
+      <% end %>
+    <% end %>
+    <%= form.submit t('vario.pages.applies.show'), class: 'vario-button', name: nil %>
+  <% end %>
+
+  <% if applies %>
+    <table class="vario-applies__table">
+      <thead>
+        <tr>
+          <th scope="col"><%= t('vario.pages.applies.setting') %></th>
+          <th scope="col"><%= t('vario.pages.applies.value') %></th>
+          <th scope="col"><%= t('vario.pages.applies.why') %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% topic.topic.definitions.each_value do |definition| %>
+          <% resolution = settable.explain(definition.name, applies) %>
+          <tr>
+            <th scope="row"><%= definition.label %></th>
+            <td><%= definition.human(resolution.value, settable).presence || t('vario.pages.applies.nothing') %></td>
+            <td>
+              <% if resolution.refinement %>
+                <%= t('vario.pages.applies.refinement', priority: resolution.refinement.position,
+                      summary: vario_refinement_summary(resolution.refinement, definition, settable, Vario::ContextVariables.new(definition.context)).split(' → ').first) %>
+              <% else %>
+                <%= t(resolution.source == :value ? 'vario.pages.applies.value_source' : 'vario.pages.applies.default') %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</section>

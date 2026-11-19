@@ -163,6 +163,29 @@ module Vario
       assert_equal({ 'match' => 'any', 'rules' => [] }, @account.settings.find_by(name: 'examples.quantity').refinements.first.conditions)
     end
 
+    test 'what applies: every setting in the chosen context, and why' do
+      apple = products(:apple)
+      @account.settings.create!(name: 'examples.quantity', value: 3, refinements_attributes: [
+        { value: 5, enabled: false, conditions: { match: 'all', rules: [{ variable: 'product', operator: 'is', value: apple.id }] } },
+        { value: 10, conditions: { match: 'all', rules: [{ variable: 'product', operator: 'is', value: apple.id }] } }
+      ])
+      @account.settings.create!(name: 'examples.name', value: 'Boxture')
+
+      get path('examples')
+      assert_select '#applies select[name="applies[product]"] option', text: 'Apple'
+      assert_select '#applies input[name="applies[environment]"]'
+      assert_select '.vario-applies__table', count: 0
+
+      get path('examples') + "&applies[product]=#{apple.id}&applies[environment]="
+
+      assert_select '#applies select[name="applies[product]"] option[selected]', text: 'Apple'
+      rows = css_select('.vario-applies__table tbody tr').to_h { |row| [row.at('th').text, row.css('td').map { |cell| cell.text.strip }] }
+      assert_equal ['10', 'Refinement 2 (Product is Apple)'], rows['Quantity']
+      assert_equal ['Boxture', 'Its own value'], rows['Name']
+      assert_equal ['13:00', 'The default'], rows['Cutoff time']
+      assert_equal ['Nothing', 'The default'], rows['Price']
+    end
+
     test 'an unknown settable' do
       @settable = 'nothing'
       get path('examples')

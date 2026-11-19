@@ -15,8 +15,10 @@ module Vario
       render :index
     end
 
+    # With applies[<root>]: what every setting is in that context, and why
     def show
       @settings = settings_by_key
+      @applies = applies_context if params[:applies]
     end
 
     def update
@@ -50,6 +52,18 @@ module Vario
     end
 
     private
+
+    # The context chosen in "What applies?": for an object root its record
+    # (in its drop, for a drop root), else the value as given
+    def applies_context
+      given = params.require(:applies).permit(*@topic.topic.context.keys).to_h.compact_blank
+      given.to_h do |root, value|
+        type = @topic.topic.context[root]
+        model = ContextVariables.new(@topic.topic.context).model(root)
+        record = model&.find_by(model.primary_key => value)
+        [root, type.is_a?(Class) && type < Liquid::Drop && record ? type.new(record) : record || value]
+      end
+    end
 
     def set_definition
       @definition = @topic.topic.definitions.values.find { |definition| definition.key == params[:setting] }

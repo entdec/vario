@@ -210,3 +210,37 @@
 .vario-refinement__then > :last-child {
   @apply flex-1;
 }
+
+/* What applies (topics/_applies) */
+.vario-applies {
+  @apply mt-12 border-t border-gray-200 pt-8 dark:border-white/10;
+}
+
+.vario-applies h2 {
+  @apply text-base font-semibold text-gray-900 dark:text-white;
+}
+
+.vario-applies__intro {
+  @apply mt-1 text-sm text-gray-500 dark:text-gray-400;
+}
+
+.vario-applies__form {
+  @apply mt-4 grid items-end gap-4 sm:grid-cols-3;
+}
+
+.vario-applies__table {
+  @apply mt-6 w-full text-left text-sm;
+}
+
+.vario-applies__table th,
+.vario-applies__table td {
+  @apply border-b border-gray-100 py-2 pr-4 align-top dark:border-white/10;
+}
+
+.vario-applies__table thead th {
+  @apply font-medium text-gray-500;
+}
+
+.vario-applies__table tbody th {
+  @apply font-medium text-gray-900 dark:text-white;
+}

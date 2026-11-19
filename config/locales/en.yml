@@ -16,6 +16,17 @@ en:
       setting:
         default: "Default: %{value}"
         use_default: Default
+      applies:
+        title: What applies?
+        intro: Choose what to look at, and see which value every setting gets, and why.
+        show: Show
+        setting: Setting
+        value: Value
+        why: Why
+        nothing: Nothing
+        refinement: "Refinement %{priority} (%{summary})"
+        value_source: Its own value
+        default: The default
       refinement:
         all: and
         any: or

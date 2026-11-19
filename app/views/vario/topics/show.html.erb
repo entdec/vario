@@ -23,5 +23,9 @@
         <% end %>
       </div>
     <% end %>
+
+    <% if @topic.topic.context.any? %>
+      <%= render 'vario/topics/applies', topic: @topic, settable: @settable, applies: @applies %>
+    <% end %>
   </main>
 </div>
