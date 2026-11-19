@@ -2,7 +2,7 @@ module Vario
   class Config
     attr_writer :logger, :current_settable
     attr_reader :keys, :settable_types, :settable_settings, :context_defaults, :legacy_keys
-    attr_accessor :base_controller, :admin_layout
+    attr_accessor :base_controller, :admin_layout, :topic_policy
 
     def initialize
       @logger               = Logger.new(STDOUT)
@@ -17,6 +17,7 @@ module Vario
       @show_group_if = {}
       @context_defaults = {}
       @legacy_keys = {}
+      @topic_policy = 'Vario::TopicPolicy'
     end
 
     # The value of a context root when a setting is read without it, for the
