@@ -70,6 +70,25 @@ and add the styles of Vario and FormComponents to your Tailwind CSS:
 
 The icons are [Font Awesome](https://fontawesome.com)'s, which your app loads.
 
+## Upgrading from 1.x
+
+Generate topics from your 1.x initializer (`bin/rails generate vario:topics_from_config`), then convert the settings' levels to values and refinements:
+
+```sh
+bin/rails vario:migrate:report                     # what it would do, per settable
+bin/rails vario:backup FILE=vario_backup.json      # all settings and refinements, as they are
+bin/rails vario:migrate                            # convert
+```
+
+To run the migration again from the same data, restore the backup first. Restoring replaces all settings and refinements by the backup's, exactly as they were: those added since are removed, those removed since come back, and changes since are lost.
+
+```sh
+bin/rails vario:restore FILE=vario_backup.json
+bin/rails vario:migrate
+```
+
+`FORCE=1 bin/rails vario:migrate` converts again without a backup: it keeps the rows as they are now, but replaces their values and refinements by those converted from their levels.
+
 ## Installation
 
 Add this line to your application's Gemfile:
