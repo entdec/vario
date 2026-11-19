@@ -42,6 +42,8 @@ module Vario
       assert_select ".vario-topics__link[aria-current='page']", text: 'Examples'
       assert_select '.vario-topics__link', text: 'PrintNode'
       assert_select 'fieldset.vario-setting', count: ExamplesSettings.definitions.size
+      # Searchable: a link to each setting's section, under its topic
+      assert_select "[data-vario--search-target=setting][data-keywords^='Working days'] a[href$='#setting_working_days']", text: 'Working days'
       assert_select 'fieldset#setting_quantity input[type=number][name="settings[quantity][value]"][value="3"]'
       assert_select 'fieldset#setting_quantity', text: /Default: 1/
       assert_select 'fieldset#setting_enabled select[name="settings[enabled][value]"]' do

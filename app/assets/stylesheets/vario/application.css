@@ -122,6 +122,18 @@
   @apply bg-gray-50 text-primary-600 dark:bg-white/5 dark:text-white;
 }
 
+.vario-topics__settings {
+  @apply ml-9 flex flex-col;
+}
+
+.vario-topics__setting {
+  @apply block rounded-md px-2 py-1 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5;
+}
+
+.vario-topics__none {
+  @apply px-3 text-sm text-gray-500;
+}
+
 .vario-topics__empty {
   @apply text-sm text-gray-500;
 }
@@ -160,6 +172,11 @@
 
 .vario-topic__settings {
   @apply flex flex-col gap-10;
+}
+
+/* Linked to from the search (#setting_<key>): below the sticky header */
+.vario-setting {
+  @apply scroll-mt-28;
 }
 
 /* A setting's refinements (topics/_refinements) */

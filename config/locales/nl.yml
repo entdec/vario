@@ -7,6 +7,7 @@ nl:
       nav:
         label: Instellingen
         search: Zoek instellingen
+        none: Geen instellingen gevonden.
       index:
         empty: Er zijn geen instellingen om te tonen.
       show:
