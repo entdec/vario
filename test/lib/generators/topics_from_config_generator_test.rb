@@ -6,7 +6,7 @@ require 'generators/vario/topics_from_config/topics_from_config_generator'
 module Vario
   class TopicsFromConfigGeneratorTest < Rails::Generators::TestCase
     tests Vario::Generators::TopicsFromConfigGenerator
-    destination File.expand_path('../../../tmp/generators', __dir__)
+    destination File.expand_path('../../dummy/tmp/generators', __dir__)
     setup :prepare_destination
 
     setup do
