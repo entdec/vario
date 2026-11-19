@@ -109,15 +109,9 @@ module Vario
         @context ? topic.context.slice(*@context) : topic.context
       end
 
-      # The records a model setting's value can be, for a settable: the
-      # model's vario_choices(settable) when it has them (a class method or
-      # scope), else the settable's (where(account: settable)), else all
+      # The records a model setting's value can be, for a settable
       def records(settable)
-        return [] unless model
-        return model.vario_choices(settable) if model.respond_to?(:vario_choices)
-
-        association = settable.class.model_name.singular
-        model.reflect_on_association(association) ? model.where(association => settable) : model.all
+        model ? Topic.records_of(model, settable) : []
       end
 
       # A value as text, for people: a choice's label, a record's name
@@ -263,6 +257,16 @@ module Vario
 
       def settable_class
         settable&.safe_constantize
+      end
+
+      # A model's records, as a setting's value or in a refinement's rule:
+      # its vario_choices(settable) when it has them (a class method or
+      # scope), else the settable's (where(account: settable)), else all
+      def records_of(model, settable)
+        return model.vario_choices(settable) if model.respond_to?(:vario_choices)
+
+        association = settable.class.model_name.singular
+        model.reflect_on_association(association) ? model.where(association => settable) : model.all
       end
 
       # A record's name, for people

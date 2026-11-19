@@ -16,6 +16,22 @@ en:
       setting:
         default: "Default: %{value}"
         use_default: Default
+      refinement:
+        all: and
+        any: or
+        always: Always
+        no_value: no value
+      refinements:
+        title: Refinements
+        hint: the first that applies wins
+        add: Add refinement
+        new: New refinement
+        drag: Drag to change its priority
+        enabled: Enabled
+        remove: Remove this refinement
+        then: then
+        value: Value
+        note: Note
       update:
         saved: The settings have been saved.
         not_saved: The settings couldn't be saved.

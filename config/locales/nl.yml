@@ -16,6 +16,22 @@ nl:
       setting:
         default: "Standaard: %{value}"
         use_default: Standaard
+      refinement:
+        all: en
+        any: of
+        always: Altijd
+        no_value: geen waarde
+      refinements:
+        title: Verfijningen
+        hint: de eerste die van toepassing is, geldt
+        add: Verfijning toevoegen
+        new: Nieuwe verfijning
+        drag: Sleep om de prioriteit te wijzigen
+        enabled: Actief
+        remove: Verwijder deze verfijning
+        then: dan
+        value: Waarde
+        note: Notitie
       update:
         saved: De instellingen zijn opgeslagen.
         not_saved: De instellingen konden niet worden opgeslagen.

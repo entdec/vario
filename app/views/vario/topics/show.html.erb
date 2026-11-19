@@ -19,7 +19,7 @@
 
       <div class="vario-topic__settings">
         <% @topic.topic.definitions.each_value do |definition| %>
-          <%= render 'vario/topics/setting', form: form, definition: definition, setting: @settings[definition.key], settable: @settable %>
+          <%= render 'vario/topics/setting', form: form, definition: definition, setting: @settings[definition.key], settable: @settable, topic: @topic %>
         <% end %>
       </div>
     <% end %>

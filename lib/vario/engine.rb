@@ -1,5 +1,7 @@
 require 'importmap-rails'
 require 'liquid'
+require 'liquidum'
+require 'entdec/view_components'
 require 'positioning'
 require 'pundit'
 require 'form_components'

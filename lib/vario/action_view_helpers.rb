@@ -62,6 +62,44 @@ module Vario
       end
     end
 
+    # A refinement in a line, for when it's closed: "Product is Apple and
+    # environment is test → 10"
+    def vario_refinement_summary(refinement, definition, settable, variables)
+      conditions = refinement.conditions.to_h.stringify_keys
+      rules = Array(conditions['rules']).map do |rule|
+        rule = rule.to_h.stringify_keys
+        label, type = variables.describe(rule['variable'])
+        value = case rule['operator']
+                when 'is_empty', 'isnt_empty' then nil
+                when 'between' then "#{rule['value']} – #{rule['value_to']}"
+                else type == 'object' ? vario_record_label(variables.model(rule['variable']), rule['value']) : rule['value']
+                end
+        [label, t("entdec.conditions.operators.#{rule['operator']}"), value].compact.join(' ')
+      end
+      match = conditions['match'] == 'any' ? 'any' : 'all'
+      text = rules.any? ? rules.join(" #{t("vario.pages.refinement.#{match}")} ") : t('vario.pages.refinement.always')
+      value = definition.human(refinement.value, settable)
+      "#{text} → #{value.presence || t('vario.pages.refinement.no_value')}"
+    end
+
+    def vario_record_label(model, id)
+      record = model&.find_by(model.primary_key => id) if id.present?
+      record ? Topic.label_of(record) : id
+    end
+
+    # The conditions editor for a refinement (EntDec::Conditions, records
+    # from the setting's context)
+    def vario_conditions(form, definition, settable, variables, variables_url:, records_url:)
+      conditions = form.object.conditions.to_h.stringify_keys
+      records = lambda do |path|
+        model = variables.model(path)
+        model ? Topic.records_of(model, settable).map { |record| [Topic.label_of(record), record.id] } : []
+      end
+
+      entdec_conditions(name: "#{form.object_name}[conditions]", match: conditions['match'], rules: Array(conditions['rules']),
+                        variables_url: variables_url, describe: ->(path) { variables.describe(path) }, records_url: records_url, records: records)
+    end
+
     # A card with a title and icon, and the actions and tabs its block adds
     # (Vario::Card), else what the block gives
     #

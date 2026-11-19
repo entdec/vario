@@ -1,6 +1,9 @@
-<%# A setting: its label and description beside its own value %>
+<%# A setting: its label and description beside its own value and, when it has a context, its refinements %>
 <%= fields_for "settings[#{definition.key}]", setting, builder: FormComponents::FormBuilder do |f| %>
   <%= f.fieldset definition.label, description: definition.description, legend_position: :beside, class: 'vario-setting', id: "setting_#{definition.key}" do %>
     <%= vario_value_field(f, definition, settable) %>
+    <% if definition.context.any? %>
+      <%= render 'vario/topics/refinements', f: f, definition: definition, setting: setting, settable: settable, topic: topic %>
+    <% end %>
   <% end %>
 <% end %>

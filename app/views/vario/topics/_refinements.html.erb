@@ -1,0 +1,41 @@
+<%# A setting's refinements: the first enabled one whose conditions are met gives its value. In order of priority, dragged by their handles; closed to a line until opened %>
+<% variables = Vario::ContextVariables.new(definition.context) %>
+<% urls = { variables_url: variables_topic_path(topic.key, settable: params[:settable], setting: definition.key),
+            records_url: records_topic_path(topic.key, settable: params[:settable], setting: definition.key) } %>
+<div class="vario-refinements" data-controller="vario--refinements vario--sortable"
+     data-action="vario--sortable:sorted->vario--refinements#renumber nested-form:add->vario--refinements#renumber nested-form:remove->vario--refinements#renumber">
+  <p class="vario-refinements__head">
+    <%= t('vario.pages.refinements.title') %>
+    (<span data-vario--refinements-target="count"><%= setting.refinements.reject(&:marked_for_destruction?).size %></span>)
+    <span class="vario-refinements__hint"><%= t('vario.pages.refinements.hint') %></span>
+  </p>
+  <%= f.nested_form :refinements, wrapper_selector: '.vario-refinement', new_record: Vario::Refinement.new, add_label: t('vario.pages.refinements.add') do |nf| %>
+    <% nf.with_item do |rf| %>
+      <% refinement = rf.object %>
+      <% open = refinement.new_record? || refinement.errors.any? %>
+      <div class="vario-refinement" data-vario--sortable-target="item" data-vario--refinements-target="item" data-new-record="<%= refinement.new_record? %>">
+        <%= rf.hidden_field :position, data: { 'vario--refinements-target': 'position' } %>
+        <%= rf.hidden_field :_destroy %>
+        <div class="vario-refinement__bar">
+          <button type="button" class="vario-refinement__grip" data-vario--sortable-target="handle" title="<%= t('vario.pages.refinements.drag') %>" aria-label="<%= t('vario.pages.refinements.drag') %>">
+            <span aria-hidden="true">⠿</span>
+            <span data-vario--refinements-target="priority"><%= refinement.position %></span>
+          </button>
+          <button type="button" class="vario-refinement__summary" aria-expanded="<%= open %>" data-action="vario--refinements#toggle">
+            <%= refinement.new_record? ? t('vario.pages.refinements.new') : vario_refinement_summary(refinement, definition, settable, variables) %>
+          </button>
+          <%= rf.check_box :enabled, label: t('vario.pages.refinements.enabled') %>
+          <button type="button" class="vario-refinement__remove" data-action="form-components--nested-form#remove" title="<%= t('vario.pages.refinements.remove') %>" aria-label="<%= t('vario.pages.refinements.remove') %>">×</button>
+        </div>
+        <div class="vario-refinement__detail" <%= 'hidden' unless open %>>
+          <%= vario_conditions(rf, definition, settable, variables, **urls) %>
+          <div class="vario-refinement__then">
+            <span><%= t('vario.pages.refinements.then') %></span>
+            <%= vario_value_field(rf, definition, settable, label: t('vario.pages.refinements.value'), hint: false) %>
+          </div>
+          <%= rf.text_field :note, label: t('vario.pages.refinements.note') %>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>

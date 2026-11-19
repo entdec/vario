@@ -2,7 +2,8 @@ import { Controller } from "@hotwired/stimulus"
 
 // A list whose items are dragged by their handle to another place, with the
 // browser's own drag and drop. The item's URL then gets a PATCH with its new
-// index among the items: {"index": 2}.
+// index among the items: {"index": 2}. Without one, the list fires
+// vario--sortable:sorted, for a form that saves the order itself.
 //
 //   div data-controller="vario--sortable"
 //     div data-vario--sortable-target="item" data-url="/settings/1/levels/2/move"
@@ -57,6 +58,8 @@ export default class extends Controller {
     event.preventDefault()
     this.dropped = true
     const item = this.dragged
+    if (!item.dataset.url) return this.dispatch("sorted", { detail: { item } })
+
     fetch(item.dataset.url, {
       method: "PATCH",
       headers: {

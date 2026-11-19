@@ -91,6 +91,78 @@ module Vario
       assert_nil @account.settings.find_by(name: 'print_node.api_key')
     end
 
+    def rule(variable, value, operator: 'is')
+      { 'match' => 'all', 'rules' => { '0' => { 'variable' => variable, 'operator' => operator, 'value' => value } } }
+    end
+
+    test "a setting's refinements, a line each until opened, and one to add" do
+      apple = products(:apple)
+      @account.settings.create!(name: 'examples.quantity', value: 3, refinements_attributes: [
+        { value: 10, conditions: { match: 'all', rules: [{ variable: 'product', operator: 'is', value: apple.id }, { variable: 'environment', operator: 'is', value: 'test' }] } },
+        { value: 20, enabled: false, conditions: { match: 'any', rules: [] } }
+      ])
+
+      get path('examples')
+
+      assert_select 'fieldset#setting_quantity .vario-refinements' do
+        assert_select '.vario-refinements__head', text: /Refinements \(2\)/
+        assert_select ".vario-refinement[data-new-record='false']", count: 2
+        assert_select '.vario-refinement__summary', text: 'Product is Apple and Environment is test → 10'
+        assert_select '.vario-refinement__summary', text: 'Always → 20'
+        assert_select 'input[name="settings[quantity][refinements_attributes][0][position]"][value="1"]'
+        assert_select 'input[type=checkbox][name="settings[quantity][refinements_attributes][1][enabled]"]:not([checked])'
+        assert_select "input[name='settings[quantity][refinements_attributes][0][conditions][rules][0][variable]'][value='product']"
+        assert_select "select[name='settings[quantity][refinements_attributes][0][conditions][rules][0][value]'] option[selected][value='#{apple.id}']", text: 'Apple'
+        assert_select 'input[type=number][name="settings[quantity][refinements_attributes][0][value]"][value="10"]'
+        assert_select "template input[name='settings[quantity][refinements_attributes][NEW_REFINEMENT][position]']"
+        assert_select ".entdec-conditions[data-entdec--conditions-records-url-value*='records?']"
+      end
+    end
+
+    test "the variables a setting's refinements can look at, and an object's records" do
+      get "/settings/topics/examples/variables?settable=#{CGI.escape(@settable)}&setting=quantity&path="
+      assert_equal [%w[environment string], %w[product object]], response.parsed_body['variables'].map { |variable| variable.values_at('name', 'type') }
+
+      get "/settings/topics/examples/records?settable=#{CGI.escape(@settable)}&setting=quantity&path=product"
+      assert_equal %w[Apple Lemon Orange], response.parsed_body['records'].map { |record| record['label'] }.sort
+
+      get "/settings/topics/examples/records?settable=#{CGI.escape(@settable)}&setting=quantity&path=environment"
+      assert_response :not_found
+      get "/settings/topics/examples/variables?settable=#{CGI.escape(@settable)}&setting=nothing&path="
+      assert_response :not_found
+    end
+
+    test 'saving refinements: new ones, in their order, and changed, disabled and removed ones' do
+      apple = products(:apple)
+      save(quantity: { value: '3', refinements_attributes: {
+        '1' => { position: '1', enabled: '1', value: '10', conditions: rule('product', apple.id) },
+        '2' => { position: '2', enabled: '1', value: '20', conditions: rule('environment', 'test') }
+      } })
+      setting = @account.settings.find_by(name: 'examples.quantity')
+      first, second = setting.refinements
+
+      assert_equal [[1, 10, [['product', 'is', apple.id]]], [2, 20, [%w[environment is test]]]],
+                   setting.refinements.map { |refinement| [refinement.position, refinement.value, refinement.conditions['rules'].map { |rule| rule.values_at('variable', 'operator', 'value') }] }
+      assert_equal 10, @account.reload.setting('examples.quantity', product: apple)
+
+      # The second first, the first disabled; then removed
+      save(quantity: { value: '3', refinements_attributes: {
+        '0' => { id: second.id, position: '1', enabled: '1', value: '20' },
+        '1' => { id: first.id, position: '2', enabled: '0', value: '10' }
+      } })
+      assert_equal [[second.id, 1, true], [first.id, 2, false]], setting.refinements.reload.map { |refinement| [refinement.id, refinement.position, refinement.enabled] }
+      assert_equal 20, @account.reload.setting('examples.quantity', product: apple)
+
+      save(quantity: { value: '3', refinements_attributes: { '0' => { id: second.id, _destroy: '1' }, '1' => { id: first.id, position: '1' } } })
+      assert_equal [[first.id, 1]], setting.refinements.reload.map { |refinement| [refinement.id, refinement.position] }
+    end
+
+    test 'a rule without a variable is no rule' do
+      save(quantity: { refinements_attributes: { '1' => { position: '1', value: '10', conditions: { 'match' => 'any', 'rules' => { '0' => { 'variable' => '', 'operator' => 'is' } } } } } })
+
+      assert_equal({ 'match' => 'any', 'rules' => [] }, @account.settings.find_by(name: 'examples.quantity').refinements.first.conditions)
+    end
+
     test 'an unknown settable' do
       @settable = 'nothing'
       get path('examples')

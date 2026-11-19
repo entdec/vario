@@ -5,7 +5,8 @@ module Vario
   # saved as a whole: their own values and refinements
   class TopicsController < ApplicationController
     before_action :set_settable
-    before_action :set_topic, only: %i[show update]
+    before_action :set_topic, only: %i[show update variables records]
+    before_action :set_definition, only: %i[variables records]
 
     def index
       topic = @topics.first
@@ -34,7 +35,26 @@ module Vario
       end
     end
 
+    # GET variables?setting=<key>&path=order: as Liquidum's (variables_url)
+    def variables
+      render json: { path: params[:path].to_s, variables: ContextVariables.new(@definition.context).at(params[:path]) }
+    end
+
+    # GET records?setting=<key>&path=location: an object variable's records
+    # (records_url)
+    def records
+      model = ContextVariables.new(@definition.context).model(params[:path])
+      return head(:not_found) unless model
+
+      render json: { records: Topic.records_of(model, @settable).map { |record| { label: Topic.label_of(record), value: record.id.to_s } } }
+    end
+
     private
+
+    def set_definition
+      @definition = @topic.topic.definitions.values.find { |definition| definition.key == params[:setting] }
+      raise ActiveRecord::RecordNotFound, "Unknown setting #{params[:setting]}" unless @definition
+    end
 
     def set_settable
       @settable = GlobalID::Locator.locate_signed(params[:settable], for: 'Vario')
