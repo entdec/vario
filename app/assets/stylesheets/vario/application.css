@@ -103,7 +103,7 @@
 }
 
 .vario-topics__nav {
-  @apply flex flex-col gap-2;
+  @apply flex flex-col gap-2 md:sticky md:top-4 md:max-h-[calc(100vh-2rem)] md:self-start md:overflow-y-auto;
 }
 
 .vario-topics__search {

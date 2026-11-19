@@ -13,6 +13,7 @@ nl:
       show:
         unsaved: Niet-opgeslagen wijzigingen
         cancel: Annuleren
+        leave: Deze pagina verlaten? Je wijzigingen zijn niet opgeslagen.
         save: Opslaan
       setting:
         default: "Standaard: %{value}"

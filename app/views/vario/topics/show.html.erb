@@ -3,7 +3,7 @@
 
   <main class="vario-topic">
     <%= form_with url: topic_path(@topic.key), method: :patch, builder: FormComponents::FormBuilder,
-                  data: { controller: 'vario--topic', action: 'input->vario--topic#changed change->vario--topic#changed' } do |form| %>
+                  data: { controller: 'vario--topic', action: 'input->vario--topic#changed change->vario--topic#changed', 'vario--topic-confirm-value': t('vario.pages.show.leave') } do |form| %>
       <header class="vario-topic__head">
         <% if @topic.topic.icon %><i class="<%= @topic.topic.icon %> fa-fw vario-topic__icon" aria-hidden="true"></i><% end %>
         <div class="vario-topic__title">
@@ -12,7 +12,7 @@
         </div>
         <div class="vario-topic__savebar" data-vario--topic-target="savebar">
           <span class="vario-topic__unsaved" hidden data-vario--topic-target="unsaved"><%= t('vario.pages.show.unsaved') %></span>
-          <%= link_to t('vario.pages.show.cancel'), topic_path(@topic.key), class: 'vario-button', hidden: true, data: { 'vario--topic-target': 'cancel' } %>
+          <%= link_to t('vario.pages.show.cancel'), topic_path(@topic.key), class: 'vario-button', hidden: true, data: { 'vario--topic-target': 'cancel', action: 'vario--topic#discard' } %>
           <%= form.submit t('vario.pages.show.save'), class: 'vario-button vario-button--primary' %>
         </div>
       </header>

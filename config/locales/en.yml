@@ -13,6 +13,7 @@ en:
       show:
         unsaved: Unsaved changes
         cancel: Cancel
+        leave: Leave this page? Your changes aren't saved.
         save: Save
       setting:
         default: "Default: %{value}"
