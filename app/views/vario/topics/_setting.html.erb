@@ -1,0 +1,6 @@
+<%# A setting: its label and description beside its own value %>
+<%= fields_for "settings[#{definition.key}]", setting, builder: FormComponents::FormBuilder do |f| %>
+  <%= f.fieldset definition.label, description: definition.description, legend_position: :beside, class: 'vario-setting', id: "setting_#{definition.key}" do %>
+    <%= vario_value_field(f, definition, settable) %>
+  <% end %>
+<% end %>

@@ -3,10 +3,14 @@
 
 import { Application } from "@hotwired/stimulus"
 
+import SearchController from "vario/controllers/search_controller"
 import SortableController from "vario/controllers/sortable_controller"
 import TabsController from "vario/controllers/tabs_controller"
+import TopicController from "vario/controllers/topic_controller"
 
 window.Stimulus ||= Application.start()
 
+window.Stimulus.register("vario--search", SearchController)
 window.Stimulus.register("vario--sortable", SortableController)
 window.Stimulus.register("vario--tabs", TabsController)
+window.Stimulus.register("vario--topic", TopicController)

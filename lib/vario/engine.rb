@@ -24,6 +24,10 @@ module Vario
       Vario::Topic.load!
     end
 
+    # Not allowed (Vario::TopicPolicy) is forbidden, as Pundit suggests,
+    # unless the app rescues it itself
+    config.action_dispatch.rescue_responses['Pundit::NotAuthorizedError'] = :forbidden
+
     initializer 'vario.assets' do |app|
       app.config.assets.paths << root.join('app/javascript') if app.config.respond_to?(:assets)
     end

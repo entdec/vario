@@ -92,3 +92,72 @@
 .vario-level__buttons {
   @apply col-span-2 flex gap-2;
 }
+
+.vario-button--primary {
+  @apply border-transparent bg-primary-600 text-white hover:bg-primary-500 dark:bg-primary-600 dark:text-white;
+}
+
+/* A settable's topics (topics/show): the list beside the topic's page */
+.vario-topics {
+  @apply grid gap-6 md:grid-cols-[14rem_1fr];
+}
+
+.vario-topics__nav {
+  @apply flex flex-col gap-2;
+}
+
+.vario-topics__search {
+  @apply w-full rounded-md border-0 px-3 py-1.5 text-sm text-gray-900 ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-primary-600 dark:bg-white/5 dark:text-white dark:ring-white/10;
+}
+
+.vario-topics__list {
+  @apply flex flex-col gap-0.5;
+}
+
+.vario-topics__link {
+  @apply flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/5;
+}
+
+.vario-topics__link[aria-current="page"] {
+  @apply bg-gray-50 text-primary-600 dark:bg-white/5 dark:text-white;
+}
+
+.vario-topics__empty {
+  @apply text-sm text-gray-500;
+}
+
+.vario-topic {
+  @apply min-w-0;
+}
+
+.vario-topic__head {
+  @apply sticky top-0 z-10 mb-6 flex flex-wrap items-start gap-4 border-b border-gray-200 bg-gray-100/90 py-4 backdrop-blur dark:border-white/10 dark:bg-gray-900/90;
+}
+
+.vario-topic__icon {
+  @apply mt-1 text-xl text-primary-600;
+}
+
+.vario-topic__title {
+  @apply min-w-0 flex-1;
+}
+
+.vario-topic__title h1 {
+  @apply text-xl font-semibold text-gray-900 dark:text-white;
+}
+
+.vario-topic__title p {
+  @apply mt-1 text-sm text-gray-500 dark:text-gray-400;
+}
+
+.vario-topic__savebar {
+  @apply flex items-center gap-2;
+}
+
+.vario-topic__unsaved {
+  @apply rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800;
+}
+
+.vario-topic__settings {
+  @apply flex flex-col gap-10;
+}

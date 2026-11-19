@@ -2,28 +2,29 @@
 
 require 'test_helper'
 
-# The app's policy for all topics, and one topic's own
-class SettingsPolicy < Vario::TopicPolicy
-  def show?
-    settable == user[:account]
-  end
-end
-
-class PrintNodeSettingsPolicy < SettingsPolicy
-  def update?
-    super && user[:admin]
-  end
-end
-
 module Vario
   class TopicPolicyTest < ActiveSupport::TestCase
+    # The app's policy for all topics, and one topic's own
     setup do
       @account = accounts(:boxture)
       @topic_policy = Vario.config.topic_policy
+
+      settings_policy = Object.const_set(:SettingsPolicy, Class.new(TopicPolicy) do
+        def show?
+          settable == user[:account]
+        end
+      end)
+      Object.const_set(:PrintNodeSettingsPolicy, Class.new(settings_policy) do
+        def update?
+          super && user[:admin]
+        end
+      end)
     end
 
     teardown do
       Vario.config.topic_policy = @topic_policy
+      Object.send(:remove_const, :SettingsPolicy)
+      Object.send(:remove_const, :PrintNodeSettingsPolicy)
     end
 
     def policy(user, topic, settable = @account)

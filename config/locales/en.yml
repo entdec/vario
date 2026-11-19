@@ -1,5 +1,24 @@
 en:
   vario:
+    values:
+      "on": "On"
+      "off": "Off"
+    pages:
+      nav:
+        label: Settings
+        search: Search settings
+      index:
+        empty: There are no settings to show.
+      show:
+        unsaved: Unsaved changes
+        cancel: Cancel
+        save: Save
+      setting:
+        default: "Default: %{value}"
+        use_default: Default
+      update:
+        saved: The settings have been saved.
+        not_saved: The settings couldn't be saved.
     levels:
       form:
         save: Save

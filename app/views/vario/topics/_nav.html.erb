@@ -1,0 +1,14 @@
+<%# The settable's topics, searchable by their titles and their settings' labels and descriptions %>
+<nav class="vario-topics__nav" aria-label="<%= t('vario.pages.nav.label') %>" data-controller="vario--search">
+  <input type="search" class="vario-topics__search" placeholder="<%= t('vario.pages.nav.search') %>" aria-label="<%= t('vario.pages.nav.search') %>" data-action="input->vario--search#filter" data-vario--search-target="input">
+  <ul class="vario-topics__list">
+    <% topics.each do |topic| %>
+      <li data-vario--search-target="item" data-keywords="<%= [topic.title, *topic.topic.definitions.values.flat_map { |definition| [definition.label, definition.description] }].compact.join(' ') %>">
+        <%= link_to topic_path(topic.key, settable: params[:settable]), class: 'vario-topics__link', aria: { current: (topic == current ? 'page' : nil) } do %>
+          <% if topic.topic.icon %><i class="<%= topic.topic.icon %> fa-fw" aria-hidden="true"></i><% end %>
+          <span><%= topic.title %></span>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+</nav>

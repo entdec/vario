@@ -109,6 +109,36 @@ module Vario
         @context ? topic.context.slice(*@context) : topic.context
       end
 
+      # The records a model setting's value can be, for a settable: the
+      # model's vario_choices(settable) when it has them (a class method or
+      # scope), else the settable's (where(account: settable)), else all
+      def records(settable)
+        return [] unless model
+        return model.vario_choices(settable) if model.respond_to?(:vario_choices)
+
+        association = settable.class.model_name.singular
+        model.reflect_on_association(association) ? model.where(association => settable) : model.all
+      end
+
+      # A value as text, for people: a choice's label, a record's name
+      def human(value, settable = nil)
+        return if value.nil?
+
+        labels = choices_for(settable).to_h { |choice| choice.is_a?(Array) ? [choice.last.to_s, choice.first.to_s] : [choice.to_s, choice.to_s] }
+        case value
+        when Array then value.map { |element| labels[element.to_s] || element.to_s }.join(', ')
+        when Hash then value.to_yaml.delete_prefix("---\n").strip
+        when true, false then I18n.t(value ? 'vario.values.on' : 'vario.values.off')
+        else
+          if model
+            record = model.find_by(model.primary_key => value)
+            record ? Topic.label_of(record) : value.to_s
+          else
+            labels[value.to_s] || value.to_s
+          end
+        end
+      end
+
       # 1.x's keys it takes: for its context roots the root (order_type) or,
       # for a drop or a model, its id (location_id), and the legacy keys of
       # variables in those roots (customer_id)
@@ -233,6 +263,11 @@ module Vario
 
       def settable_class
         settable&.safe_constantize
+      end
+
+      # A record's name, for people
+      def label_of(record)
+        (record.try(:display_name) || record.try(:name) || record.to_s).to_s
       end
 
       def title

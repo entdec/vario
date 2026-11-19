@@ -1,5 +1,24 @@
 nl:
   vario:
+    values:
+      "on": Aan
+      "off": Uit
+    pages:
+      nav:
+        label: Instellingen
+        search: Zoek instellingen
+      index:
+        empty: Er zijn geen instellingen om te tonen.
+      show:
+        unsaved: Niet-opgeslagen wijzigingen
+        cancel: Annuleren
+        save: Opslaan
+      setting:
+        default: "Standaard: %{value}"
+        use_default: Standaard
+      update:
+        saved: De instellingen zijn opgeslagen.
+        not_saved: De instellingen konden niet worden opgeslagen.
     levels:
       form:
         save: Opslaan
