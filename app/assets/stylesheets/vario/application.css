@@ -97,7 +97,12 @@
   @apply border-transparent bg-primary-600 text-white hover:bg-primary-500 dark:bg-primary-600 dark:text-white;
 }
 
-/* A settable's topics (topics/show): the list beside the topic's page */
+/* A settable's topics (topics/show): the list beside the topic's page.
+   Where the list and the topic's head stick in the host's scrolling area,
+   that area's height and its background (which covers what scrolls by above
+   the head) can be set by the host:
+     :root { --vario-sticky-top: 1rem; --vario-scroll-height: calc(100vh - 4rem); --vario-page-background: var(--color-gray-50) } */
+
 .vario-topics {
   @apply grid gap-6 md:grid-cols-[14rem_1fr];
 }
@@ -108,11 +113,19 @@
 }
 
 .vario-topics__nav {
-  @apply flex flex-col gap-2 md:sticky md:top-4 md:max-h-[calc(100vh-2rem)] md:self-start md:overflow-y-auto;
+  @apply flex flex-col gap-3 rounded-lg bg-white p-3 shadow-xs ring-1 ring-gray-900/5 md:sticky md:top-[var(--vario-sticky-top,0px)] md:max-h-[calc(var(--vario-scroll-height,100vh)-2*var(--vario-sticky-top,0px))] md:self-start md:overflow-y-auto [scrollbar-width:thin] dark:bg-gray-800 dark:ring-white/10 dark:[scrollbar-color:var(--color-gray-600)_transparent];
+}
+
+.vario-topics__find {
+  @apply relative;
+}
+
+.vario-topics__find-icon {
+  @apply pointer-events-none absolute inset-y-0 left-3 my-auto h-4 text-sm text-gray-400;
 }
 
 .vario-topics__search {
-  @apply w-full rounded-md border-0 px-3 py-1.5 text-sm text-gray-900 ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-primary-600 dark:bg-white/5 dark:text-white dark:ring-white/10;
+  @apply w-full rounded-md border-0 py-1.5 pr-3 pl-9 text-sm text-gray-900 ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-primary-600 dark:bg-white/5 dark:text-white dark:ring-white/10;
 }
 
 .vario-topics__list {
@@ -120,19 +133,36 @@
 }
 
 .vario-topics__link {
-  @apply flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/5;
+  @apply flex items-center gap-3 rounded-md px-2 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white;
+}
+
+.vario-topics__icon {
+  @apply shrink-0 text-gray-400;
 }
 
 .vario-topics__link[aria-current="page"] {
-  @apply bg-gray-50 text-primary-600 dark:bg-white/5 dark:text-white;
+  @apply bg-primary-50 font-semibold text-primary-700 dark:bg-white/10 dark:text-white;
 }
 
+.vario-topics__link[aria-current="page"] .vario-topics__icon {
+  @apply text-primary-600 dark:text-white;
+}
+
+/* Under a topic, its settings: those of the current one, or those found */
 .vario-topics__settings {
-  @apply ml-9 flex flex-col;
+  @apply ml-[1.1rem] flex flex-col border-l border-gray-200 pl-3 dark:border-gray-700;
+}
+
+.vario-topics__settings:not(:has(> li:not([hidden]))) {
+  @apply hidden;
 }
 
 .vario-topics__setting {
-  @apply block rounded-md px-2 py-1 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5;
+  @apply block rounded-md px-2 py-1 text-[0.8125rem] text-gray-500 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white;
+}
+
+.vario-topics__nav mark {
+  @apply rounded-sm bg-yellow-100 px-px text-inherit dark:bg-yellow-500/30;
 }
 
 .vario-topics__none {
@@ -148,7 +178,16 @@
 }
 
 .vario-topic__head {
-  @apply sticky top-0 z-10 mb-6 flex flex-wrap items-start gap-4 border-b border-gray-200 bg-gray-100/90 py-4 backdrop-blur dark:border-white/10 dark:bg-gray-900/90;
+  @apply sticky top-[var(--vario-sticky-top,0px)] z-10 mb-6 flex flex-wrap items-start gap-4 rounded-t-lg border-b border-gray-200 bg-gray-100/90 px-4 py-4 backdrop-blur sm:px-6 dark:border-white/10 dark:bg-gray-900/90;
+}
+
+.vario-topic__head::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 100%;
+  height: var(--vario-sticky-top, 0px);
+  background: var(--vario-page-background, transparent);
 }
 
 .vario-topic__icon {

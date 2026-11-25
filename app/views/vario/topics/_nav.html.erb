@@ -1,17 +1,23 @@
-<%# The settable's topics. Searched, the topics whose title matches and, under their topic, the settings whose label or description does, each a link to its section %>
+<%# The settable's topics, each with its settings as links to their section: those of the current topic, or, searched, those whose label or description matches %>
 <nav class="vario-topics__nav" aria-label="<%= t('vario.pages.nav.label') %>" data-controller="vario--search">
-  <input type="search" class="vario-topics__search" placeholder="<%= t('vario.pages.nav.search') %>" aria-label="<%= t('vario.pages.nav.search') %>" data-action="input->vario--search#filter" data-vario--search-target="input">
+  <div class="vario-topics__find">
+    <i class="fa-regular fa-magnifying-glass vario-topics__find-icon" aria-hidden="true"></i>
+    <input type="search" class="vario-topics__search" placeholder="<%= t('vario.pages.nav.search') %>" aria-label="<%= t('vario.pages.nav.search') %>" data-action="input->vario--search#filter keydown.esc->vario--search#clear" data-vario--search-target="input">
+  </div>
   <ul class="vario-topics__list">
     <% topics.each do |topic| %>
-      <li data-vario--search-target="topic" data-keywords="<%= topic.title %>">
-        <%= link_to topic_path(topic.key), class: 'vario-topics__link', aria: { current: (topic == current ? 'page' : nil) } do %>
-          <% if topic.topic.icon %><i class="<%= topic.topic.icon %> fa-fw" aria-hidden="true"></i><% end %>
-          <span><%= topic.title %></span>
+      <% is_current = topic == current %>
+      <li data-vario--search-target="topic" data-keywords="<%= topic.title %>" <%= 'data-current' if is_current %>>
+        <%= link_to topic_path(topic.key), class: 'vario-topics__link', aria: { current: (is_current ? 'page' : nil) } do %>
+          <i class="<%= topic.topic.icon || 'fa-regular fa-sliders' %> fa-fw vario-topics__icon" aria-hidden="true"></i>
+          <span data-vario--search-target="label"><%= topic.title %></span>
         <% end %>
         <ul class="vario-topics__settings">
           <% topic.topic.definitions.each_value do |definition| %>
-            <li hidden data-vario--search-target="setting" data-keywords="<%= [definition.label, definition.description].compact.join(' ') %>">
-              <%= link_to definition.label, topic_path(topic.key, anchor: "setting_#{definition.key}"), class: 'vario-topics__setting' %>
+            <li <%= 'hidden' unless is_current %> data-vario--search-target="setting" data-keywords="<%= [definition.label, definition.description].compact.join(' ') %>">
+              <%= link_to topic_path(topic.key, anchor: "setting_#{definition.key}"), class: 'vario-topics__setting' do %>
+                <span data-vario--search-target="label"><%= definition.label %></span>
+              <% end %>
             </li>
           <% end %>
         </ul>

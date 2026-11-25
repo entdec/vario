@@ -54,8 +54,11 @@ module Vario
       end
 
       # A value as the setting's type, from a form, the database or 1.x; nil
-      # for nothing (the default applies)
+      # for nothing (the default applies). A list is a list even when empty:
+      # none, as 1.x read a cleared one ([""]), not nothing.
       def cast(value)
+        return value_type.cast(value) if type == :array && value.is_a?(Array)
+
         value_type.cast(value) unless Types.blank?(value)
       end
 

@@ -17,11 +17,17 @@ module Vario
 
     test 'nothing is nil, so the default applies' do
       [nil, '', '  ', [], {}].each do |value|
-        %w[enabled quantity name cutoff_time working_days options owner].each do |key|
+        %w[enabled quantity name cutoff_time options owner].each do |key|
           assert_nil definition(key).cast(value), "#{key} #{value.inspect}"
         end
       end
+      [nil, '', '  '].each { |value| assert_nil definition('working_days').cast(value), value.inspect }
       refute_nil definition('enabled').cast(false)
+    end
+
+    test 'a list is a list even when empty: none, not nothing' do
+      assert_equal [[], [], %w[mon]], [[], [''], ['', 'mon']].map { |value| definition('working_days').cast(value) }
+      assert_equal ['[]', []], stored('working_days', [''])
     end
 
     test 'a boolean' do
