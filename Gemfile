@@ -17,10 +17,11 @@ gemspec
 gem "form_components", entdec: "form_components"
 # Its record rules aren't released yet: the checkout next to this one,
 # mounted in the devcontainer (.devcontainer/docker-compose.yml)
-gem "entdec-view_components", path: "/workspaces/view_components"
+gem "entdec-view_components", entdec: "view_components"
 
 # The dummy app's server and assets
 gem "puma"
 gem "propshaft"
 gem "stimulus-rails"
 gem "tailwindcss-rails", "~> 4.0"
+gem "shipkit"
