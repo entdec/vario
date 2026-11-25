@@ -50,22 +50,32 @@ Menus::Builder.build(:settings) do |m|
 end
 ```
 
-The settings pages need importmap-rails, Propshaft and Tailwind CSS 4 through tailwindcss-rails 4.3 or later (for engine support), and [FormComponents](https://github.com/entdec/form_components) for their forms, a dependency from GitHub: add `gem "form_components", github: "entdec/form_components"` to your Gemfile. Import Vario's JavaScript, which uses your app's Stimulus application (`window.Stimulus`) or starts one, and register FormComponents' controllers with it:
+The settings pages need importmap-rails, Propshaft and Tailwind CSS 4 through tailwindcss-rails 4.3 or later (for engine support), [FormComponents](https://github.com/entdec/form_components) for their forms and [entdec-view_components](https://github.com/entdec/view_components) for the conditions editor, both dependencies from GitHub:
+
+```ruby
+gem "form_components", github: "entdec/form_components"
+gem "entdec-view_components", github: "entdec/view_components"
+```
+
+Import Vario's JavaScript, which uses your app's Stimulus application (`window.Stimulus`) or starts one, and register the controllers of FormComponents and entdec-view_components with it:
 
 ```js
 // app/javascript/application.js
 import "vario"
 import { registerFormComponents } from "form_components"
+import { registerViewComponents } from "entdec/view_components"
 
 registerFormComponents(window.Stimulus)
+registerViewComponents(window.Stimulus)
 ```
 
-and add the styles of Vario and FormComponents to your Tailwind CSS:
+and add their styles to your Tailwind CSS:
 
 ```css
 /* app/assets/tailwind/application.css */
 @import "../builds/tailwind/vario";
 @import "../builds/tailwind/form_components";
+@import "../builds/tailwind/entdec_view_components";
 ```
 
 The icons are [Font Awesome](https://fontawesome.com)'s, which your app loads.

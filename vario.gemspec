@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
 
   s.files = Dir['{app,config,db,lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
 
-  s.add_runtime_dependency 'entdec-view_components', '>= 0.1'
+  s.add_runtime_dependency 'entdec-view_components', '>= 0.2'
   s.add_runtime_dependency 'form_components', '>= 0.1.9'
   s.add_runtime_dependency 'grape'
   s.add_runtime_dependency 'grape-swagger', '>= 0.33'
